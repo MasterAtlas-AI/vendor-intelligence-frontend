@@ -73,6 +73,10 @@ npm run typecheck
 npm run build
 ```
 
+### CI (GitHub Actions)
+
+[.github/workflows/ci.yml](.github/workflows/ci.yml) runs `npm ci`, lint, type check and a production build on every push to `main` and on pull requests.
+
 ---
 
 ## Deploying to Render

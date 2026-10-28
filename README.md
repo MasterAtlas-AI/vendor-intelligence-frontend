@@ -97,7 +97,7 @@ src/
   app/
     (auth)/          login · forgot-password · reset-password · accept-invite
     (app)/           signed-in area (layout = Suspense + AppShell)
-      dashboard/ · jobs/ · jobs/[id]/
+      dashboard/ · jobs/ · jobs/[id]/   (each: page.tsx server entry + view.tsx client UI)
       settings/      profile · organization · users · api-keys · audit-log
       admin/         tenants · audit-logs
   components/
@@ -114,7 +114,7 @@ src/
 
 ### Conventions
 
-- **Signed-in pages are Client Components.** They fetch data with TanStack Query through `api()`, because the session lives in browser memory. The `(app)` layout wraps them in `<Suspense>` (required by Cache Components for URL-reading hooks) and sets `instant = false`.
+- **Signed-in pages are Client Components.** They fetch data with TanStack Query through `api()`, because the session lives in browser memory. The `(app)` layout wraps them in `<Suspense>` (required by Cache Components for URL-reading hooks). Each route is a thin server `page.tsx` that sets `export const instant = false` and re-exports the client `view.tsx`, because `instant` is per segment and can't be exported from a Client Component.
 - **Query keys** include the "view as" tenant where the data is tenant-specific. Switching tenant always calls `queryClient.clear()`.
 - **Base UI composition** uses the `render` prop (e.g. `<DropdownMenuTrigger render={<Button />}>`), not Radix's `asChild`.
 - **Checkboxes** need an explicit `aria-label`: Base UI renders them as `<span role="checkbox">`, so a wrapping `<label>` doesn't name them.

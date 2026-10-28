@@ -1,16 +1,6 @@
-"use client";
+// Signed-in pages fetch their data on the client (the session lives in memory), so navigations into them
+// can't be instant by design. `instant` must be set per page and can't live in a Client Component,
+// hence this thin server entry around the client view.
+export const instant = false;
 
-import { AuditLogTable } from "@/components/audit-log-table";
-import { NoAccess, PageHeader } from "@/components/page-header";
-import { P, useCan } from "@/lib/auth/permissions";
-
-export default function PlatformAuditLogPage() {
-  const canRead = useCan(P.TENANT_MANAGE);
-  if (!canRead) return <NoAccess what="the platform audit log" />;
-  return (
-    <>
-      <PageHeader title="Platform audit log" description="Events across all tenants and platform staff." />
-      <AuditLogTable path="/admin/audit-logs" showTenant />
-    </>
-  );
-}
+export { default } from "./view";

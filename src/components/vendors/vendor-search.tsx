@@ -146,9 +146,11 @@ export function VendorSearch({ mine = false }: { mine?: boolean }) {
           loading={vendors.isPending}
           showOwnFields={hasTenant}
           empty={
-            mine && !filtered
-              ? "Your list is empty. Add vendors from their page, or import your vendor list."
-              : "No vendors match these filters."
+            filtered
+              ? "No vendors match these filters."
+              : mine
+                ? "Your list is empty. Add vendors from their page, or import your vendor list."
+                : "The knowledge base has no vendors yet. Import a vendor list, or approve proposals, to add some."
           }
         />
       )}

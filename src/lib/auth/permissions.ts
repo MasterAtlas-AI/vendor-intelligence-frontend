@@ -9,7 +9,9 @@ export const P = {
   APIKEY_MANAGE: "apikey:manage",
   AUDIT_READ: "audit:read",
   VENDOR_READ: "vendor:read",
+  SEARCH_RUN: "search:run",
   UPLOAD_CREATE: "upload:create",
+  DISCOVERY_RUN: "discovery:run",
   KNOWLEDGE_APPROVE: "knowledge:approve",
   TENANT_VENDOR_APPROVE: "tenant_vendor:approve",
 } as const;

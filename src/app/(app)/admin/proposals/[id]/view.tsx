@@ -26,7 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useCertificationTypes, useEquipmentCategories, useIndustries, useServiceCategories } from "@/hooks/use-taxonomy";
 import { ApiError, api } from "@/lib/api/client";
-import type { ProposalDetail, ProposalItemRead } from "@/lib/api/types";
+import type { ProposalDetail, ProposalItemRead, VendorDetail } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
 import { formatDateTime, humanize, timeAgo } from "@/lib/format";
 import { errorMessage } from "@/lib/validation";
@@ -72,6 +72,54 @@ function PayloadView({ item }: { item: ProposalItemRead }) {
         );
       })}
     </dl>
+  );
+}
+
+function VendorBox({ label, vendor, missing }: { label: string; vendor: VendorDetail | undefined; missing?: boolean }) {
+  return (
+    <div className="grid content-start gap-1 rounded-md border p-3 text-sm">
+      <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</span>
+      {missing && <span className="text-muted-foreground">No longer available</span>}
+      {!missing && !vendor && <Skeleton className="h-12" />}
+      {vendor && (
+        <>
+          <Link href={`/vendors/${vendor.id}`} className="font-medium text-primary hover:underline">
+            {vendor.display_name}
+          </Link>
+          {vendor.legal_name !== vendor.display_name && <span className="text-xs text-muted-foreground">{vendor.legal_name}</span>}
+          <span className="text-xs text-muted-foreground">
+            {[vendor.domains.join(", ") || "no website", vendor.hq_country && countryName(vendor.hq_country)].filter(Boolean).join(" · ")}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {vendor.equipment_count} equipment · {vendor.service_count} services · {vendor.certification_count} certifications
+          </span>
+          {vendor.status !== "active" && <StatusBadge status={vendor.status} />}
+        </>
+      )}
+    </div>
+  );
+}
+
+/** A merge shown as the two vendors by name: the one that stays (the proposal's subject) and the duplicate. */
+function MergeView({ item, keep }: { item: ProposalItemRead; keep: VendorDetail | null }) {
+  const dupId = String(item.payload.duplicate_vendor_id ?? "");
+  const dup = useQuery({ queryKey: ["vendor", dupId, "merge"], queryFn: () => api<VendorDetail>(`/vendors/${dupId}`), retry: false });
+  const similarity = item.payload.similarity;
+  return (
+    <div className="grid gap-2">
+      <div className="grid gap-2 sm:grid-cols-2">
+        <VendorBox label="Keep" vendor={keep ?? undefined} missing={!keep} />
+        <VendorBox label="Merge into it and retire" vendor={dup.data} missing={dup.isError} />
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {typeof similarity === "number" && `Names ${Math.round(similarity * 100)}% similar. `}
+        {String(item.payload.reason ?? "")}
+      </p>
+      <p className="text-xs text-muted-foreground">
+        Approving moves the duplicate&apos;s facts, evidence, aliases and websites to the vendor kept, and combines each
+        organization&apos;s own records for the two.
+      </p>
+    </div>
   );
 }
 
@@ -321,7 +369,11 @@ export default function ProposalReviewPage() {
                     </Button>
                   )}
                 </div>
-                <PayloadView item={item} />
+                {item.action === "merge_vendor" ? (
+                  <MergeView item={item} keep={p.subject_vendor ?? null} />
+                ) : (
+                  <PayloadView item={item} />
+                )}
                 <EvidenceView evidence={item.evidence} />
                 {item.reject_reason && <p className="text-xs text-destructive">Rejected: {item.reject_reason}</p>}
               </div>

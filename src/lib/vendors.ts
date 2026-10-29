@@ -18,6 +18,7 @@ export const OUTCOME_LABELS: Record<ImportRowOutcome, string> = {
   duplicate_in_file: "Duplicate in file",
   ambiguous: "Ambiguous name",
   invalid: "Invalid row",
+  discarded: "Discarded",
 };
 
 export function countryName(code: string | null | undefined): string {
@@ -36,6 +37,7 @@ const ORIGIN_LABELS: Record<string, string> = {
   ai_vendor_discovery: "AI vendor discovery",
   ai_equipment_discovery: "AI equipment discovery",
   suggestion: "Suggestion",
+  dedup_scan: "Duplicate scan",
 };
 
 export function originLabel(origin: string): string {

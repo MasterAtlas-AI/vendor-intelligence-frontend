@@ -49,6 +49,24 @@ export type PdfImportRequest = S["PdfImportRequest"];
 export type PdfPreview = S["PdfPreview"];
 export type PdfCandidate = S["PdfCandidate"];
 
+// Phase 3: AI discovery
+export type DiscoveryRequest = S["DiscoveryRequest"];
+export type DiscoveryEstimate = S["DiscoveryEstimate"];
+export type DiscoveryAccepted = S["DiscoveryAccepted"];
+export type CapabilityRequest = S["CapabilityRequest"];
+export type AiUsage = S["AiUsageRead"];
+export type DedupScanRequest = S["DedupScanRequest"];
+export type Region = NonNullable<DiscoveryRequest["regions"]>[number];
+
+// Phase 4: search
+export type SearchIntent = S["SearchIntent"];
+export type SearchRequest = S["SearchRequest"];
+export type SearchResponse = S["SearchResponse"];
+export type SearchHit = S["SearchHit"];
+export type MatchReason = S["MatchReason"];
+export type SearchHistoryEntry = S["SearchHistoryRead"];
+export type Suggestion = S["Suggestion"];
+
 export interface CursorPage<T> {
   items: T[];
   next_cursor: string | null;

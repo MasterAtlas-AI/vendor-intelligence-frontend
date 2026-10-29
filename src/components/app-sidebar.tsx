@@ -12,7 +12,10 @@ import {
   ListChecks,
   LogOut,
   ScrollText,
+  Search,
   ShieldCheck,
+  Sparkles,
+  Wallet,
   Settings2,
   Upload,
   UserRound,
@@ -58,9 +61,11 @@ interface NavItem {
 
 const WORKSPACE: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/search", label: "Search", icon: Search, permission: P.SEARCH_RUN },
   { href: "/vendors", label: "Vendors", icon: Factory, permission: P.VENDOR_READ },
   { href: "/my-vendors", label: "My vendors", icon: BookmarkCheck, permission: P.VENDOR_READ, needsTenant: true },
   { href: "/imports", label: "Imports", icon: Upload, permission: P.UPLOAD_CREATE },
+  { href: "/discovery", label: "AI discovery", icon: Sparkles, permission: P.DISCOVERY_RUN },
   { href: "/jobs", label: "Background jobs", icon: ListChecks },
 ];
 
@@ -72,6 +77,7 @@ const SETTINGS: NavItem[] = [
   { href: "/settings/profile", label: "My profile", icon: UserRound },
   { href: "/settings/organization", label: "Organization", icon: Settings2, permission: P.TENANT_SETTINGS_MANAGE, needsTenant: true },
   { href: "/settings/users", label: "Users & roles", icon: Users, permission: P.USER_READ, needsTenant: true },
+  { href: "/settings/ai-usage", label: "AI usage", icon: Wallet, permission: P.DISCOVERY_RUN },
   { href: "/settings/api-keys", label: "API keys", icon: KeyRound, permission: P.APIKEY_MANAGE, needsTenant: true },
   { href: "/settings/audit-log", label: "Audit log", icon: ScrollText, permission: P.AUDIT_READ, needsTenant: true },
 ];

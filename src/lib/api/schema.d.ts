@@ -952,6 +952,330 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ai/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ai Usage
+         * @description This month's AI spending for your organization against its budget (platform staff: the platform budget).
+         */
+        get: operations["ai_usage_api_v1_ai_usage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/ai/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check Ai
+         * @description Makes one tiny AI call (a fraction of a cent) to confirm the key, model and network work.
+         */
+        post: operations["check_ai_api_v1_admin_ai_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Estimate Discovery
+         * @description Expected number of searches and cost of a discovery, before running it.
+         */
+        post: operations["estimate_discovery_api_v1_discovery_estimate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Vendor Discovery
+         * @description Finds suppliers matching the request on the web, researches their sites and proposes what it finds for
+         *     curator review. Runs as a background job; follow it with GET /jobs/{id}/events.
+         */
+        post: operations["start_vendor_discovery_api_v1_discovery_vendors_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Discovery Runs */
+        get: operations["discovery_runs_api_v1_discovery_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/runs/{job_id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Discovery Results
+         * @description One entry per candidate: new (proposed), existing (matched, new facts proposed), or discarded with the reason.
+         */
+        get: operations["discovery_results_api_v1_discovery_runs__job_id__results_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/vendors/{vendor_id}/equipment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Research a vendor's website for equipment and certifications */
+        post: operations["discover_vendor_equipment_api_v1_discovery_vendors__vendor_id__equipment_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/vendors/{vendor_id}/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Research a vendor's website for services */
+        post: operations["discover_vendor_services_api_v1_discovery_vendors__vendor_id__services_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/vendors/{vendor_id}/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Re-research everything about a vendor (all fact types) */
+        post: operations["discover_vendor_refresh_api_v1_discovery_vendors__vendor_id__refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/dedup/scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Dedup Scan
+         * @description Scans the knowledge base for duplicate vendors and raises merge proposals (nothing is merged without review).
+         */
+        post: operations["start_dedup_scan_api_v1_admin_dedup_scan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/search/index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Index Status
+         * @description How much of the knowledge base has current search vectors.
+         */
+        get: operations["index_status_api_v1_admin_search_index_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/search/reindex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reindex
+         * @description Refreshes search vectors now (normally automatic after approvals and in the maintenance loop).
+         */
+        post: operations["reindex_api_v1_admin_search_reindex_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Search
+         * @description Hybrid vendor search: the query (or edited intent chips) ranked over structured facts, full text and
+         *     vector similarity, with a confidence score and the facts behind each match.
+         */
+        post: operations["search_api_v1_search_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/parse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Parse
+         * @description Only the query understanding step, for the chips UI ("ai" costs a fraction of a cent; repeat queries are free).
+         */
+        post: operations["parse_api_v1_search_parse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_search_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/history/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete History */
+        delete: operations["delete_history_api_v1_search_history__entry_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Suggest
+         * @description Typeahead: matching categories, certifications, industries and vendor names.
+         */
+        get: operations["suggest_api_v1_search_suggest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -1004,6 +1328,47 @@ export interface components {
          * @enum {string}
          */
         ActorType: "user" | "api_key" | "system" | "ai";
+        /** AiCheckResult */
+        AiCheckResult: {
+            /** Ok */
+            ok: boolean;
+            /** Provider */
+            provider: string;
+            /** Model */
+            model: string;
+            /** Echo */
+            echo: string;
+            /** Latency Ms */
+            latency_ms: number;
+            /** Input Tokens */
+            input_tokens: number;
+            /** Output Tokens */
+            output_tokens: number;
+            /** Cost Usd */
+            cost_usd: string;
+        };
+        /** AiUsageRead */
+        AiUsageRead: {
+            /** Configured */
+            configured: boolean;
+            /** Model */
+            model: string | null;
+            /**
+             * Month Start
+             * Format: date-time
+             */
+            month_start: string;
+            /** Budget Usd */
+            budget_usd: string;
+            /** Spent Usd */
+            spent_usd: string;
+            /** Remaining Usd */
+            remaining_usd: string;
+            /** Calls */
+            calls: number;
+            /** By Prompt */
+            by_prompt: components["schemas"]["PromptUsage"][];
+        };
         /** ApiKeyCreate */
         ApiKeyCreate: {
             /** Name */
@@ -1129,6 +1494,16 @@ export interface components {
         Body_upload_file_api_v1_imports_uploads_post: {
             /** File */
             file: string;
+        };
+        /** CapabilityRequest */
+        CapabilityRequest: {
+            /**
+             * Max Pages
+             * @default 12
+             */
+            max_pages: number;
+            /** Extra Urls */
+            extra_urls?: string[];
         };
         /** CategoryRead */
         CategoryRead: {
@@ -1285,6 +1660,24 @@ export interface components {
              */
             version: number;
         };
+        /** DedupScanRequest */
+        DedupScanRequest: {
+            /**
+             * Min Similarity
+             * @default 0.6
+             */
+            min_similarity: number;
+            /**
+             * Max Pairs
+             * @default 200
+             */
+            max_pairs: number;
+            /**
+             * Use Ai
+             * @default true
+             */
+            use_ai: boolean;
+        };
         /** DiagnosticsJobCreate */
         DiagnosticsJobCreate: {
             /**
@@ -1299,6 +1692,71 @@ export interface components {
             step_seconds: number;
             /** Fail At Step */
             fail_at_step?: number | null;
+        };
+        /** DiscoveryAccepted */
+        DiscoveryAccepted: {
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            status: components["schemas"]["JobStatus"];
+            /** Events Url */
+            events_url: string;
+            estimate: components["schemas"]["DiscoveryEstimate"];
+        };
+        /** DiscoveryEstimate */
+        DiscoveryEstimate: {
+            /** Queries */
+            queries: number;
+            /** Web Searches */
+            web_searches: number;
+            /** Candidates */
+            candidates: number;
+            /** Typical Cost Usd */
+            typical_cost_usd: number;
+            /** Max Cost Usd */
+            max_cost_usd: number;
+        };
+        /**
+         * DiscoveryRequest
+         * @description What to look for, never who: categories, industry, region, standards and a free-text brief.
+         */
+        DiscoveryRequest: {
+            /** Equipment Categories */
+            equipment_categories?: string[];
+            /** Service Categories */
+            service_categories?: string[];
+            /** Industries */
+            industries?: string[];
+            /** Countries */
+            countries?: string[];
+            /** Regions */
+            regions?: ("global" | "europe" | "middle_east" | "africa" | "south_asia" | "south_east_asia" | "east_asia" | "oceania" | "north_america" | "latin_america")[];
+            /** Standards */
+            standards?: string[];
+            /** Certifications */
+            certifications?: string[];
+            /**
+             * Brief
+             * @default
+             */
+            brief: string;
+            /**
+             * Max Candidates
+             * @default 15
+             */
+            max_candidates: number;
+            /**
+             * Include Existing
+             * @default true
+             */
+            include_existing: boolean;
+            /**
+             * Pages Per Vendor
+             * @default 6
+             */
+            pages_per_vendor: number;
         };
         /** EquipmentCategoryRead */
         EquipmentCategoryRead: {
@@ -1422,7 +1880,7 @@ export interface components {
          * @description What an import did with one row of the file (shown in the import report).
          * @enum {string}
          */
-        ImportRowOutcome: "matched" | "created" | "proposed" | "already_proposed" | "duplicate_in_file" | "ambiguous" | "invalid";
+        ImportRowOutcome: "matched" | "created" | "proposed" | "already_proposed" | "duplicate_in_file" | "ambiguous" | "invalid" | "discarded";
         /** ImportRowPage */
         ImportRowPage: {
             /** Items */
@@ -1458,6 +1916,21 @@ export interface components {
             };
             /** Messages */
             messages: string[];
+            /** Details */
+            details?: {
+                [key: string]: unknown;
+            };
+        };
+        /** IndexStatus */
+        IndexStatus: {
+            /** Vendors */
+            vendors: number;
+            /** Indexed Vendors */
+            indexed_vendors: number;
+            /** Stale Vendors */
+            stale_vendors: number;
+            /** Chunks */
+            chunks: number;
         };
         /** IndustryRead */
         IndustryRead: {
@@ -1642,6 +2115,48 @@ export interface components {
             /** Password */
             password: string;
         };
+        /**
+         * MatchReason
+         * @description One reason a vendor matched, with the knowledge-base fact and where it came from.
+         */
+        MatchReason: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "equipment" | "service" | "certification" | "industry" | "standard" | "text" | "semantic";
+            /** Label */
+            label: string;
+            /** Code */
+            code?: string | null;
+            /** Sources */
+            sources?: components["schemas"]["SourceRef"][];
+        };
+        /** ParseRequest */
+        ParseRequest: {
+            /** Query */
+            query: string;
+            /**
+             * Parser
+             * @default ai
+             * @enum {string}
+             */
+            parser: "local" | "ai";
+        };
+        /** ParseResult */
+        ParseResult: {
+            intent: components["schemas"]["SearchIntent"];
+            /**
+             * Parser
+             * @enum {string}
+             */
+            parser: "local" | "ai";
+            /**
+             * Cached
+             * @default false
+             */
+            cached: boolean;
+        };
         /** PasswordChangeRequest */
         PasswordChangeRequest: {
             /** Current Password */
@@ -1800,6 +2315,15 @@ export interface components {
             /** Scope */
             scope: string;
         };
+        /** PromptUsage */
+        PromptUsage: {
+            /** Prompt */
+            prompt: string;
+            /** Calls */
+            calls: number;
+            /** Cost Usd */
+            cost_usd: string;
+        };
         /**
          * ProposalCreate
          * @description A curator entering knowledge by hand (origin = manual).
@@ -1858,7 +2382,7 @@ export interface components {
          * ProposalItemAction
          * @enum {string}
          */
-        ProposalItemAction: "create_vendor" | "update_vendor_field" | "add_domain" | "add_alias" | "add_location" | "add_industry" | "add_equipment" | "add_service" | "add_certification" | "add_project";
+        ProposalItemAction: "create_vendor" | "update_vendor_field" | "add_domain" | "add_alias" | "add_location" | "add_industry" | "add_equipment" | "add_service" | "add_certification" | "add_project" | "merge_vendor";
         /**
          * ProposalItemStatus
          * @enum {string}
@@ -1868,12 +2392,12 @@ export interface components {
          * ProposalKind
          * @enum {string}
          */
-        ProposalKind: "new_vendor" | "update_vendor";
+        ProposalKind: "new_vendor" | "update_vendor" | "merge_vendors";
         /**
          * ProposalOrigin
          * @enum {string}
          */
-        ProposalOrigin: "manual" | "excel" | "pdf" | "ai_vendor_discovery" | "ai_equipment_discovery" | "suggestion";
+        ProposalOrigin: "manual" | "excel" | "pdf" | "ai_vendor_discovery" | "ai_equipment_discovery" | "suggestion" | "dedup_scan";
         /** ProposalPage */
         ProposalPage: {
             /** Items */
@@ -1915,6 +2439,11 @@ export interface components {
             /** Version */
             version: number;
         };
+        /** ReindexRequest */
+        ReindexRequest: {
+            /** Vendor Ids */
+            vendor_ids?: string[];
+        };
         /** RequestInfo */
         RequestInfo: {
             /** Note */
@@ -1939,6 +2468,130 @@ export interface components {
             is_system: boolean;
             /** Permissions */
             permissions: string[];
+        };
+        /** ScoreBreakdown */
+        ScoreBreakdown: {
+            /** Equipment */
+            equipment?: number | null;
+            /** Standards Certifications */
+            standards_certifications?: number | null;
+            /** Industries */
+            industries?: number | null;
+            /** Services */
+            services?: number | null;
+            /** Semantic */
+            semantic?: number | null;
+            /** Text */
+            text?: number | null;
+            /** Data Quality */
+            data_quality: number;
+        };
+        /**
+         * SearchFilters
+         * @description Hard filters (results must match), unlike the intent, which ranks.
+         */
+        SearchFilters: {
+            /** Countries */
+            countries?: string[];
+            /** Avl Status */
+            avl_status?: components["schemas"]["AvlStatus"][];
+            /**
+             * My Vendors Only
+             * @default false
+             */
+            my_vendors_only: boolean;
+        };
+        /** SearchHistoryRead */
+        SearchHistoryRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Query */
+            query: string;
+            intent: components["schemas"]["SearchIntent"];
+            filters: components["schemas"]["SearchFilters"];
+            /** Result Count */
+            result_count: number;
+            /** Took Ms */
+            took_ms: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** SearchHit */
+        SearchHit: {
+            vendor: components["schemas"]["VendorSummary"];
+            /** Confidence */
+            confidence: number;
+            scores: components["schemas"]["ScoreBreakdown"];
+            /** Reasons */
+            reasons: components["schemas"]["MatchReason"][];
+        };
+        /**
+         * SearchIntent
+         * @description What a query asks for, as taxonomy codes plus leftover keywords. Shown to the user as editable chips; also the
+         *     AI's output schema for query understanding (kept flat and unconstrained for strict Structured Outputs).
+         */
+        SearchIntent: {
+            /** Equipment Categories */
+            equipment_categories?: string[];
+            /** Service Categories */
+            service_categories?: string[];
+            /** Industries */
+            industries?: string[];
+            /** Certifications */
+            certifications?: string[];
+            /** Standards */
+            standards?: string[];
+            /** Countries */
+            countries?: string[];
+            /**
+             * Keywords
+             * @default
+             */
+            keywords: string;
+        };
+        /** SearchRequest */
+        SearchRequest: {
+            /**
+             * Query
+             * @default
+             */
+            query: string;
+            intent?: components["schemas"]["SearchIntent"] | null;
+            /**
+             * Parser
+             * @default local
+             * @enum {string}
+             */
+            parser: "local" | "ai";
+            filters?: components["schemas"]["SearchFilters"];
+            /**
+             * Limit
+             * @default 20
+             */
+            limit: number;
+        };
+        /** SearchResponse */
+        SearchResponse: {
+            /** Search Id */
+            search_id: string | null;
+            intent: components["schemas"]["SearchIntent"];
+            /**
+             * Parser
+             * @enum {string}
+             */
+            parser: "local" | "ai";
+            /** Semantic */
+            semantic: boolean;
+            /** Took Ms */
+            took_ms: number;
+            /** Results */
+            results: components["schemas"]["SearchHit"][];
         };
         /** ServiceRead */
         ServiceRead: {
@@ -1992,6 +2645,33 @@ export interface components {
             title: string;
             /** Retrieved At */
             retrieved_at: string | null;
+        };
+        /** SourceRef */
+        SourceRef: {
+            /** Url */
+            url: string | null;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * Snippet
+             * @default
+             */
+            snippet: string;
+        };
+        /** Suggestion */
+        Suggestion: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "vendor" | "equipment" | "service" | "certification" | "industry";
+            /** Label */
+            label: string;
+            /** Value */
+            value: string;
         };
         /** TenantAdminInput */
         TenantAdminInput: {
@@ -4485,6 +5165,628 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ai_usage_api_v1_ai_usage_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiUsageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_ai_api_v1_admin_ai_check_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiCheckResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    estimate_discovery_api_v1_discovery_estimate_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiscoveryRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryEstimate"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_vendor_discovery_api_v1_discovery_vendors_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiscoveryRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discovery_runs_api_v1_discovery_runs_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CursorPage_JobRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discovery_results_api_v1_discovery_runs__job_id__results_get: {
+        parameters: {
+            query?: {
+                outcome?: components["schemas"]["ImportRowOutcome"] | null;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportRowPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discover_vendor_equipment_api_v1_discovery_vendors__vendor_id__equipment_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CapabilityRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discover_vendor_services_api_v1_discovery_vendors__vendor_id__services_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CapabilityRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discover_vendor_refresh_api_v1_discovery_vendors__vendor_id__refresh_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CapabilityRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_dedup_scan_api_v1_admin_dedup_scan_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DedupScanRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    index_status_api_v1_admin_search_index_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndexStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reindex_api_v1_admin_search_reindex_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReindexRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_api_v1_search_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SearchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    parse_api_v1_search_parse_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParseResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    history_api_v1_search_history_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchHistoryRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_history_api_v1_search_history__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suggest_api_v1_search_suggest_get: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Suggestion"][];
                 };
             };
             /** @description Validation Error */

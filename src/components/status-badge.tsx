@@ -27,6 +27,7 @@ const TONES: Record<string, string> = {
   not_approved: BAD,
   blacklisted: BAD,
   invalid: BAD,
+  discarded: "",
   active: "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200",
   succeeded: "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200",
   trial: "bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200",

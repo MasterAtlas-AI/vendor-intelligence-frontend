@@ -1490,6 +1490,87 @@ export interface paths {
         patch: operations["update_scorecard_api_v1_scorecards__scorecard_id__patch"];
         trace?: never;
     };
+    "/api/v1/assistant/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Chat
+         * @description Ask about vendors. Answers come only from the knowledge base (and the organization's own vendor records),
+         *     with every vendor cited; two AI calls per message, charged to the organization's AI budget.
+         */
+        post: operations["chat_api_v1_assistant_chat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/data-quality": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Dashboard
+         * @description Knowledge-base quality: score distribution, how many vendors have each issue, and the weakest vendors.
+         */
+        get: operations["get_dashboard_api_v1_admin_data_quality_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/data-quality/rescore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rescore All
+         * @description Recompute every vendor's score now (the maintenance loop also does this).
+         */
+        post: operations["rescore_all_api_v1_admin_data_quality_rescore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/data-quality/reverify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reverify Stale
+         * @description Re-read the websites of the stalest vendors (a full AI refresh each, proposals go to review as usual).
+         */
+        post: operations["reverify_stale_api_v1_admin_data_quality_reverify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -1718,6 +1799,8 @@ export interface components {
             max_pages: number;
             /** Extra Urls */
             extra_urls?: string[];
+            /** Website */
+            website?: string | null;
         };
         /** CategoryRead */
         CategoryRead: {
@@ -1783,6 +1866,83 @@ export interface components {
             issuer: string;
             /** Category */
             category: string;
+        };
+        /**
+         * ChatAction
+         * @description Something the app can do next, shown as a button. Nothing runs until the user clicks (and confirms).
+         */
+        ChatAction: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "research_vendor" | "discover_vendors";
+            /** Label */
+            label: string;
+            /** Vendor Id */
+            vendor_id?: string | null;
+            /** Vendor Name */
+            vendor_name?: string | null;
+            /** Website */
+            website?: string | null;
+            /** Brief */
+            brief?: string | null;
+        };
+        /** ChatMessage */
+        ChatMessage: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+        };
+        /**
+         * ChatRequest
+         * @description The conversation so far, newest last (kept by the client; the last message is the user's question).
+         */
+        ChatRequest: {
+            /** Messages */
+            messages: components["schemas"]["ChatMessage"][];
+            /** Context Vendor Ids */
+            context_vendor_ids?: string[];
+        };
+        /** ChatResponse */
+        ChatResponse: {
+            /** Answer */
+            answer: string;
+            /** Vendors */
+            vendors: components["schemas"]["CitedVendor"][];
+            /** Follow Ups */
+            follow_ups: string[];
+            /** Actions */
+            actions?: components["schemas"]["ChatAction"][];
+            /** Searched */
+            searched: string[];
+            /**
+             * Removed Refs
+             * @default 0
+             */
+            removed_refs: number;
+        };
+        /** CitedVendor */
+        CitedVendor: {
+            /** Ref */
+            ref: string;
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /** Name */
+            name: string;
+            /** Country */
+            country: string | null;
+            /** Avl Status */
+            avl_status: string | null;
+            /** Sources */
+            sources?: string[];
         };
         /** Criterion */
         Criterion: {
@@ -2184,6 +2344,15 @@ export interface components {
             /** Synonyms */
             synonyms: string[];
         };
+        /** IssueCount */
+        IssueCount: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Count */
+            count: number;
+        };
         /** ItemCounts */
         ItemCounts: {
             /**
@@ -2362,7 +2531,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "equipment" | "service" | "certification" | "industry" | "standard" | "text" | "semantic";
+            kind: "equipment" | "service" | "certification" | "industry" | "standard" | "text" | "semantic" | "ai";
             /** Label */
             label: string;
             /** Code */
@@ -2784,6 +2953,37 @@ export interface components {
             /** Version */
             version: number;
         };
+        /** QualityDashboard */
+        QualityDashboard: {
+            /** Vendors */
+            vendors: number;
+            /** Avg Score */
+            avg_score: number;
+            /** Distribution */
+            distribution: {
+                [key: string]: number;
+            };
+            /** Issues */
+            issues: components["schemas"]["IssueCount"][];
+            /** Worst */
+            worst: components["schemas"]["QualityVendor"][];
+        };
+        /** QualityVendor */
+        QualityVendor: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /** Name */
+            name: string;
+            /** Country */
+            country: string | null;
+            /** Score */
+            score: number;
+            /** Issues */
+            issues: string[];
+        };
         /** ReindexRequest */
         ReindexRequest: {
             /** Vendor Ids */
@@ -2795,6 +2995,26 @@ export interface components {
             note: string;
             /** Version */
             version: number;
+        };
+        /** RescoreResult */
+        RescoreResult: {
+            /** Updated */
+            updated: number;
+        };
+        /** ReverifyRequest */
+        ReverifyRequest: {
+            /**
+             * Limit
+             * @default 10
+             */
+            limit: number;
+        };
+        /** ReverifyResult */
+        ReverifyResult: {
+            /** Queued */
+            queued: number;
+            /** Job Ids */
+            job_ids: string[];
         };
         /** RoleRead */
         RoleRead: {
@@ -2982,6 +3202,8 @@ export interface components {
             scores: components["schemas"]["ScoreBreakdown"];
             /** Reasons */
             reasons: components["schemas"]["MatchReason"][];
+            /** Ai Fit */
+            ai_fit?: number | null;
         };
         /**
          * SearchIntent
@@ -3027,6 +3249,8 @@ export interface components {
              * @default 20
              */
             limit: number;
+            /** Rerank */
+            rerank?: boolean | null;
         };
         /** SearchResponse */
         SearchResponse: {
@@ -3040,6 +3264,11 @@ export interface components {
             parser: "local" | "ai";
             /** Semantic */
             semantic: boolean;
+            /**
+             * Reranked
+             * @default false
+             */
+            reranked: boolean;
             /** Took Ms */
             took_ms: number;
             /** Results */
@@ -7051,6 +7280,149 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScorecardRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    chat_api_v1_assistant_chat_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_dashboard_api_v1_admin_data_quality_get: {
+        parameters: {
+            query?: {
+                issue?: string | null;
+                limit?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QualityDashboard"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rescore_all_api_v1_admin_data_quality_rescore_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RescoreResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reverify_stale_api_v1_admin_data_quality_reverify_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReverifyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReverifyResult"];
                 };
             };
             /** @description Validation Error */

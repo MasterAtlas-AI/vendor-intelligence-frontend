@@ -46,6 +46,7 @@ const REASON_ICONS: Record<MatchReason["kind"], React.ComponentType<{ className?
   industry: Factory,
   text: Search,
   semantic: Sparkles,
+  ai: Sparkles,
 };
 
 const SCORE_LABELS: Record<string, string> = {
@@ -147,6 +148,11 @@ function Hit({ hit }: { hit: SearchHit }) {
           </div>
           <div className="flex items-center gap-2">
             {v.tenant && <StatusBadge status={v.tenant.avl_status} />}
+            {hit.ai_fit !== null && hit.ai_fit !== undefined && (
+              <span className="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary" title="Technical fit judged by AI (0-10)">
+                <Sparkles className="size-3" /> {hit.ai_fit}/10
+              </span>
+            )}
             <Tooltip>
               <TooltipTrigger render={<span className="cursor-default" />}>
                 <div className="flex w-28 items-center gap-2" aria-label={`Match ${pct}%`}>
@@ -305,7 +311,8 @@ export default function SearchPage() {
           {result && (
             <p className="text-xs text-muted-foreground">
               {result.results.length} vendor{result.results.length === 1 ? "" : "s"} · {result.took_ms} ms
-              {!result.semantic && " · meaning-based matching unavailable (search index not built yet)"}
+              {result.reranked && " · re-ranked by AI for technical fit"}
+              {!result.semantic && " · meaning-based matching unavailable"}
             </p>
           )}
 

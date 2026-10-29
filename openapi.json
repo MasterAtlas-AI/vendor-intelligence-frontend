@@ -9658,6 +9658,387 @@
         }
       }
     },
+    "/api/v1/assistant/chat": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Chat",
+        "description": "Ask about vendors. Answers come only from the knowledge base (and the organization's own vendor records),\nwith every vendor cited; two AI calls per message, charged to the organization's AI budget.",
+        "operationId": "chat_api_v1_assistant_chat_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/data-quality": {
+      "get": {
+        "tags": [
+          "data quality"
+        ],
+        "summary": "Get Dashboard",
+        "description": "Knowledge-base quality: score distribution, how many vendors have each issue, and the weakest vendors.",
+        "operationId": "get_dashboard_api_v1_admin_data_quality_get",
+        "parameters": [
+          {
+            "name": "issue",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(no_website|no_country|no_description|no_facts|unsourced_facts|expired_certifications|stale)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Issue"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityDashboard"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/data-quality/rescore": {
+      "post": {
+        "tags": [
+          "data quality"
+        ],
+        "summary": "Rescore All",
+        "description": "Recompute every vendor's score now (the maintenance loop also does this).",
+        "operationId": "rescore_all_api_v1_admin_data_quality_rescore_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RescoreResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/data-quality/reverify": {
+      "post": {
+        "tags": [
+          "data quality"
+        ],
+        "summary": "Reverify Stale",
+        "description": "Re-read the websites of the stalest vendors (a full AI refresh each, proposals go to review as usual).",
+        "operationId": "reverify_stale_api_v1_admin_data_quality_reverify_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReverifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReverifyResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health/live": {
       "get": {
         "tags": [
@@ -10275,6 +10656,18 @@
             "type": "array",
             "maxItems": 5,
             "title": "Extra Urls"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
           }
         },
         "additionalProperties": false,
@@ -10454,6 +10847,232 @@
           "category"
         ],
         "title": "CertificationTypeRead"
+      },
+      "ChatAction": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "research_vendor",
+              "discover_vendors"
+            ],
+            "title": "Kind"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "vendor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Id"
+          },
+          "vendor_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Name"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "brief": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brief"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "label"
+        ],
+        "title": "ChatAction",
+        "description": "Something the app can do next, shown as a button. Nothing runs until the user clicks (and confirms)."
+      },
+      "ChatMessage": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Content"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "ChatMessage"
+      },
+      "ChatRequest": {
+        "properties": {
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Messages"
+          },
+          "context_vendor_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Context Vendor Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "title": "ChatRequest",
+        "description": "The conversation so far, newest last (kept by the client; the last message is the user's question)."
+      },
+      "ChatResponse": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "vendors": {
+            "items": {
+              "$ref": "#/components/schemas/CitedVendor"
+            },
+            "type": "array",
+            "title": "Vendors"
+          },
+          "follow_ups": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Follow Ups"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/ChatAction"
+            },
+            "type": "array",
+            "title": "Actions"
+          },
+          "searched": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Searched"
+          },
+          "removed_refs": {
+            "type": "integer",
+            "title": "Removed Refs",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer",
+          "vendors",
+          "follow_ups",
+          "searched"
+        ],
+        "title": "ChatResponse"
+      },
+      "CitedVendor": {
+        "properties": {
+          "ref": {
+            "type": "string",
+            "title": "Ref"
+          },
+          "vendor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Vendor Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "avl_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avl Status"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ref",
+          "vendor_id",
+          "name",
+          "country",
+          "avl_status"
+        ],
+        "title": "CitedVendor"
       },
       "Criterion": {
         "properties": {
@@ -11489,6 +12108,29 @@
         ],
         "title": "IndustryRead"
       },
+      "IssueCount": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "count"
+        ],
+        "title": "IssueCount"
+      },
       "ItemCounts": {
         "properties": {
           "pending": {
@@ -11970,7 +12612,8 @@
               "industry",
               "standard",
               "text",
-              "semantic"
+              "semantic",
+              "ai"
             ],
             "title": "Kind"
           },
@@ -13297,6 +13940,92 @@
         ],
         "title": "ProposalSummary"
       },
+      "QualityDashboard": {
+        "properties": {
+          "vendors": {
+            "type": "integer",
+            "title": "Vendors"
+          },
+          "avg_score": {
+            "type": "number",
+            "title": "Avg Score"
+          },
+          "distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Distribution"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/IssueCount"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "worst": {
+            "items": {
+              "$ref": "#/components/schemas/QualityVendor"
+            },
+            "type": "array",
+            "title": "Worst"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendors",
+          "avg_score",
+          "distribution",
+          "issues",
+          "worst"
+        ],
+        "title": "QualityDashboard"
+      },
+      "QualityVendor": {
+        "properties": {
+          "vendor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Vendor Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendor_id",
+          "name",
+          "country",
+          "score",
+          "issues"
+        ],
+        "title": "QualityVendor"
+      },
       "ReindexRequest": {
         "properties": {
           "vendor_ids": {
@@ -13333,6 +14062,55 @@
           "version"
         ],
         "title": "RequestInfo"
+      },
+      "RescoreResult": {
+        "properties": {
+          "updated": {
+            "type": "integer",
+            "title": "Updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "updated"
+        ],
+        "title": "RescoreResult"
+      },
+      "ReverifyRequest": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 10
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ReverifyRequest"
+      },
+      "ReverifyResult": {
+        "properties": {
+          "queued": {
+            "type": "integer",
+            "title": "Queued"
+          },
+          "job_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Job Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "queued",
+          "job_ids"
+        ],
+        "title": "ReverifyResult"
       },
       "RoleRead": {
         "properties": {
@@ -13837,6 +14615,17 @@
             },
             "type": "array",
             "title": "Reasons"
+          },
+          "ai_fit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Fit"
           }
         },
         "type": "object",
@@ -13938,6 +14727,17 @@
             "minimum": 1.0,
             "title": "Limit",
             "default": 20
+          },
+          "rerank": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rerank"
           }
         },
         "additionalProperties": false,
@@ -13972,6 +14772,11 @@
           "semantic": {
             "type": "boolean",
             "title": "Semantic"
+          },
+          "reranked": {
+            "type": "boolean",
+            "title": "Reranked",
+            "default": false
           },
           "took_ms": {
             "type": "integer",

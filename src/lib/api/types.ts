@@ -75,6 +75,12 @@ export type ScorecardTemplate = S["TemplateRead"];
 export type Scorecard = S["ScorecardRead"];
 export type VendorStage = ProjectVendor["stage"];
 
+// Phase 4: assistant
+export type ChatMessage = S["ChatMessage"];
+export type ChatResponse = S["ChatResponse"];
+export type CitedVendor = S["CitedVendor"];
+export type ChatAction = S["ChatAction"];
+
 export interface CursorPage<T> {
   items: T[];
   next_cursor: string | null;

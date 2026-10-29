@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -66,7 +66,14 @@ export default function NewDiscoveryPage() {
   const services = useServiceCategories();
   const industries = useIndustries();
   const certifications = useCertificationTypes();
+  const prefill = useSearchParams().get("brief");
   const [req, setReq] = useState<DiscoveryRequest>(EMPTY);
+  const [prefilled, setPrefilled] = useState<string | null>(null);
+  if (prefill && prefill !== prefilled) {
+    // Opened from the assistant ("Discover vendors on the web"): start from its suggested brief.
+    setPrefilled(prefill);
+    setReq({ ...EMPTY, brief: prefill.slice(0, 1000) });
+  }
   const [countries, setCountries] = useState("");
   const [standards, setStandards] = useState("");
   const set = <K extends keyof DiscoveryRequest>(key: K, value: DiscoveryRequest[K]) => setReq((r) => ({ ...r, [key]: value }));

@@ -5,6 +5,7 @@ import {
   Building2,
   ChevronsUpDown,
   ClipboardCheck,
+  Gauge,
   Compass,
   Factory,
   FolderKanban,
@@ -12,6 +13,7 @@ import {
   LayoutDashboard,
   ListChecks,
   LogOut,
+  MessageSquare,
   ScrollText,
   Search,
   ShieldCheck,
@@ -63,6 +65,7 @@ interface NavItem {
 const WORKSPACE: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/search", label: "Search", icon: Search, permission: P.SEARCH_RUN },
+  { href: "/assistant", label: "Assistant", icon: MessageSquare, permission: P.SEARCH_RUN },
   { href: "/vendors", label: "Vendors", icon: Factory, permission: P.VENDOR_READ },
   { href: "/projects", label: "Projects", icon: FolderKanban, permission: P.VENDOR_READ, needsTenant: true },
   { href: "/my-vendors", label: "My vendors", icon: BookmarkCheck, permission: P.VENDOR_READ, needsTenant: true },
@@ -73,6 +76,7 @@ const WORKSPACE: NavItem[] = [
 
 const CURATION: NavItem[] = [
   { href: "/admin/proposals", label: "Approvals", icon: ClipboardCheck, permission: P.KNOWLEDGE_APPROVE },
+  { href: "/admin/data-quality", label: "Data quality", icon: Gauge, permission: P.KNOWLEDGE_APPROVE },
 ];
 
 const SETTINGS: NavItem[] = [

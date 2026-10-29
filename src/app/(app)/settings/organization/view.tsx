@@ -9,7 +9,9 @@ import { NoAccess, PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api/client";
 import type { TenantRead } from "@/lib/api/types";
@@ -58,6 +60,46 @@ function OrganizationForm({ tenant }: { tenant: TenantRead }) {
   );
 }
 
+function SearchSettings({ tenant }: { tenant: TenantRead }) {
+  const queryClient = useQueryClient();
+  const enabled = Boolean((tenant.settings as Record<string, unknown>)?.search_rerank);
+  const save = useMutation({
+    mutationFn: (on: boolean) =>
+      api<TenantRead>("/tenant", { method: "PATCH", body: { settings: { ...tenant.settings, search_rerank: on } } }),
+    onSuccess: (t) => {
+      queryClient.setQueryData(["tenant", "own"], t);
+      toast.success("Search settings saved");
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+  return (
+    <Card className="max-w-xl">
+      <CardHeader>
+        <CardTitle>Search</CardTitle>
+        <CardDescription>How vendor search ranks results for everyone in your organization.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Label className="flex items-start gap-2.5 font-normal">
+          <Checkbox
+            aria-label="AI re-ranking of search results"
+            className="mt-0.5"
+            checked={enabled}
+            disabled={save.isPending}
+            onCheckedChange={(c) => save.mutate(Boolean(c))}
+          />
+          <span className="grid gap-0.5">
+            <span className="font-medium">AI re-ranking</span>
+            <span className="text-xs text-muted-foreground">
+              The AI judges the technical fit of the top 20 results for each search and explains it in one line. About
+              US$0.003 per search from your monthly AI budget; search falls back to the normal order if the budget runs out.
+            </span>
+          </span>
+        </Label>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function OrganizationPage() {
   const canManage = useCan(P.TENANT_SETTINGS_MANAGE);
   const tenant = useQuery({ queryKey: ["tenant", "own"], queryFn: () => api<TenantRead>("/tenant"), enabled: canManage });
@@ -66,7 +108,16 @@ export default function OrganizationPage() {
   return (
     <>
       <PageHeader title="Organization" description="Your organization's profile." />
-      {tenant.isPending ? <Skeleton className="h-64 max-w-xl" /> : tenant.data && <OrganizationForm tenant={tenant.data} />}
+      {tenant.isPending ? (
+        <Skeleton className="h-64 max-w-xl" />
+      ) : (
+        tenant.data && (
+          <div className="grid gap-4">
+            <OrganizationForm tenant={tenant.data} />
+            <SearchSettings tenant={tenant.data} />
+          </div>
+        )
+      )}
     </>
   );
 }

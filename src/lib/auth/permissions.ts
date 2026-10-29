@@ -14,6 +14,7 @@ export const P = {
   DISCOVERY_RUN: "discovery:run",
   KNOWLEDGE_APPROVE: "knowledge:approve",
   PROJECT_MANAGE: "project:manage",
+  RFQ_MANAGE: "rfq:manage",
   SCORECARD_MANAGE: "scorecard:manage",
   TENANT_VENDOR_APPROVE: "tenant_vendor:approve",
 } as const;

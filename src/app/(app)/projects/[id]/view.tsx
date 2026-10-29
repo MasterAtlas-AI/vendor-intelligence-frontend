@@ -1,13 +1,14 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ClipboardList, Plus, Trash2, UserPlus } from "lucide-react";
+import { ArrowLeft, ClipboardList, FilePlus, Plus, Trash2, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { FilterSelect } from "@/components/filter-select";
+import { NewRfqDialog } from "@/components/rfqs/new-rfq-dialog";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -277,6 +278,8 @@ export default function ProjectPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const project = useQuery({ queryKey: ["project", id], queryFn: () => api<ProjectRead>(`/projects/${id}`) });
+  const canRfq = useCan(P.RFQ_MANAGE);
+  const [rfqOpen, setRfqOpen] = useState(false);
   const setStatus = useMutation({
     mutationFn: (status: string) =>
       api<ProjectRead>(`/projects/${id}`, { method: "PATCH", body: { status, version: project.data!.version } }),
@@ -303,7 +306,13 @@ export default function ProjectPage() {
         title={p.name}
         description={[p.code, p.client, p.facility_type, p.country && countryName(p.country)].filter(Boolean).join(" · ")}
         actions={
-          p.can_edit ? (
+          <>
+            {canRfq && (
+              <Button variant="outline" onClick={() => setRfqOpen(true)}>
+                <FilePlus /> Create RFQ
+              </Button>
+            )}
+            {p.can_edit ? (
             <FilterSelect
               label="Project status"
               anyLabel="Active"
@@ -314,10 +323,12 @@ export default function ProjectPage() {
             />
           ) : (
             <StatusBadge status={p.status} />
-          )
+          )}
+          </>
         }
       />
-      {p.description && <p className="mb-4 max-w-3xl text-sm whitespace-pre-wrap text-muted-foreground">{p.description}</p>}
+      <NewRfqDialog open={rfqOpen} onOpenChange={setRfqOpen} projectId={p.id} />
+      {p.description &&<p className="mb-4 max-w-3xl text-sm whitespace-pre-wrap text-muted-foreground">{p.description}</p>}
       <div className="grid gap-4 lg:grid-cols-[1fr_20rem]">
         <Vendors project={p} />
         <div className="grid content-start gap-4">

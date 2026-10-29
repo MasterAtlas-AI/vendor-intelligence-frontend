@@ -81,6 +81,10 @@ export type ChatResponse = S["ChatResponse"];
 export type CitedVendor = S["CitedVendor"];
 export type ChatAction = S["ChatAction"];
 
+// Phase 5: RFQs
+export type Rfq = S["RfqRead"];
+export type RfqVendor = S["RfqVendorRead"];
+
 export interface CursorPage<T> {
   items: T[];
   next_cursor: string | null;

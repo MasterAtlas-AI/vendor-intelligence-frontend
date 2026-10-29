@@ -1571,6 +1571,175 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/rfqs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Rfqs */
+        get: operations["list_rfqs_api_v1_rfqs_get"];
+        put?: never;
+        /**
+         * Create Rfq
+         * @description A draft RFQ; with `project_id` and `from_shortlist`, the project's shortlisted and selected vendors join it.
+         */
+        post: operations["create_rfq_api_v1_rfqs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rfq */
+        get: operations["get_rfq_api_v1_rfqs__rfq_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Rfq */
+        patch: operations["update_rfq_api_v1_rfqs__rfq_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}/issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Issue the RFQ (shortlisted vendors become invited) */
+        post: operations["rfq_issue_api_v1_rfqs__rfq_id__issue_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start evaluating the quotes */
+        post: operations["rfq_evaluate_api_v1_rfqs__rfq_id__evaluate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close an awarded RFQ */
+        post: operations["rfq_close_api_v1_rfqs__rfq_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel the RFQ */
+        post: operations["rfq_cancel_api_v1_rfqs__rfq_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}/award": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Award Rfq
+         * @description Award to a vendor that quoted; the other quoted vendors are marked lost.
+         */
+        post: operations["award_rfq_api_v1_rfqs__rfq_id__award_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Rfq Vendors
+         * @description Vendors with their quotes, lead times and project scorecard scores, best first.
+         */
+        get: operations["list_rfq_vendors_api_v1_rfqs__rfq_id__vendors_get"];
+        put?: never;
+        /** Add Rfq Vendor */
+        post: operations["add_rfq_vendor_api_v1_rfqs__rfq_id__vendors_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rfqs/{rfq_id}/vendors/{vendor_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Rfq Vendor */
+        delete: operations["remove_rfq_vendor_api_v1_rfqs__rfq_id__vendors__vendor_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Rfq Vendor
+         * @description Record a quote (amount, currency, lead time), an invitation or a decline.
+         */
+        patch: operations["update_rfq_vendor_api_v1_rfqs__rfq_id__vendors__vendor_id__patch"];
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -1785,6 +1954,21 @@ export interface components {
          * @enum {string}
          */
         AvlStatus: "approved" | "conditional" | "not_approved" | "blacklisted" | "unassessed";
+        /** AwardRequest */
+        AwardRequest: {
+            /** Version */
+            version: number;
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+        };
         /** Body_upload_file_api_v1_imports_uploads_post */
         Body_upload_file_api_v1_imports_uploads_post: {
             /** File */
@@ -2996,6 +3180,16 @@ export interface components {
             /** Version */
             version: number;
         };
+        /** Requirement */
+        Requirement: {
+            /** Text */
+            text: string;
+            /**
+             * Mandatory
+             * @default true
+             */
+            mandatory: boolean;
+        };
         /** RescoreResult */
         RescoreResult: {
             /** Updated */
@@ -3015,6 +3209,148 @@ export interface components {
             queued: number;
             /** Job Ids */
             job_ids: string[];
+        };
+        /** RfqCreate */
+        RfqCreate: {
+            /** Title */
+            title: string;
+            /** Rfq Number */
+            rfq_number?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+            /**
+             * From Shortlist
+             * @default false
+             */
+            from_shortlist: boolean;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Equipment Categories */
+            equipment_categories?: string[];
+            /** Requirements */
+            requirements?: components["schemas"]["Requirement"][];
+            /** Due Date */
+            due_date?: string | null;
+        };
+        /** RfqRead */
+        RfqRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Rfq Number */
+            rfq_number: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Project Id */
+            project_id: string | null;
+            /** Project Name */
+            project_name?: string | null;
+            /** Equipment Categories */
+            equipment_categories: string[];
+            /** Requirements */
+            requirements: components["schemas"]["Requirement"][];
+            /** Due Date */
+            due_date: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "issued" | "evaluating" | "awarded" | "closed" | "cancelled";
+            /** Awarded Vendor Id */
+            awarded_vendor_id: string | null;
+            /** Awarded Vendor Name */
+            awarded_vendor_name?: string | null;
+            /** Issued At */
+            issued_at: string | null;
+            /** Awarded At */
+            awarded_at: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Vendor Counts */
+            vendor_counts?: {
+                [key: string]: number;
+            };
+            /**
+             * Can Edit
+             * @default false
+             */
+            can_edit: boolean;
+        };
+        /** RfqUpdate */
+        RfqUpdate: {
+            /** Version */
+            version: number;
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Equipment Categories */
+            equipment_categories?: string[] | null;
+            /** Requirements */
+            requirements?: components["schemas"]["Requirement"][] | null;
+            /** Due Date */
+            due_date?: string | null;
+        };
+        /** RfqVendorAdd */
+        RfqVendorAdd: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+        };
+        /** RfqVendorRead */
+        RfqVendorRead: {
+            vendor: components["schemas"]["VendorSummary"];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "shortlisted" | "invited" | "quoted" | "declined" | "awarded" | "lost";
+            /** Quote Amount */
+            quote_amount: string | null;
+            /** Currency */
+            currency: string | null;
+            /** Lead Time Weeks */
+            lead_time_weeks: number | null;
+            /** Quote Received At */
+            quote_received_at: string | null;
+            /** Notes */
+            notes: string;
+            /** Scorecard Id */
+            scorecard_id?: string | null;
+            /** Score */
+            score?: string | null;
+        };
+        /** RfqVendorUpdate */
+        RfqVendorUpdate: {
+            /** Status */
+            status?: ("invited" | "quoted" | "declined") | null;
+            /** Quote Amount */
+            quote_amount?: number | string | null;
+            /** Currency */
+            currency?: string | null;
+            /** Lead Time Weeks */
+            lead_time_weeks?: number | null;
+            /** Notes */
+            notes?: string | null;
         };
         /** RoleRead */
         RoleRead: {
@@ -3608,6 +3944,16 @@ export interface components {
             /** Expires In */
             expires_in: number;
             user: components["schemas"]["CurrentUser"];
+        };
+        /** Transition */
+        Transition: {
+            /** Version */
+            version: number;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
         };
         /**
          * UploadKind
@@ -7423,6 +7769,496 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReverifyResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_rfqs_api_v1_rfqs_get: {
+        parameters: {
+            query?: {
+                status?: ("draft" | "issued" | "evaluating" | "awarded" | "closed" | "cancelled") | null;
+                project_id?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_rfq_api_v1_rfqs_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RfqCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_rfq_api_v1_rfqs__rfq_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_rfq_api_v1_rfqs__rfq_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RfqUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rfq_issue_api_v1_rfqs__rfq_id__issue_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Transition"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rfq_evaluate_api_v1_rfqs__rfq_id__evaluate_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Transition"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rfq_close_api_v1_rfqs__rfq_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Transition"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rfq_cancel_api_v1_rfqs__rfq_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Transition"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    award_rfq_api_v1_rfqs__rfq_id__award_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AwardRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_rfq_vendors_api_v1_rfqs__rfq_id__vendors_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqVendorRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_rfq_vendor_api_v1_rfqs__rfq_id__vendors_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RfqVendorAdd"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqVendorRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_rfq_vendor_api_v1_rfqs__rfq_id__vendors__vendor_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_rfq_vendor_api_v1_rfqs__rfq_id__vendors__vendor_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RfqVendorUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RfqVendorRead"][];
                 };
             };
             /** @description Validation Error */

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OverlayDialog } from "@/components/vendors/overlay-dialog";
+import { ProjectsCard } from "@/components/vendors/projects-card";
 import { ResearchCard } from "@/components/vendors/research-card";
 import { VendorFacts } from "@/components/vendors/vendor-facts";
 import { api } from "@/lib/api/client";
@@ -164,6 +165,7 @@ export default function VendorDetailPage() {
         </div>
         <div className="grid content-start gap-4">
           {hasTenant && <YourRecord vendor={v} />}
+          {hasTenant && <ProjectsCard vendor={v} />}
           {v.status !== "retired" && <ResearchCard vendor={v} />}
         </div>
       </div>

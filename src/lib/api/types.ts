@@ -67,6 +67,14 @@ export type MatchReason = S["MatchReason"];
 export type SearchHistoryEntry = S["SearchHistoryRead"];
 export type Suggestion = S["Suggestion"];
 
+// Phase 4: projects and scorecards
+export type ProjectRead = S["TenantProjectRead"];
+export type ProjectMember = S["MemberRead"];
+export type ProjectVendor = S["ProjectVendorRead"];
+export type ScorecardTemplate = S["TemplateRead"];
+export type Scorecard = S["ScorecardRead"];
+export type VendorStage = ProjectVendor["stage"];
+
 export interface CursorPage<T> {
   items: T[];
   next_cursor: string | null;

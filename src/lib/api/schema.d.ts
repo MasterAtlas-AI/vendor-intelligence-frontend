@@ -1276,6 +1276,220 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Projects
+         * @description Projects the caller can see (all of the organization's with project:manage, otherwise their own).
+         */
+        get: operations["list_projects_api_v1_projects_get"];
+        put?: never;
+        /** Create Project */
+        post: operations["create_project_api_v1_projects_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Project */
+        get: operations["get_project_api_v1_projects__project_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Project
+         * @description Edit details or status (archive with status=archived). Needs the current `version`.
+         */
+        patch: operations["update_project_api_v1_projects__project_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Members */
+        get: operations["list_members_api_v1_projects__project_id__members_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/members/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Member */
+        put: operations["set_member_api_v1_projects__project_id__members__user_id__put"];
+        post?: never;
+        /** Remove Member */
+        delete: operations["remove_member_api_v1_projects__project_id__members__user_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Project Vendors
+         * @description The project's vendors by stage, ranked by their latest scorecard.
+         */
+        get: operations["list_project_vendors_api_v1_projects__project_id__vendors_get"];
+        put?: never;
+        /** Add Project Vendor */
+        post: operations["add_project_vendor_api_v1_projects__project_id__vendors_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/vendors/{vendor_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Project Vendor */
+        delete: operations["remove_project_vendor_api_v1_projects__project_id__vendors__vendor_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Project Vendor */
+        patch: operations["update_project_vendor_api_v1_projects__project_id__vendors__vendor_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/vendors/{vendor_id}/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vendor Projects
+         * @description The caller's projects this vendor is on.
+         */
+        get: operations["vendor_projects_api_v1_vendors__vendor_id__projects_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scorecard-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Templates */
+        get: operations["list_templates_api_v1_scorecard_templates_get"];
+        put?: never;
+        /** Create Template */
+        post: operations["create_template_api_v1_scorecard_templates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scorecard-templates/{template_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Template */
+        patch: operations["update_template_api_v1_scorecard_templates__template_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/scorecards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Scorecards */
+        get: operations["list_scorecards_api_v1_scorecards_get"];
+        put?: never;
+        /**
+         * Create Scorecard
+         * @description A new draft scorecard for a vendor (optionally within a project), from a template (default: the first).
+         */
+        post: operations["create_scorecard_api_v1_scorecards_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scorecards/{scorecard_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Scorecard */
+        get: operations["get_scorecard_api_v1_scorecards__scorecard_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Scorecard */
+        delete: operations["delete_scorecard_api_v1_scorecards__scorecard_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Scorecard
+         * @description Score criteria (0-10, with comments), edit notes, finalise or reopen. The total is recomputed (0-100).
+         */
+        patch: operations["update_scorecard_api_v1_scorecards__scorecard_id__patch"];
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -1569,6 +1783,30 @@ export interface components {
             issuer: string;
             /** Category */
             category: string;
+        };
+        /** Criterion */
+        Criterion: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Weight */
+            weight: number;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+        };
+        /** CriterionScore */
+        CriterionScore: {
+            /** Score */
+            score?: number | null;
+            /**
+             * Comment
+             * @default
+             */
+            comment: string;
         };
         /** CurrentUser */
         CurrentUser: {
@@ -2132,6 +2370,31 @@ export interface components {
             /** Sources */
             sources?: components["schemas"]["SourceRef"][];
         };
+        /** MemberRead */
+        MemberRead: {
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /** Full Name */
+            full_name: string;
+            /** Email */
+            email: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "owner" | "editor" | "viewer";
+        };
+        /** MemberUpsert */
+        MemberUpsert: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "owner" | "editor" | "viewer";
+        };
         /** ParseRequest */
         ParseRequest: {
             /** Query */
@@ -2293,6 +2556,24 @@ export interface components {
             /** Messages */
             messages: string[];
         };
+        /** ProjectCreate */
+        ProjectCreate: {
+            /** Name */
+            name: string;
+            /** Code */
+            code?: string | null;
+            /** Client */
+            client?: string | null;
+            /** Facility Type */
+            facility_type?: string | null;
+            /** Country */
+            country?: string | null;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+        };
         /** ProjectRead */
         ProjectRead: {
             /**
@@ -2314,6 +2595,70 @@ export interface components {
             year: number | null;
             /** Scope */
             scope: string;
+        };
+        /** ProjectUpdate */
+        ProjectUpdate: {
+            /** Version */
+            version: number;
+            /** Name */
+            name?: string | null;
+            /** Code */
+            code?: string | null;
+            /** Client */
+            client?: string | null;
+            /** Facility Type */
+            facility_type?: string | null;
+            /** Country */
+            country?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Status */
+            status?: ("active" | "on_hold" | "closed" | "archived") | null;
+        };
+        /** ProjectVendorAdd */
+        ProjectVendorAdd: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /**
+             * Stage
+             * @default longlist
+             * @enum {string}
+             */
+            stage: "longlist" | "shortlist" | "selected" | "rejected";
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+        };
+        /** ProjectVendorRead */
+        ProjectVendorRead: {
+            vendor: components["schemas"]["VendorSummary"];
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "longlist" | "shortlist" | "selected" | "rejected";
+            /** Note */
+            note: string;
+            /**
+             * Added At
+             * Format: date-time
+             */
+            added_at: string;
+            scorecard?: components["schemas"]["ScoreSummary"] | null;
+            /** Rank */
+            rank?: number | null;
+        };
+        /** ProjectVendorUpdate */
+        ProjectVendorUpdate: {
+            /** Stage */
+            stage?: ("longlist" | "shortlist" | "selected" | "rejected") | null;
+            /** Note */
+            note?: string | null;
         };
         /** PromptUsage */
         PromptUsage: {
@@ -2485,6 +2830,113 @@ export interface components {
             text?: number | null;
             /** Data Quality */
             data_quality: number;
+        };
+        /** ScoreSummary */
+        ScoreSummary: {
+            /**
+             * Scorecard Id
+             * Format: uuid
+             */
+            scorecard_id: string;
+            /** Total Score */
+            total_score: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "final";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ScorecardCreate */
+        ScorecardCreate: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /** Project Id */
+            project_id?: string | null;
+            /** Template Id */
+            template_id?: string | null;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+        };
+        /** ScorecardRead */
+        ScorecardRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /**
+             * Vendor Name
+             * @default
+             */
+            vendor_name: string;
+            /** Project Id */
+            project_id: string | null;
+            /** Project Name */
+            project_name?: string | null;
+            /** Template Id */
+            template_id: string | null;
+            /** Title */
+            title: string;
+            /** Criteria */
+            criteria: components["schemas"]["Criterion"][];
+            /** Scores */
+            scores: {
+                [key: string]: components["schemas"]["CriterionScore"];
+            };
+            /** Total Score */
+            total_score: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "final";
+            /** Notes */
+            notes: string;
+            /** Version */
+            version: number;
+            /** Created By */
+            created_by: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ScorecardUpdate */
+        ScorecardUpdate: {
+            /** Version */
+            version: number;
+            /** Scores */
+            scores?: {
+                [key: string]: components["schemas"]["CriterionScore"];
+            } | null;
+            /** Title */
+            title?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /** Status */
+            status?: ("draft" | "final") | null;
         };
         /**
          * SearchFilters
@@ -2673,6 +3125,41 @@ export interface components {
             /** Value */
             value: string;
         };
+        /** TemplateCreate */
+        TemplateCreate: {
+            /** Name */
+            name: string;
+            /** Criteria */
+            criteria: components["schemas"]["Criterion"][];
+        };
+        /** TemplateRead */
+        TemplateRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Criteria */
+            criteria: components["schemas"]["Criterion"][];
+            /** Archived */
+            archived: boolean;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** TemplateUpdate */
+        TemplateUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Criteria */
+            criteria?: components["schemas"]["Criterion"][] | null;
+            /** Archived */
+            archived?: boolean | null;
+        };
         /** TenantAdminInput */
         TenantAdminInput: {
             /**
@@ -2780,6 +3267,54 @@ export interface components {
             tags?: string[] | null;
             /** Notes */
             notes?: string | null;
+        };
+        /** TenantProjectRead */
+        TenantProjectRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string | null;
+            /** Name */
+            name: string;
+            /** Client */
+            client: string | null;
+            /** Facility Type */
+            facility_type: string | null;
+            /** Country */
+            country: string | null;
+            /** Description */
+            description: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "on_hold" | "closed" | "archived";
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** My Role */
+            my_role?: ("owner" | "editor" | "viewer") | null;
+            /**
+             * Can Edit
+             * @default false
+             */
+            can_edit: boolean;
+            /** Vendor Counts */
+            vendor_counts?: {
+                [key: string]: number;
+            };
         };
         /** TenantRead */
         TenantRead: {
@@ -5787,6 +6322,735 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Suggestion"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_projects_api_v1_projects_get: {
+        parameters: {
+            query?: {
+                status?: ("active" | "on_hold" | "closed" | "archived") | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantProjectRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_project_api_v1_projects_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantProjectRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_project_api_v1_projects__project_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantProjectRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_project_api_v1_projects__project_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantProjectRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_members_api_v1_projects__project_id__members_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_member_api_v1_projects__project_id__members__user_id__put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberUpsert"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_member_api_v1_projects__project_id__members__user_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_project_vendors_api_v1_projects__project_id__vendors_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectVendorRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_project_vendor_api_v1_projects__project_id__vendors_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectVendorAdd"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectVendorRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_project_vendor_api_v1_projects__project_id__vendors__vendor_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_project_vendor_api_v1_projects__project_id__vendors__vendor_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectVendorUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectVendorRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    vendor_projects_api_v1_vendors__vendor_id__projects_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantProjectRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_templates_api_v1_scorecard_templates_get: {
+        parameters: {
+            query?: {
+                include_archived?: boolean;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_template_api_v1_scorecard_templates_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_template_api_v1_scorecard_templates__template_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                template_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_scorecards_api_v1_scorecards_get: {
+        parameters: {
+            query?: {
+                project_id?: string | null;
+                vendor_id?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_scorecard_api_v1_scorecards_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScorecardCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_scorecard_api_v1_scorecards__scorecard_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_scorecard_api_v1_scorecards__scorecard_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_scorecard_api_v1_scorecards__scorecard_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScorecardUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardRead"];
                 };
             };
             /** @description Validation Error */

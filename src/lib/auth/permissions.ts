@@ -8,6 +8,10 @@ export const P = {
   USER_MANAGE: "user:manage",
   APIKEY_MANAGE: "apikey:manage",
   AUDIT_READ: "audit:read",
+  VENDOR_READ: "vendor:read",
+  UPLOAD_CREATE: "upload:create",
+  KNOWLEDGE_APPROVE: "knowledge:approve",
+  TENANT_VENDOR_APPROVE: "tenant_vendor:approve",
 } as const;
 
 // Scopes an API key may carry (backend: API_KEY_ALLOWED_SCOPES).

@@ -22,6 +22,33 @@ export type UserStatus = S["UserStatus"];
 export type JobStatus = S["JobStatus"];
 export type TenantStatus = S["TenantStatus"];
 
+// Phase 2: knowledge base, proposals, imports
+export type VendorSummary = S["VendorSummary"];
+export type VendorDetail = S["VendorDetail"];
+export type VendorPage = S["VendorPage"];
+export type TenantOverlayRead = S["TenantOverlayRead"];
+export type TenantOverlayUpdate = S["TenantOverlayUpdate"];
+export type AvlStatus = S["AvlStatus"];
+export type EquipmentCategory = S["EquipmentCategoryRead"];
+export type ServiceCategory = S["CategoryRead"];
+export type CertificationType = S["CertificationTypeRead"];
+export type Industry = S["IndustryRead"];
+export type ProposalSummary = S["ProposalSummary"];
+export type ProposalDetail = S["ProposalDetail"];
+export type ProposalPage = S["ProposalPage"];
+export type ProposalItemRead = S["ItemRead"];
+export type ProposalStatus = S["ProposalStatus"];
+export type UploadRead = S["UploadRead"];
+export type SheetInfo = S["SheetInfo"];
+export type ImportRequest = S["ImportRequest"];
+export type ImportPreview = S["ImportPreview"];
+export type ImportRowRead = S["ImportRowRead"];
+export type ImportRowPage = S["ImportRowPage"];
+export type ImportRowOutcome = S["ImportRowOutcome"];
+export type PdfImportRequest = S["PdfImportRequest"];
+export type PdfPreview = S["PdfPreview"];
+export type PdfCandidate = S["PdfCandidate"];
+
 export interface CursorPage<T> {
   items: T[];
   next_cursor: string | null;

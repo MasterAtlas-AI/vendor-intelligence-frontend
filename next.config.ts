@@ -7,6 +7,11 @@ const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    // The /api/v1 rewrite gives up after 30 s by default and answers 500 even if the API then succeeds.
+    // File uploads and large curator approvals can take longer on slow links.
+    proxyTimeout: 120_000,
+  },
   turbopack: {
     rules: {
       "*.css": {

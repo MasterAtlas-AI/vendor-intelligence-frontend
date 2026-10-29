@@ -108,7 +108,9 @@ export function authHeaders(): Record<string, string> {
 async function send(path: string, opts: RequestOptions): Promise<Response> {
   const headers: Record<string, string> = { ...(opts.anonymous ? {} : authHeaders()), ...opts.headers };
   let body: BodyInit | undefined;
-  if (opts.body !== undefined) {
+  if (opts.body instanceof FormData) {
+    body = opts.body; // the browser sets the multipart boundary
+  } else if (opts.body !== undefined) {
     headers["Content-Type"] = "application/json";
     body = JSON.stringify(opts.body);
   }
@@ -121,8 +123,8 @@ async function send(path: string, opts: RequestOptions): Promise<Response> {
   });
 }
 
-/** Call the backend. Retries once after a silent token refresh when the access token has expired. */
-export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T> {
+/** Send with one silent token refresh when the access token has expired. */
+async function sendAuthed(path: string, opts: RequestOptions): Promise<Response> {
   let res = await send(path, opts);
   if (res.status === 401 && !opts.anonymous) {
     const err = await toApiError(res.clone());
@@ -133,6 +135,23 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
     }
   }
   if (!res.ok) throw await toApiError(res);
+  return res;
+}
+
+/** Call the backend. Retries once after a silent token refresh when the access token has expired. */
+export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T> {
+  const res = await sendAuthed(path, opts);
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
+}
+
+/** Fetch an authenticated file (e.g. a CSV report) and hand it to the browser as a download. */
+export async function download(path: string, filename: string): Promise<void> {
+  const blob = await (await sendAuthed(path, {})).blob();
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement("a"), { href: url, download: filename });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }

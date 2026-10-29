@@ -1,9 +1,12 @@
 "use client";
 
 import {
+  BookmarkCheck,
   Building2,
   ChevronsUpDown,
+  ClipboardCheck,
   Compass,
+  Factory,
   KeyRound,
   LayoutDashboard,
   ListChecks,
@@ -11,6 +14,7 @@ import {
   ScrollText,
   ShieldCheck,
   Settings2,
+  Upload,
   UserRound,
   Users,
 } from "lucide-react";
@@ -54,7 +58,14 @@ interface NavItem {
 
 const WORKSPACE: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/vendors", label: "Vendors", icon: Factory, permission: P.VENDOR_READ },
+  { href: "/my-vendors", label: "My vendors", icon: BookmarkCheck, permission: P.VENDOR_READ, needsTenant: true },
+  { href: "/imports", label: "Imports", icon: Upload, permission: P.UPLOAD_CREATE },
   { href: "/jobs", label: "Background jobs", icon: ListChecks },
+];
+
+const CURATION: NavItem[] = [
+  { href: "/admin/proposals", label: "Approvals", icon: ClipboardCheck, permission: P.KNOWLEDGE_APPROVE },
 ];
 
 const SETTINGS: NavItem[] = [
@@ -180,6 +191,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <NavGroup label="Workspace" items={WORKSPACE} />
+        <NavGroup label="Curation" items={CURATION} />
         <NavGroup label="Settings" items={SETTINGS} />
         <NavGroup label="Platform" items={PLATFORM} />
       </SidebarContent>

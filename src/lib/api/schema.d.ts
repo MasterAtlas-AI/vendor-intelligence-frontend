@@ -545,6 +545,413 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/taxonomy/equipment-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Equipment Categories */
+        get: operations["equipment_categories_api_v1_taxonomy_equipment_categories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/taxonomy/service-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Service Categories */
+        get: operations["service_categories_api_v1_taxonomy_service_categories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/taxonomy/certification-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Certification Types */
+        get: operations["certification_types_api_v1_taxonomy_certification_types_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/taxonomy/industries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Industries */
+        get: operations["industries_api_v1_taxonomy_industries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Vendors */
+        get: operations["search_vendors_api_v1_vendors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vendors/{vendor_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Vendor */
+        get: operations["get_vendor_api_v1_vendors__vendor_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/my-vendors/{vendor_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set My Vendor
+         * @description Add the vendor to your organization's list or update its approval status, internal code, tags or notes.
+         */
+        put: operations["set_my_vendor_api_v1_my_vendors__vendor_id__put"];
+        post?: never;
+        /** Remove My Vendor */
+        delete: operations["remove_my_vendor_api_v1_my_vendors__vendor_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Proposals */
+        get: operations["list_proposals_api_v1_admin_proposals_get"];
+        put?: never;
+        /**
+         * Create Proposal
+         * @description Enter knowledge by hand. It still goes through review, so a second curator can check it.
+         */
+        post: operations["create_proposal_api_v1_admin_proposals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/proposals/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Proposal */
+        get: operations["get_proposal_api_v1_admin_proposals__proposal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/proposals/{proposal_id}/items/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Item */
+        patch: operations["edit_item_api_v1_admin_proposals__proposal_id__items__item_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/proposals/{proposal_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve */
+        post: operations["approve_api_v1_admin_proposals__proposal_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/proposals/{proposal_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject */
+        post: operations["reject_api_v1_admin_proposals__proposal_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/proposals/{proposal_id}/request-info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Info */
+        post: operations["request_info_api_v1_admin_proposals__proposal_id__request_info_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Proposals
+         * @description Proposals that came from your organization (imports, suggestions), with their review status.
+         */
+        get: operations["my_proposals_api_v1_proposals_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload File
+         * @description Stores a vendor list (.xlsx or .csv) or a vendor document (.pdf). Spreadsheets come back with their
+         *     sheets, detected headers, sample rows and a suggested column mapping; PDFs with page count, whether they look
+         *     scanned, how many facts were found, and suggested vendor names and websites. Nothing is imported yet.
+         */
+        post: operations["upload_file_api_v1_imports_uploads_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/uploads/{upload_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Upload */
+        get: operations["get_upload_api_v1_imports_uploads__upload_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/excel/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Import
+         * @description Dry run on the first rows with this mapping: parsed values and the predicted outcome of each row.
+         */
+        post: operations["preview_import_api_v1_imports_excel_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Import
+         * @description Starts the import as a background job; follow it with GET /jobs/{id}/events.
+         */
+        post: operations["start_import_api_v1_imports_excel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/{job_id}/rows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Import Rows
+         * @description The import report, one entry per spreadsheet row, in sheet order.
+         */
+        get: operations["import_rows_api_v1_imports__job_id__rows_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/{job_id}/report.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Import Report Csv */
+        get: operations["import_report_csv_api_v1_imports__job_id__report_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/pdf/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Pdf Import
+         * @description Facts found in an uploaded vendor PDF (page and snippet for each), and, if `vendor` is given, what the
+         *     import would do with that vendor. Nothing is written.
+         */
+        post: operations["preview_pdf_import_api_v1_imports_pdf_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Pdf Import
+         * @description Proposes the selected facts for the vendor (an existing one, or a new-vendor proposal) as a background
+         *     job. The report is at GET /imports/{job_id}/rows like a spreadsheet import, with one row.
+         */
+        post: operations["start_pdf_import_api_v1_imports_pdf_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -671,6 +1078,11 @@ export interface components {
             /** Created By */
             created_by: string | null;
         };
+        /**
+         * ApprovalAction
+         * @enum {string}
+         */
+        ApprovalAction: "approve" | "reject" | "request_info" | "auto_approve" | "edit";
         /** AuditLogRead */
         AuditLogRead: {
             /**
@@ -706,6 +1118,82 @@ export interface components {
             ip: string | null;
             /** Request Id */
             request_id: string | null;
+        };
+        /**
+         * AvlStatus
+         * @description A tenant's own approval of a vendor (its Approved Vendor List), independent of the global KB.
+         * @enum {string}
+         */
+        AvlStatus: "approved" | "conditional" | "not_approved" | "blacklisted" | "unassessed";
+        /** Body_upload_file_api_v1_imports_uploads_post */
+        Body_upload_file_api_v1_imports_uploads_post: {
+            /** File */
+            file: string;
+        };
+        /** CategoryRead */
+        CategoryRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Parent Id */
+            parent_id: string | null;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Level */
+            level: number;
+            /** Synonyms */
+            synonyms: string[];
+        };
+        /** CategoryRef */
+        CategoryRef: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+        };
+        /** CertificationRead */
+        CertificationRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            certification: components["schemas"]["CategoryRef"];
+            /** Certificate Number */
+            certificate_number: string | null;
+            /** Scope */
+            scope: string;
+            /** Valid From */
+            valid_from: string | null;
+            /** Valid To */
+            valid_to: string | null;
+            /** Verified */
+            verified: boolean;
+        };
+        /** CertificationTypeRead */
+        CertificationTypeRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Issuer */
+            issuer: string;
+            /** Category */
+            category: string;
         };
         /** CurrentUser */
         CurrentUser: {
@@ -779,6 +1267,24 @@ export interface components {
              */
             has_more: boolean;
         };
+        /** Decision */
+        Decision: {
+            /**
+             * Item Ids
+             * @description Items to decide; omit to decide every pending item
+             */
+            item_ids?: string[] | null;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /**
+             * Version
+             * @description The proposal version you reviewed (optimistic locking)
+             */
+            version: number;
+        };
         /** DiagnosticsJobCreate */
         DiagnosticsJobCreate: {
             /**
@@ -794,10 +1300,255 @@ export interface components {
             /** Fail At Step */
             fail_at_step?: number | null;
         };
+        /** EquipmentCategoryRead */
+        EquipmentCategoryRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Parent Id */
+            parent_id: string | null;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Level */
+            level: number;
+            /** Synonyms */
+            synonyms: string[];
+            /** Standards */
+            standards: string[];
+        };
+        /** EquipmentRead */
+        EquipmentRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            category: components["schemas"]["CategoryRef"];
+            /** Name */
+            name: string;
+            /** Model Series */
+            model_series: string | null;
+            /** Standards */
+            standards: string[];
+            /** Specs */
+            specs: {
+                [key: string]: unknown;
+            };
+            /** Applications */
+            applications: string[];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HistoryRead */
+        HistoryRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposal Item Id */
+            proposal_item_id: string | null;
+            action: components["schemas"]["ApprovalAction"];
+            /** Reason */
+            reason: string;
+            /** Before */
+            before: {
+                [key: string]: unknown;
+            } | null;
+            /** After */
+            after: {
+                [key: string]: unknown;
+            } | null;
+            /** Actor Id */
+            actor_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ImportOptionsIn */
+        ImportOptionsIn: {
+            default_avl_status?: components["schemas"]["AvlStatus"] | null;
+            /** Tags */
+            tags?: string[];
+        };
+        /** ImportPreview */
+        ImportPreview: {
+            /** Sheet */
+            sheet: string;
+            /** Header Row */
+            header_row: number;
+            /** Headers */
+            headers: string[];
+            /** Data Rows */
+            data_rows: number;
+            /** Rows */
+            rows: components["schemas"]["PreviewRow"][];
+            /** Predicted */
+            predicted: {
+                [key: string]: number;
+            };
+        };
+        /** ImportRequest */
+        ImportRequest: {
+            /**
+             * Upload Id
+             * Format: uuid
+             */
+            upload_id: string;
+            /** Sheet */
+            sheet?: string | null;
+            /** Header Row */
+            header_row?: number | null;
+            /**
+             * Mapping
+             * @description Field -> 0-based column index. `name` is required.
+             */
+            mapping: {
+                [key: string]: number;
+            };
+            options?: components["schemas"]["ImportOptionsIn"];
+        };
+        /**
+         * ImportRowOutcome
+         * @description What an import did with one row of the file (shown in the import report).
+         * @enum {string}
+         */
+        ImportRowOutcome: "matched" | "created" | "proposed" | "already_proposed" | "duplicate_in_file" | "ambiguous" | "invalid";
+        /** ImportRowPage */
+        ImportRowPage: {
+            /** Items */
+            items: components["schemas"]["ImportRowRead"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /** Has More */
+            has_more: boolean;
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+        };
+        /** ImportRowRead */
+        ImportRowRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Row Number */
+            row_number: number;
+            outcome: components["schemas"]["ImportRowOutcome"];
+            /** Vendor Name */
+            vendor_name: string;
+            /** Vendor Id */
+            vendor_id: string | null;
+            /** Proposal Id */
+            proposal_id: string | null;
+            /** Overlay */
+            overlay: {
+                [key: string]: unknown;
+            };
+            /** Messages */
+            messages: string[];
+        };
+        /** IndustryRead */
+        IndustryRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Synonyms */
+            synonyms: string[];
+        };
+        /** ItemCounts */
+        ItemCounts: {
+            /**
+             * Pending
+             * @default 0
+             */
+            pending: number;
+            /**
+             * Applied
+             * @default 0
+             */
+            applied: number;
+            /**
+             * Rejected
+             * @default 0
+             */
+            rejected: number;
+        };
+        /** ItemIn */
+        ItemIn: {
+            action: components["schemas"]["ProposalItemAction"];
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Evidence */
+            evidence?: {
+                [key: string]: unknown;
+            }[];
+            /** Confidence */
+            confidence?: number | string | null;
+        };
+        /** ItemRead */
+        ItemRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sort Order */
+            sort_order: number;
+            action: components["schemas"]["ProposalItemAction"];
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Evidence */
+            evidence: {
+                [key: string]: unknown;
+            }[];
+            /** Confidence */
+            confidence: string | null;
+            status: components["schemas"]["ProposalItemStatus"];
+            /** Applied Table */
+            applied_table: string | null;
+            /** Applied Entity Id */
+            applied_entity_id: string | null;
+            /** Decided By */
+            decided_by: string | null;
+            /** Decided At */
+            decided_at: string | null;
+            /** Reject Reason */
+            reject_reason: string;
+        };
+        /** ItemUpdate */
+        ItemUpdate: {
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            } | null;
+            /** Evidence */
+            evidence?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Version */
+            version: number;
         };
         /** JobAccepted */
         JobAccepted: {
@@ -861,6 +1612,26 @@ export interface components {
          * @enum {string}
          */
         JobStatus: "queued" | "running" | "succeeded" | "partially_succeeded" | "failed" | "cancelled";
+        /** LocationRead */
+        LocationRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            location_type: components["schemas"]["LocationType"];
+            /** Address */
+            address: string;
+            /** City */
+            city: string | null;
+            /** Country */
+            country: string | null;
+        };
+        /**
+         * LocationType
+         * @enum {string}
+         */
+        LocationType: "hq" | "factory" | "service_center" | "sales" | "rnd" | "other";
         /** LoginRequest */
         LoginRequest: {
             /**
@@ -893,12 +1664,263 @@ export interface components {
             /** New Password */
             new_password: string;
         };
+        /** PdfCandidate */
+        PdfCandidate: {
+            /** Key */
+            key: string;
+            /** Kind */
+            kind: string;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Page */
+            page: number;
+            /** Snippet */
+            snippet: string;
+            /** Occurrences */
+            occurrences: number;
+            /** Confidence */
+            confidence: string;
+            /** Details */
+            details: {
+                [key: string]: unknown;
+            };
+        };
+        /** PdfImportRequest */
+        PdfImportRequest: {
+            /**
+             * Upload Id
+             * Format: uuid
+             */
+            upload_id: string;
+            vendor?: components["schemas"]["PdfVendor"] | null;
+            /**
+             * Include
+             * @description Candidate keys to propose; default: all found
+             */
+            include?: string[] | null;
+            options?: components["schemas"]["ImportOptionsIn"];
+        };
+        /** PdfInfo */
+        PdfInfo: {
+            /** Page Count */
+            page_count: number;
+            /** Pages Read */
+            pages_read: number;
+            /** Scanned */
+            scanned: boolean;
+            /** Facts Found */
+            facts_found: number;
+            /** Suggested Names */
+            suggested_names: string[];
+            /** Suggested Domains */
+            suggested_domains: string[];
+        };
+        /** PdfPreview */
+        PdfPreview: {
+            /** Page Count */
+            page_count: number;
+            /** Pages Read */
+            pages_read: number;
+            /** Scanned */
+            scanned: boolean;
+            /** Facts Found */
+            facts_found: number;
+            /** Suggested Names */
+            suggested_names: string[];
+            /** Suggested Domains */
+            suggested_domains: string[];
+            /** Candidates */
+            candidates: components["schemas"]["PdfCandidate"][];
+            vendor: components["schemas"]["PdfVendorMatch"] | null;
+        };
+        /**
+         * PdfVendor
+         * @description Whose document this is: an existing vendor, or a new one described by name (and ideally website).
+         */
+        PdfVendor: {
+            /** Vendor Id */
+            vendor_id?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Website */
+            website?: string | null;
+            /** Country */
+            country?: string | null;
+        };
+        /** PdfVendorMatch */
+        PdfVendorMatch: {
+            outcome: components["schemas"]["ImportRowOutcome"];
+            /** Vendor Id */
+            vendor_id: string | null;
+            /** Messages */
+            messages: string[];
+        };
         /** PermissionRead */
         PermissionRead: {
             /** Key */
             key: string;
             /** Description */
             description: string;
+        };
+        /** PreviewRow */
+        PreviewRow: {
+            /** Row Number */
+            row_number: number;
+            /** Values */
+            values: {
+                [key: string]: string;
+            };
+            outcome: components["schemas"]["ImportRowOutcome"];
+            /** Vendor Id */
+            vendor_id: string | null;
+            /** Messages */
+            messages: string[];
+        };
+        /** ProjectRead */
+        ProjectRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Project Name */
+            project_name: string;
+            /** Client */
+            client: string | null;
+            /** Operator */
+            operator: string | null;
+            /** Facility Type */
+            facility_type: string | null;
+            /** Country */
+            country: string | null;
+            /** Year */
+            year: number | null;
+            /** Scope */
+            scope: string;
+        };
+        /**
+         * ProposalCreate
+         * @description A curator entering knowledge by hand (origin = manual).
+         */
+        ProposalCreate: {
+            kind: components["schemas"]["ProposalKind"];
+            /** Subject Vendor Id */
+            subject_vendor_id?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Items */
+            items: components["schemas"]["ItemIn"][];
+        };
+        /**
+         * ProposalDetail
+         * @description Curator view. `origin_tenant_id` is platform-only information.
+         */
+        ProposalDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["ProposalKind"];
+            origin: components["schemas"]["ProposalOrigin"];
+            status: components["schemas"]["ProposalStatus"];
+            /** Title */
+            title: string;
+            /** Subject Vendor Id */
+            subject_vendor_id: string | null;
+            /** Confidence */
+            confidence: string | null;
+            counts: components["schemas"]["ItemCounts"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Decided At */
+            decided_at: string | null;
+            /** Version */
+            version: number;
+            /** Origin Tenant Id */
+            origin_tenant_id: string | null;
+            /** Origin Job Id */
+            origin_job_id: string | null;
+            /** Decision Note */
+            decision_note: string;
+            /** Items */
+            items: components["schemas"]["ItemRead"][];
+            /** History */
+            history: components["schemas"]["HistoryRead"][];
+            subject_vendor: components["schemas"]["VendorDetail"] | null;
+        };
+        /**
+         * ProposalItemAction
+         * @enum {string}
+         */
+        ProposalItemAction: "create_vendor" | "update_vendor_field" | "add_domain" | "add_alias" | "add_location" | "add_industry" | "add_equipment" | "add_service" | "add_certification" | "add_project";
+        /**
+         * ProposalItemStatus
+         * @enum {string}
+         */
+        ProposalItemStatus: "pending" | "rejected" | "applied";
+        /**
+         * ProposalKind
+         * @enum {string}
+         */
+        ProposalKind: "new_vendor" | "update_vendor";
+        /**
+         * ProposalOrigin
+         * @enum {string}
+         */
+        ProposalOrigin: "manual" | "excel" | "pdf" | "ai_vendor_discovery" | "ai_equipment_discovery" | "suggestion";
+        /** ProposalPage */
+        ProposalPage: {
+            /** Items */
+            items: components["schemas"]["ProposalSummary"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /** Has More */
+            has_more: boolean;
+        };
+        /**
+         * ProposalStatus
+         * @enum {string}
+         */
+        ProposalStatus: "pending_review" | "needs_info" | "approved" | "partially_approved" | "rejected" | "auto_approved";
+        /** ProposalSummary */
+        ProposalSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["ProposalKind"];
+            origin: components["schemas"]["ProposalOrigin"];
+            status: components["schemas"]["ProposalStatus"];
+            /** Title */
+            title: string;
+            /** Subject Vendor Id */
+            subject_vendor_id: string | null;
+            /** Confidence */
+            confidence: string | null;
+            counts: components["schemas"]["ItemCounts"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Decided At */
+            decided_at: string | null;
+            /** Version */
+            version: number;
+        };
+        /** RequestInfo */
+        RequestInfo: {
+            /** Note */
+            note: string;
+            /** Version */
+            version: number;
         };
         /** RoleRead */
         RoleRead: {
@@ -917,6 +1939,59 @@ export interface components {
             is_system: boolean;
             /** Permissions */
             permissions: string[];
+        };
+        /** ServiceRead */
+        ServiceRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            category: components["schemas"]["CategoryRef"];
+            equipment_category: components["schemas"]["CategoryRef"] | null;
+            /** Name */
+            name: string;
+            /** Regions */
+            regions: string[];
+        };
+        /** SheetInfo */
+        SheetInfo: {
+            /** Name */
+            name: string;
+            /** Header Row */
+            header_row: number;
+            /** Headers */
+            headers: string[];
+            /** Data Rows */
+            data_rows: number;
+            /** Truncated */
+            truncated: boolean;
+            /** Sample */
+            sample: string[][];
+            /** Suggested Mapping */
+            suggested_mapping: {
+                [key: string]: number;
+            };
+        };
+        /**
+         * SourceKind
+         * @enum {string}
+         */
+        SourceKind: "web" | "document" | "excel" | "manual" | "ai";
+        /** SourceRead */
+        SourceRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["SourceKind"];
+            /** Url */
+            url: string | null;
+            /** Title */
+            title: string;
+            /** Retrieved At */
+            retrieved_at: string | null;
         };
         /** TenantAdminInput */
         TenantAdminInput: {
@@ -998,6 +2073,34 @@ export interface components {
             };
             admin: components["schemas"]["TenantAdminInput"];
         };
+        /**
+         * TenantOverlayRead
+         * @description The caller's tenant-private view of the vendor (absent when the tenant has no record yet).
+         */
+        TenantOverlayRead: {
+            avl_status: components["schemas"]["AvlStatus"];
+            /** Internal Vendor Code */
+            internal_vendor_code: string | null;
+            /** Tags */
+            tags: string[];
+            /** Notes */
+            notes: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** TenantOverlayUpdate */
+        TenantOverlayUpdate: {
+            avl_status?: components["schemas"]["AvlStatus"] | null;
+            /** Internal Vendor Code */
+            internal_vendor_code?: string | null;
+            /** Tags */
+            tags?: string[] | null;
+            /** Notes */
+            notes?: string | null;
+        };
         /** TenantRead */
         TenantRead: {
             /**
@@ -1062,6 +2165,36 @@ export interface components {
             expires_in: number;
             user: components["schemas"]["CurrentUser"];
         };
+        /**
+         * UploadKind
+         * @enum {string}
+         */
+        UploadKind: "spreadsheet" | "pdf";
+        /** UploadRead */
+        UploadRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["UploadKind"];
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Sha256 */
+            sha256: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Sheets */
+            sheets?: components["schemas"]["SheetInfo"][];
+            pdf?: components["schemas"]["PdfInfo"] | null;
+        };
         /** UserInvite */
         UserInvite: {
             /**
@@ -1125,6 +2258,98 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** VendorDetail */
+        VendorDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Legal Name */
+            legal_name: string;
+            /** Website */
+            website: string | null;
+            /** Hq Country */
+            hq_country: string | null;
+            /** Hq City */
+            hq_city: string | null;
+            status: components["schemas"]["VendorStatus"];
+            /** Equipment Count */
+            equipment_count: number;
+            /** Service Count */
+            service_count: number;
+            /** Certification Count */
+            certification_count: number;
+            tenant?: components["schemas"]["TenantOverlayRead"] | null;
+            /** Description */
+            description: string;
+            /** Domains */
+            domains: string[];
+            /** Aliases */
+            aliases: string[];
+            /** Industries */
+            industries: components["schemas"]["CategoryRef"][];
+            /** Data Quality Score */
+            data_quality_score: string | null;
+            /** Last Verified At */
+            last_verified_at: string | null;
+            /** Knowledge Version */
+            knowledge_version: number;
+            /** Locations */
+            locations: components["schemas"]["LocationRead"][];
+            /** Equipment */
+            equipment: components["schemas"]["EquipmentRead"][];
+            /** Services */
+            services: components["schemas"]["ServiceRead"][];
+            /** Certifications */
+            certifications: components["schemas"]["CertificationRead"][];
+            /** Projects */
+            projects: components["schemas"]["ProjectRead"][];
+            /** Sources */
+            sources: components["schemas"]["SourceRead"][];
+        };
+        /** VendorPage */
+        VendorPage: {
+            /** Items */
+            items: components["schemas"]["VendorSummary"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /** Has More */
+            has_more: boolean;
+        };
+        /**
+         * VendorStatus
+         * @enum {string}
+         */
+        VendorStatus: "active" | "inactive" | "retired";
+        /** VendorSummary */
+        VendorSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Legal Name */
+            legal_name: string;
+            /** Website */
+            website: string | null;
+            /** Hq Country */
+            hq_country: string | null;
+            /** Hq City */
+            hq_city: string | null;
+            status: components["schemas"]["VendorStatus"];
+            /** Equipment Count */
+            equipment_count: number;
+            /** Service Count */
+            service_count: number;
+            /** Certification Count */
+            certification_count: number;
+            tenant?: components["schemas"]["TenantOverlayRead"] | null;
         };
     };
     responses: never;
@@ -2361,6 +3586,895 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["DiagnosticsJobCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    equipment_categories_api_v1_taxonomy_equipment_categories_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EquipmentCategoryRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    service_categories_api_v1_taxonomy_service_categories_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    certification_types_api_v1_taxonomy_certification_types_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificationTypeRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    industries_api_v1_taxonomy_industries_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndustryRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_vendors_api_v1_vendors_get: {
+        parameters: {
+            query?: {
+                /** @description Name, alias, website or description text */
+                q?: string | null;
+                /** @description ISO code or name; HQ or any location */
+                country?: string | null;
+                /** @description Taxonomy code, incl. descendants */
+                equipment_category?: string | null;
+                service_category?: string | null;
+                /** @description Certification type code, e.g. API_Q1 */
+                certification?: string | null;
+                industry?: string | null;
+                /** @description Your organization's approval status */
+                avl_status?: components["schemas"]["AvlStatus"] | null;
+                /** @description Only vendors on your organization's own list */
+                mine?: boolean;
+                include_inactive?: boolean;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_vendor_api_v1_vendors__vendor_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_my_vendor_api_v1_my_vendors__vendor_id__put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantOverlayUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantOverlayRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_my_vendor_api_v1_my_vendors__vendor_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_proposals_api_v1_admin_proposals_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ProposalStatus"] | null;
+                kind?: components["schemas"]["ProposalKind"] | null;
+                origin?: components["schemas"]["ProposalOrigin"] | null;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_proposal_api_v1_admin_proposals_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_proposal_api_v1_admin_proposals__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    edit_item_api_v1_admin_proposals__proposal_id__items__item_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                proposal_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ItemUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_api_v1_admin_proposals__proposal_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Decision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_api_v1_admin_proposals__proposal_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Decision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_info_api_v1_admin_proposals__proposal_id__request_info_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestInfo"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_proposals_api_v1_proposals_mine_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ProposalStatus"] | null;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_file_api_v1_imports_uploads_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_file_api_v1_imports_uploads_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_upload_api_v1_imports_uploads__upload_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                upload_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_import_api_v1_imports_excel_preview_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportPreview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_import_api_v1_imports_excel_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_rows_api_v1_imports__job_id__rows_get: {
+        parameters: {
+            query?: {
+                outcome?: components["schemas"]["ImportRowOutcome"] | null;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportRowPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_report_csv_api_v1_imports__job_id__report_csv_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_pdf_import_api_v1_imports_pdf_preview_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PdfImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PdfPreview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_pdf_import_api_v1_imports_pdf_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PdfImportRequest"];
             };
         };
         responses: {

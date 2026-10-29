@@ -66,7 +66,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      {/* min-w-0: let wide tables scroll inside their own container instead of widening the page. */}
+      <SidebarInset className="min-w-0">
         <ActingAsBanner />
         <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />

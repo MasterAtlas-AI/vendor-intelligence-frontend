@@ -15,7 +15,6 @@ import { useAuth } from "@/lib/auth/store";
 import { humanize, timeAgo } from "@/lib/format";
 
 const NEXT_UP = [
-  "Vendor knowledge base, Excel/PDF import and the approval workflow (Phase 2)",
   "AI discovery of vendors, equipment and services (Phase 3)",
   "Semantic search, scorecards and the AI assistant (Phase 4)",
 ];

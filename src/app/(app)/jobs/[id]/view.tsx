@@ -4,55 +4,25 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Radio } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
+import { ProgressBar } from "@/components/progress-bar";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TERMINAL_JOB_STATUSES, useLiveJob } from "@/hooks/use-live-job";
 import { api } from "@/lib/api/client";
-import { readEventStream } from "@/lib/api/sse";
 import type { JobRead } from "@/lib/api/types";
 import { formatDateTime, humanize } from "@/lib/format";
 import { errorMessage } from "@/lib/validation";
-
-const TERMINAL = new Set(["succeeded", "partially_succeeded", "failed", "cancelled"]);
-
-/** Subscribes to the job's SSE stream and writes each snapshot into the query cache. */
-function useLiveJob(id: string, enabled: boolean) {
-  const queryClient = useQueryClient();
-  const [live, setLive] = useState(false);
-  useEffect(() => {
-    if (!enabled) return;
-    const controller = new AbortController();
-    readEventStream(
-      `/jobs/${id}/events`,
-      (e) => {
-        setLive(true);
-        try {
-          queryClient.setQueryData(["job", id], JSON.parse(e.data) as JobRead);
-        } catch {
-          // ignore malformed frames
-        }
-      },
-      controller.signal,
-    )
-      .catch(() => {
-        if (!controller.signal.aborted) void queryClient.invalidateQueries({ queryKey: ["job", id] });
-      })
-      .finally(() => setLive(false));
-    return () => controller.abort();
-  }, [id, enabled, queryClient]);
-  return live;
-}
 
 export default function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const job = useQuery({ queryKey: ["job", id], queryFn: () => api<JobRead>(`/jobs/${id}`) });
-  const finished = job.data ? TERMINAL.has(job.data.status) : true;
+  const finished = job.data ? TERMINAL_JOB_STATUSES.has(job.data.status) : true;
   const live = useLiveJob(id, Boolean(job.data) && !finished);
 
   const cancel = useMutation({
@@ -100,21 +70,7 @@ export default function JobDetailPage() {
             )}
           </CardHeader>
           <CardContent className="grid gap-4">
-            <div>
-              <div className="mb-1 flex justify-between text-sm">
-                <span>Progress</span>
-                <span>{j.progress}%</span>
-              </div>
-              <div
-                className="h-2 overflow-hidden rounded-full bg-muted"
-                role="progressbar"
-                aria-valuenow={j.progress}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <div className="h-full bg-primary transition-all duration-500" style={{ width: `${j.progress}%` }} />
-              </div>
-            </div>
+            <ProgressBar value={j.progress} />
             {j.error && (
               <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm">
                 <div className="font-medium text-destructive">{String(j.error.code ?? "Error")}</div>

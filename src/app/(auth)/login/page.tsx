@@ -36,7 +36,9 @@ function LoginForm() {
   const { register, handleSubmit, formState } = useForm<Values>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
-    if (status === "authenticated") router.replace(next);
+    // Next keeps visited routes mounted in the background; only redirect while the user is actually here,
+    // so a stale login page can't pull them away from wherever they went afterwards.
+    if (status === "authenticated" && window.location.pathname === "/login") router.replace(next);
   }, [status, next, router]);
 
   const onSubmit = handleSubmit(async (values) => {

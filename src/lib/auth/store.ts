@@ -17,9 +17,11 @@ interface AuthState {
   user: CurrentUser | null;
   // Super admins can view the app as a tenant; sent as X-Act-As-Tenant on every request.
   actAs: ActAsTenant | null;
+  // True after the user signed out on purpose, so nothing tries to restore the session behind their back.
+  signedOut: boolean;
   setSession: (accessToken: string, user: CurrentUser) => void;
   setAccessToken: (accessToken: string) => void;
-  clearSession: () => void;
+  clearSession: (signedOut?: boolean) => void;
   setActAs: (tenant: ActAsTenant | null) => void;
 }
 
@@ -48,11 +50,12 @@ export const useAuth = create<AuthState>((set) => ({
   accessToken: null,
   user: null,
   actAs: loadActAs(),
-  setSession: (accessToken, user) => set({ status: "authenticated", accessToken, user }),
+  signedOut: false,
+  setSession: (accessToken, user) => set({ status: "authenticated", accessToken, user, signedOut: false }),
   setAccessToken: (accessToken) => set({ accessToken }),
-  clearSession: () => {
+  clearSession: (signedOut = false) => {
     saveActAs(null);
-    set({ status: "anonymous", accessToken: null, user: null, actAs: null });
+    set({ status: "anonymous", accessToken: null, user: null, actAs: null, signedOut });
   },
   setActAs: (tenant) => {
     saveActAs(tenant);

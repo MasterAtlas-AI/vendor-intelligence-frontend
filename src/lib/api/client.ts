@@ -125,10 +125,16 @@ async function send(path: string, opts: RequestOptions): Promise<Response> {
 
 /** Send with one silent token refresh when the access token has expired. */
 async function sendAuthed(path: string, opts: RequestOptions): Promise<Response> {
+  const tokenUsed = useAuth.getState().accessToken;
   let res = await send(path, opts);
   if (res.status === 401 && !opts.anonymous) {
     const err = await toApiError(res.clone());
-    if (err.code === "token_expired" && (await refreshSession())) {
+    const current = useAuth.getState().accessToken;
+    if (err.code === "token_expired" && current && current !== tokenUsed) {
+      // Another request refreshed the session while this one was in flight with the old token: just retry.
+      // Refreshing again would replay the rotated refresh cookie and could end the session.
+      res = await send(path, opts);
+    } else if (err.code === "token_expired" && (await refreshSession())) {
       res = await send(path, opts);
     } else if (err.code !== "invalid_credentials") {
       useAuth.getState().clearSession();

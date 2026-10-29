@@ -1,4 +1,5 @@
 import { authHeaders, buildUrl, refreshSession } from "@/lib/api/client";
+import { useAuth } from "@/lib/auth/store";
 
 export interface SseEvent {
   event: string;
@@ -17,8 +18,13 @@ export async function readEventStream(
   const open = () =>
     fetch(buildUrl(path), { headers: { ...authHeaders(), Accept: "text/event-stream" }, signal });
 
+  const tokenUsed = useAuth.getState().accessToken;
   let res = await open();
-  if (res.status === 401 && (await refreshSession())) res = await open();
+  if (res.status === 401) {
+    const current = useAuth.getState().accessToken;
+    // Already refreshed by another request while this one was in flight: retry with the new token.
+    if ((current && current !== tokenUsed) || (await refreshSession())) res = await open();
+  }
   if (!res.ok || !res.body) throw new Error(`Event stream failed (${res.status})`);
 
   const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();

@@ -3,13 +3,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Eye, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { refreshSession } from "@/lib/api/client";
 import { useAuth } from "@/lib/auth/store";
 
 export function ShellSkeleton() {
@@ -57,8 +58,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const status = useAuth((s) => s.status);
 
+  const wasSignedIn = useRef(false);
+
   useEffect(() => {
-    if (status === "anonymous") router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    const toLogin = () => router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    if (status === "authenticated") wasSignedIn.current = true;
+    if (status !== "anonymous") return;
+    if (!wasSignedIn.current || useAuth.getState().signedOut) {
+      toLogin();
+      return;
+    }
+    // Signed out mid-session (e.g. a refresh lost a race with another request or tab): try the refresh cookie
+    // once before sending the user to the login page, so they stay on the page they were opening.
+    wasSignedIn.current = false;
+    void refreshSession().then((ok) => {
+      if (!ok) toLogin();
+    });
   }, [status, pathname, router]);
 
   if (status !== "authenticated") return <ShellSkeleton />;

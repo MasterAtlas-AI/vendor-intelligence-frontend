@@ -141,7 +141,7 @@ function UserMenu() {
     } catch {
       // Signing out locally is what matters; the refresh token expires on its own.
     }
-    clearSession();
+    clearSession(true);
     if (everywhere) toast.success("Signed out on all devices");
     router.replace("/login");
   }

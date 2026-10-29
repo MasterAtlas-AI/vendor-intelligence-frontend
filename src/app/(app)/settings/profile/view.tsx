@@ -76,7 +76,7 @@ function PasswordCard() {
     onSuccess: () => {
       // The backend signs out every session, including this one.
       toast.success("Password changed. Please sign in again.");
-      clearSession();
+      clearSession(true);
       router.replace("/login");
     },
     onError: (e) => toast.error(errorMessage(e)),

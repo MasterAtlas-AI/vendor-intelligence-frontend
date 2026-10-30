@@ -43,6 +43,7 @@ const TONES: Record<string, string> = {
   quoted: GOOD,
   declined: BAD,
   lost: "",
+  ready: GOOD,
   final: GOOD,
   active: "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200",
   succeeded: "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200",

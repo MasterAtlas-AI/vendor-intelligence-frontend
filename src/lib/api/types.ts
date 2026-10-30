@@ -85,6 +85,10 @@ export type ChatAction = S["ChatAction"];
 export type Rfq = S["RfqRead"];
 export type RfqVendor = S["RfqVendorRead"];
 
+// Phase 5: reports
+export type ReportRead = S["ReportRead"];
+export type ReportRequest = S["ReportRequest"];
+
 export interface CursorPage<T> {
   items: T[];
   next_cursor: string | null;

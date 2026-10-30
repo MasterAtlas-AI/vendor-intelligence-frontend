@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PageHeader } from "@/components/page-header";
+import { ReportButton } from "@/components/reports/report-button";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -181,6 +182,7 @@ export default function RfqPage() {
         actions={
           <>
             <StatusBadge status={r.status} />
+            <ReportButton reportType="rfq_summary" parameters={{ rfq_id: r.id }} label="Summary" size="default" />
             {r.can_edit &&
               (RFQ_ACTIONS[r.status] ?? []).map(([path, label]) => (
                 <Button key={path} variant={path === "cancel" ? "outline" : "default"} disabled={move.isPending} onClick={() => setConfirm([path, label])}>

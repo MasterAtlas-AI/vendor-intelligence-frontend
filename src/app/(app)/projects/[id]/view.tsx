@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { FilterSelect } from "@/components/filter-select";
 import { NewRfqDialog } from "@/components/rfqs/new-rfq-dialog";
 import { PageHeader } from "@/components/page-header";
+import { ReportButton } from "@/components/reports/report-button";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -307,6 +308,7 @@ export default function ProjectPage() {
         description={[p.code, p.client, p.facility_type, p.country && countryName(p.country)].filter(Boolean).join(" · ")}
         actions={
           <>
+            <ReportButton reportType="vendor_comparison" parameters={{ project_id: p.id }} label="Comparison" size="default" />
             {canRfq && (
               <Button variant="outline" onClick={() => setRfqOpen(true)}>
                 <FilePlus /> Create RFQ

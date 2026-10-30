@@ -15,6 +15,7 @@ export const P = {
   KNOWLEDGE_APPROVE: "knowledge:approve",
   PROJECT_MANAGE: "project:manage",
   RFQ_MANAGE: "rfq:manage",
+  REPORT_READ: "report:read",
   SCORECARD_MANAGE: "scorecard:manage",
   TENANT_VENDOR_APPROVE: "tenant_vendor:approve",
 } as const;

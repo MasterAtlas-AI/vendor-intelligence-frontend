@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BarChart3,
   BookmarkCheck,
   Building2,
   ChevronsUpDown,
@@ -66,6 +67,7 @@ interface NavItem {
 
 const WORKSPACE: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/analytics", label: "Analytics", icon: BarChart3, permission: P.REPORT_READ, needsTenant: true },
   { href: "/search", label: "Search", icon: Search, permission: P.SEARCH_RUN },
   { href: "/assistant", label: "Assistant", icon: MessageSquare, permission: P.SEARCH_RUN },
   { href: "/vendors", label: "Vendors", icon: Factory, permission: P.VENDOR_READ },
@@ -81,6 +83,7 @@ const WORKSPACE: NavItem[] = [
 const CURATION: NavItem[] = [
   { href: "/admin/proposals", label: "Approvals", icon: ClipboardCheck, permission: P.KNOWLEDGE_APPROVE },
   { href: "/admin/data-quality", label: "Data quality", icon: Gauge, permission: P.KNOWLEDGE_APPROVE },
+  { href: "/admin/analytics", label: "Platform analytics", icon: BarChart3, permission: P.KNOWLEDGE_APPROVE },
 ];
 
 const SETTINGS: NavItem[] = [

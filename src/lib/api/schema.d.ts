@@ -1795,6 +1795,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Platform Analytics
+         * @description Knowledge-base coverage, the discovery funnel, approval turnaround and usage per organization.
+         */
+        get: operations["platform_analytics_api_v1_admin_analytics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Organization Analytics
+         * @description Your organization's vendor list, activity and AI spend.
+         */
+        get: operations["organization_analytics_api_v1_analytics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -1967,6 +2007,21 @@ export interface components {
          * @enum {string}
          */
         ApprovalAction: "approve" | "reject" | "request_info" | "auto_approve" | "edit";
+        /** ApprovalStats */
+        ApprovalStats: {
+            /** Origin */
+            origin: string;
+            /** Decided */
+            decided: number;
+            /** Median Hours */
+            median_hours: number | null;
+            /** P90 Hours */
+            p90_hours: number | null;
+            /** Pending */
+            pending: number;
+            /** Oldest Pending Hours */
+            oldest_pending_hours: number | null;
+        };
         /** AuditLogRead */
         AuditLogRead: {
             /**
@@ -2023,6 +2078,13 @@ export interface components {
              * @default
              */
             note: string;
+        };
+        /** Bar */
+        Bar: {
+            /** Label */
+            label: string;
+            /** Value */
+            value: number;
         };
         /** Body_upload_file_api_v1_imports_uploads_post */
         Body_upload_file_api_v1_imports_uploads_post: {
@@ -2354,6 +2416,21 @@ export interface components {
             typical_cost_usd: number;
             /** Max Cost Usd */
             max_cost_usd: number;
+        };
+        /** DiscoveryFunnel */
+        DiscoveryFunnel: {
+            /** Runs */
+            runs: number;
+            /** Cost Usd */
+            cost_usd: number;
+            /** Steps */
+            steps: components["schemas"]["Bar"][];
+            /** Discarded */
+            discarded: number;
+            /** Rejected */
+            rejected: number;
+            /** Pending */
+            pending: number;
         };
         /**
          * DiscoveryRequest
@@ -2731,6 +2808,23 @@ export interface components {
          * @enum {string}
          */
         JobStatus: "queued" | "running" | "succeeded" | "partially_succeeded" | "failed" | "cancelled";
+        /** KnowledgeBaseStats */
+        KnowledgeBaseStats: {
+            /** Vendors */
+            vendors: number;
+            /** With Equipment */
+            with_equipment: number;
+            /** Avg Quality */
+            avg_quality: number;
+            /** Added */
+            added: number;
+            /** By Category */
+            by_category: components["schemas"]["Bar"][];
+            /** By Country */
+            by_country: components["schemas"]["Bar"][];
+            /** Top Certifications */
+            top_certifications: components["schemas"]["Bar"][];
+        };
         /** LocationRead */
         LocationRead: {
             /**
@@ -2802,6 +2896,59 @@ export interface components {
              * @enum {string}
              */
             role: "owner" | "editor" | "viewer";
+        };
+        /** OrganizationAnalytics */
+        OrganizationAnalytics: {
+            /** Days */
+            days: number;
+            /** Vendors */
+            vendors: number;
+            /** By Avl Status */
+            by_avl_status: components["schemas"]["Bar"][];
+            /** By Category */
+            by_category: components["schemas"]["Bar"][];
+            /** By Country */
+            by_country: components["schemas"]["Bar"][];
+            /** Rfqs By Status */
+            rfqs_by_status: components["schemas"]["Bar"][];
+            /** Searches */
+            searches: number;
+            /** Discovery Runs */
+            discovery_runs: number;
+            /** Ai Spend Month */
+            ai_spend_month: number;
+            /** Ai Budget Month */
+            ai_budget_month: number;
+            /** Active Projects */
+            active_projects: number;
+            /** Reports */
+            reports: number;
+        };
+        /** OrganizationUsage */
+        OrganizationUsage: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Status */
+            status: string;
+            /** Users */
+            users: number;
+            /** Vendors */
+            vendors: number;
+            /** Searches */
+            searches: number;
+            /** Discovery Runs */
+            discovery_runs: number;
+            /** Projects */
+            projects: number;
+            /** Rfqs */
+            rfqs: number;
+            /** Ai Spend Month */
+            ai_spend_month: number;
         };
         /** ParseRequest */
         ParseRequest: {
@@ -2949,6 +3096,17 @@ export interface components {
             key: string;
             /** Description */
             description: string;
+        };
+        /** PlatformAnalytics */
+        PlatformAnalytics: {
+            /** Days */
+            days: number;
+            knowledge_base: components["schemas"]["KnowledgeBaseStats"];
+            discovery_funnel: components["schemas"]["DiscoveryFunnel"];
+            /** Approvals */
+            approvals: components["schemas"]["ApprovalStats"][];
+            /** Organizations */
+            organizations: components["schemas"]["OrganizationUsage"][];
         };
         /** PreviewRow */
         PreviewRow: {
@@ -8519,6 +8677,76 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    platform_analytics_api_v1_admin_analytics_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformAnalytics"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    organization_analytics_api_v1_analytics_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationAnalytics"];
+                };
             };
             /** @description Validation Error */
             422: {

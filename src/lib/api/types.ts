@@ -89,6 +89,11 @@ export type RfqVendor = S["RfqVendorRead"];
 export type ReportRead = S["ReportRead"];
 export type ReportRequest = S["ReportRequest"];
 
+// Phase 5: analytics
+export type PlatformAnalytics = S["PlatformAnalytics"];
+export type OrganizationAnalytics = S["OrganizationAnalytics"];
+export type Bar = S["Bar"];
+
 export interface CursorPage<T> {
   items: T[];
   next_cursor: string | null;

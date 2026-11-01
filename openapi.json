@@ -11737,6 +11737,196 @@
         }
       }
     },
+    "/api/v1/admin/analytics": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Platform Analytics",
+        "description": "Knowledge-base coverage, the discovery funnel, approval turnaround and usage per organization.",
+        "operationId": "platform_analytics_api_v1_admin_analytics_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Days"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformAnalytics"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Organization Analytics",
+        "description": "Your organization's vendor list, activity and AI spend.",
+        "operationId": "organization_analytics_api_v1_analytics_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Days"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationAnalytics"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health/live": {
       "get": {
         "tags": [
@@ -12196,6 +12386,65 @@
         ],
         "title": "ApprovalAction"
       },
+      "ApprovalStats": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "decided": {
+            "type": "integer",
+            "title": "Decided"
+          },
+          "median_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Hours"
+          },
+          "p90_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90 Hours"
+          },
+          "pending": {
+            "type": "integer",
+            "title": "Pending"
+          },
+          "oldest_pending_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Pending Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "origin",
+          "decided",
+          "median_hours",
+          "p90_hours",
+          "pending",
+          "oldest_pending_hours"
+        ],
+        "title": "ApprovalStats"
+      },
       "AuditLogRead": {
         "properties": {
           "id": {
@@ -12349,6 +12598,24 @@
           "vendor_id"
         ],
         "title": "AwardRequest"
+      },
+      "Bar": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "Bar"
       },
       "Body_upload_file_api_v1_imports_uploads_post": {
         "properties": {
@@ -13209,6 +13476,47 @@
           "max_cost_usd"
         ],
         "title": "DiscoveryEstimate"
+      },
+      "DiscoveryFunnel": {
+        "properties": {
+          "runs": {
+            "type": "integer",
+            "title": "Runs"
+          },
+          "cost_usd": {
+            "type": "number",
+            "title": "Cost Usd"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "discarded": {
+            "type": "integer",
+            "title": "Discarded"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "pending": {
+            "type": "integer",
+            "title": "Pending"
+          }
+        },
+        "type": "object",
+        "required": [
+          "runs",
+          "cost_usd",
+          "steps",
+          "discarded",
+          "rejected",
+          "pending"
+        ],
+        "title": "DiscoveryFunnel"
       },
       "DiscoveryRequest": {
         "properties": {
@@ -14244,6 +14552,58 @@
         ],
         "title": "JobStatus"
       },
+      "KnowledgeBaseStats": {
+        "properties": {
+          "vendors": {
+            "type": "integer",
+            "title": "Vendors"
+          },
+          "with_equipment": {
+            "type": "integer",
+            "title": "With Equipment"
+          },
+          "avg_quality": {
+            "type": "number",
+            "title": "Avg Quality"
+          },
+          "added": {
+            "type": "integer",
+            "title": "Added"
+          },
+          "by_category": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "By Category"
+          },
+          "by_country": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "By Country"
+          },
+          "top_certifications": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "Top Certifications"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendors",
+          "with_equipment",
+          "avg_quality",
+          "added",
+          "by_category",
+          "by_country",
+          "top_certifications"
+        ],
+        "title": "KnowledgeBaseStats"
+      },
       "LocationRead": {
         "properties": {
           "id": {
@@ -14424,6 +14784,145 @@
           "role"
         ],
         "title": "MemberUpsert"
+      },
+      "OrganizationAnalytics": {
+        "properties": {
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "vendors": {
+            "type": "integer",
+            "title": "Vendors"
+          },
+          "by_avl_status": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "By Avl Status"
+          },
+          "by_category": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "By Category"
+          },
+          "by_country": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "By Country"
+          },
+          "rfqs_by_status": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "Rfqs By Status"
+          },
+          "searches": {
+            "type": "integer",
+            "title": "Searches"
+          },
+          "discovery_runs": {
+            "type": "integer",
+            "title": "Discovery Runs"
+          },
+          "ai_spend_month": {
+            "type": "number",
+            "title": "Ai Spend Month"
+          },
+          "ai_budget_month": {
+            "type": "number",
+            "title": "Ai Budget Month"
+          },
+          "active_projects": {
+            "type": "integer",
+            "title": "Active Projects"
+          },
+          "reports": {
+            "type": "integer",
+            "title": "Reports"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days",
+          "vendors",
+          "by_avl_status",
+          "by_category",
+          "by_country",
+          "rfqs_by_status",
+          "searches",
+          "discovery_runs",
+          "ai_spend_month",
+          "ai_budget_month",
+          "active_projects",
+          "reports"
+        ],
+        "title": "OrganizationAnalytics"
+      },
+      "OrganizationUsage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "users": {
+            "type": "integer",
+            "title": "Users"
+          },
+          "vendors": {
+            "type": "integer",
+            "title": "Vendors"
+          },
+          "searches": {
+            "type": "integer",
+            "title": "Searches"
+          },
+          "discovery_runs": {
+            "type": "integer",
+            "title": "Discovery Runs"
+          },
+          "projects": {
+            "type": "integer",
+            "title": "Projects"
+          },
+          "rfqs": {
+            "type": "integer",
+            "title": "Rfqs"
+          },
+          "ai_spend_month": {
+            "type": "number",
+            "title": "Ai Spend Month"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status",
+          "users",
+          "vendors",
+          "searches",
+          "discovery_runs",
+          "projects",
+          "rfqs",
+          "ai_spend_month"
+        ],
+        "title": "OrganizationUsage"
       },
       "ParseRequest": {
         "properties": {
@@ -14847,6 +15346,43 @@
           "description"
         ],
         "title": "PermissionRead"
+      },
+      "PlatformAnalytics": {
+        "properties": {
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "knowledge_base": {
+            "$ref": "#/components/schemas/KnowledgeBaseStats"
+          },
+          "discovery_funnel": {
+            "$ref": "#/components/schemas/DiscoveryFunnel"
+          },
+          "approvals": {
+            "items": {
+              "$ref": "#/components/schemas/ApprovalStats"
+            },
+            "type": "array",
+            "title": "Approvals"
+          },
+          "organizations": {
+            "items": {
+              "$ref": "#/components/schemas/OrganizationUsage"
+            },
+            "type": "array",
+            "title": "Organizations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days",
+          "knowledge_base",
+          "discovery_funnel",
+          "approvals",
+          "organizations"
+        ],
+        "title": "PlatformAnalytics"
       },
       "PreviewRow": {
         "properties": {

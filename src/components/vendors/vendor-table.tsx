@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { StatusBadge } from "@/components/status-badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { VendorSummary } from "@/lib/api/types";
@@ -11,19 +12,34 @@ export function VendorTable({
   loading,
   empty,
   showOwnFields,
+  selection,
 }: {
   rows: VendorSummary[];
   loading: boolean;
   empty: React.ReactNode;
   /** Show the organization's own AVL status and vendor code. */
   showOwnFields: boolean;
+  /** Tick boxes per row (e.g. for AI actions). */
+  selection?: { selected: Set<string>; onToggle: (id: string, on: boolean) => void; onToggleAll: (on: boolean) => void };
 }) {
-  const cols = showOwnFields ? 6 : 4;
+  const cols = (showOwnFields ? 6 : 4) + (selection ? 1 : 0);
+  const allPicked = Boolean(selection) && rows.length > 0 && rows.every((v) => selection!.selected.has(v.id));
   return (
     <div className="rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
+            {selection && (
+              <TableHead className="w-10">
+                <Checkbox
+                  aria-label="Select the vendors shown"
+                  checked={allPicked}
+                  indeterminate={selection.selected.size > 0 && !allPicked}
+                  disabled={!rows.length}
+                  onCheckedChange={(c) => selection.onToggleAll(Boolean(c))}
+                />
+              </TableHead>
+            )}
             <TableHead>Vendor</TableHead>
             <TableHead>Headquarters</TableHead>
             <TableHead className="text-right">Equipment / services / certifications</TableHead>
@@ -48,7 +64,16 @@ export function VendorTable({
             </TableRow>
           )}
           {rows.map((v) => (
-            <TableRow key={v.id}>
+            <TableRow key={v.id} data-state={selection?.selected.has(v.id) ? "selected" : undefined}>
+              {selection && (
+                <TableCell>
+                  <Checkbox
+                    aria-label={`Select ${v.display_name}`}
+                    checked={selection.selected.has(v.id)}
+                    onCheckedChange={(c) => selection.onToggle(v.id, Boolean(c))}
+                  />
+                </TableCell>
+              )}
               <TableCell>
                 <Link href={`/vendors/${v.id}`} className="font-medium hover:underline">
                   {v.display_name}

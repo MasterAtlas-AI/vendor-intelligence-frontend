@@ -36,6 +36,7 @@ function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
   const [scopes, setScopes] = useState<string[]>(["vendor:read"]);
   const [expires, setExpires] = useState("");
   const [ips, setIps] = useState("");
+  const [limit, setLimit] = useState("120");
   const [created, setCreated] = useState<ApiKeyCreated | null>(null);
 
   const create = useMutation({
@@ -47,6 +48,7 @@ function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
           scopes,
           expires_at: expires ? new Date(`${expires}T23:59:59`).toISOString() : null,
           ip_allowlist: ips.split(/[\s,]+/).filter(Boolean),
+          rate_limit_per_minute: Math.min(10000, Math.max(10, Math.round(Number(limit)) || 120)),
         },
       }),
     onSuccess: (key) => {
@@ -63,6 +65,7 @@ function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
     setScopes(["vendor:read"]);
     setExpires("");
     setIps("");
+    setLimit("120");
   }
 
   const choices = API_KEY_SCOPES.map((s) => ({
@@ -123,6 +126,9 @@ function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
               </FormField>
               <FormField id="key-expires" label="Expires on" hint="Optional. Leave empty for no expiry.">
                 <Input id="key-expires" type="date" value={expires} onChange={(e) => setExpires(e.target.value)} />
+              </FormField>
+              <FormField id="key-limit" label="Requests per minute" hint="10–10,000. Requests over the limit get HTTP 429 with Retry-After.">
+                <Input id="key-limit" type="number" min={10} max={10000} value={limit} onChange={(e) => setLimit(e.target.value)} />
               </FormField>
               <FormField id="key-ips" label="Allowed IPs / networks" hint="Optional, e.g. 203.0.113.0/24. Comma or space separated.">
                 <Input id="key-ips" value={ips} onChange={(e) => setIps(e.target.value)} />
@@ -186,6 +192,7 @@ export default function ApiKeysPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Key</TableHead>
                 <TableHead>Scopes</TableHead>
+                <TableHead className="text-right">Limit / min</TableHead>
                 <TableHead>Last used</TableHead>
                 <TableHead>Expires</TableHead>
                 <TableHead>Status</TableHead>
@@ -195,7 +202,7 @@ export default function ApiKeysPage() {
             <TableBody>
               {keys.isPending && (
                 <TableRow>
-                  <TableCell colSpan={7}>
+                  <TableCell colSpan={8}>
                     <Skeleton className="h-6" />
                   </TableCell>
                 </TableRow>
@@ -205,6 +212,7 @@ export default function ApiKeysPage() {
                   <TableCell className="font-medium">{k.name}</TableCell>
                   <TableCell className="font-mono text-xs">mai_live_{k.prefix}_…</TableCell>
                   <TableCell className="max-w-56 text-xs text-muted-foreground">{k.scopes.join(", ")}</TableCell>
+                  <TableCell className="text-right text-sm tabular-nums">{k.rate_limit_per_minute.toLocaleString()}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{timeAgo(k.last_used_at)}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{k.expires_at ? formatDateTime(k.expires_at) : "Never"}</TableCell>
                   <TableCell>

@@ -15,8 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OverlayDialog } from "@/components/vendors/overlay-dialog";
+import { LookupResults, ResearchResults } from "@/components/quality/ai-fill";
+import { FullDetailsButton, ProductResults } from "@/components/vendors/product-research";
 import { ProjectsCard } from "@/components/vendors/projects-card";
 import { ResearchCard } from "@/components/vendors/research-card";
+import { RunAllButton, type RunAllJobs } from "@/components/vendors/run-all";
 import { VendorFacts } from "@/components/vendors/vendor-facts";
 import { api } from "@/lib/api/client";
 import type { VendorDetail } from "@/lib/api/types";
@@ -102,6 +105,15 @@ export default function VendorDetailPage() {
   const { id } = useParams<{ id: string }>();
   const actAs = useAuth((s) => s.actAs);
   const hasTenant = useAuth((s) => Boolean(s.user?.tenant || s.actAs));
+  const [productJob, setProductJob] = useState<string | null>(null);
+  // AI web look-ups started from this page (contact details, or the missing basics from "Do everything").
+  const [lookupJobs, setLookupJobs] = useState<RunAllJobs["lookups"]>([]);
+  const [researchJob, setResearchJob] = useState<string | null>(null);
+  const startedAll = (jobs: RunAllJobs) => {
+    if (jobs.products) setProductJob(jobs.products);
+    if (jobs.research) setResearchJob(jobs.research);
+    setLookupJobs((prev) => [...prev.filter((l) => !jobs.lookups.some((n) => n.field === l.field)), ...jobs.lookups]);
+  };
   const vendor = useQuery({
     queryKey: ["vendor", id, actAs?.id],
     queryFn: () => api<VendorDetail>(`/vendors/${id}`),
@@ -121,15 +133,31 @@ export default function VendorDetailPage() {
         title={v.display_name}
         description={[v.legal_name !== v.display_name ? v.legal_name : null, hq].filter(Boolean).join(" · ")}
         actions={
-          v.website && (
-            <Button variant="outline" render={<a href={v.website} target="_blank" rel="noreferrer noopener" />}>
-              <ExternalLink /> Website
-            </Button>
-          )
+          <>
+            {v.website && (
+              <Button variant="outline" render={<a href={v.website} target="_blank" rel="noreferrer noopener" />}>
+                <ExternalLink /> Website
+              </Button>
+            )}
+            <FullDetailsButton vendor={v} onStarted={setProductJob} />
+            <RunAllButton vendor={v} onStarted={startedAll} />
+          </>
         }
       />
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="grid gap-4 lg:col-span-2">
+          {productJob && <ProductResults key={productJob} jobId={productJob} vendorId={v.id} onClose={() => setProductJob(null)} />}
+          {lookupJobs.map((l) => (
+            <LookupResults key={l.jobId} jobId={l.jobId} field={l.field} onClose={() => setLookupJobs((prev) => prev.filter((x) => x.jobId !== l.jobId))} />
+          ))}
+          {researchJob && (
+            <ResearchResults
+              key={researchJob}
+              research={{ queued: 1, estimated_cost_usd: 0, vendors: [{ vendor_id: v.id, name: v.display_name, job_id: researchJob, skipped: null }] }}
+              onClose={() => setResearchJob(null)}
+              onFindWebsites={() => undefined}
+            />
+          )}
           <Card>
             <CardHeader>
               <CardTitle>Overview</CardTitle>
@@ -166,7 +194,9 @@ export default function VendorDetailPage() {
         <div className="grid content-start gap-4">
           {hasTenant && <YourRecord vendor={v} />}
           {hasTenant && <ProjectsCard vendor={v} />}
-          {v.status !== "retired" && <ResearchCard vendor={v} />}
+          {v.status !== "retired" && (
+            <ResearchCard vendor={v} onContactsStarted={(jobId) => startedAll({ lookups: [{ field: "contacts", jobId }] })} />
+          )}
         </div>
       </div>
     </>

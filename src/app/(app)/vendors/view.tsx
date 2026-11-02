@@ -11,6 +11,8 @@ import { P, useCan } from "@/lib/auth/permissions";
 export default function VendorsPage() {
   const canRead = useCan(P.VENDOR_READ);
   const canImport = useCan(P.UPLOAD_CREATE);
+  // Curators may change the global knowledge base, so they get the AI look-up and in-place approval.
+  const canCurate = useCan(P.KNOWLEDGE_APPROVE);
   if (!canRead) return <NoAccess what="the vendor knowledge base" />;
   return (
     <>
@@ -25,7 +27,7 @@ export default function VendorsPage() {
           )
         }
       />
-      <VendorSearch />
+      <VendorSearch aiFill={canCurate} />
     </>
   );
 }

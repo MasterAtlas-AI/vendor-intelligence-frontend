@@ -4771,6 +4771,99 @@
         }
       }
     },
+    "/api/v1/admin/proposals/bulk": {
+      "post": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Decide In Bulk",
+        "description": "Approve or reject several proposals (every pending item of each). Each one succeeds or fails on its own: a\nproposal that changed since it was listed, or whose facts clash (e.g. a website another vendor owns), is\nreported and left as it was.",
+        "operationId": "decide_in_bulk_api_v1_admin_proposals_bulk_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/proposals/{proposal_id}/reject": {
       "post": {
         "tags": [
@@ -6875,6 +6968,116 @@
                 "anyOf": [
                   {
                     "$ref": "#/components/schemas/CapabilityRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveryAccepted"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/discovery/vendors/{vendor_id}/products": {
+      "post": {
+        "tags": [
+          "discovery"
+        ],
+        "summary": "Discover Vendor Products",
+        "description": "Full product details: reads the vendor's product pages and datasheets (25 pages, or 60 when `deep`) and\nproposes every product line with its specifications, each backed by a quote from the vendor's own pages.",
+        "operationId": "discover_vendor_products_api_v1_discovery_vendors__vendor_id__products_post",
+        "parameters": [
+          {
+            "name": "vendor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Vendor Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ProductResearchRequest"
                   },
                   {
                     "type": "null"
@@ -9664,7 +9867,7 @@
           "assistant"
         ],
         "summary": "Chat",
-        "description": "Ask about vendors. Answers come only from the knowledge base (and the organization's own vendor records),\nwith every vendor cited; two AI calls per message, charged to the organization's AI budget.",
+        "description": "Ask about vendors. Answers come only from the knowledge base (and the organization's own vendor records),\nwith every vendor cited; two AI calls per message, charged to the organization's AI budget. The question and\nanswer are saved to the user's chat history (`conversation_id`, or a new chat when it's empty).",
         "operationId": "chat_api_v1_assistant_chat_post",
         "parameters": [
           {
@@ -9751,6 +9954,380 @@
         }
       }
     },
+    "/api/v1/assistant/conversations": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "List Conversations",
+        "description": "The user's saved chats, most recently used first.",
+        "operationId": "list_conversations_api_v1_assistant_conversations_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConversationRead"
+                  },
+                  "title": "Response List Conversations Api V1 Assistant Conversations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Get Conversation",
+        "operationId": "get_conversation_api_v1_assistant_conversations__conversation_id__get",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Rename Conversation",
+        "operationId": "rename_conversation_api_v1_assistant_conversations__conversation_id__patch",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationRename"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Delete Conversation",
+        "operationId": "delete_conversation_api_v1_assistant_conversations__conversation_id__delete",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/data-quality": {
       "get": {
         "tags": [
@@ -9788,6 +10365,37 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "hide_checked",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Leave out vendors the AI already checked for this list",
+              "default": false,
+              "title": "Hide Checked"
+            },
+            "description": "Leave out vendors the AI already checked for this list"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vendor name, legal name or alias",
+              "title": "Q"
+            },
+            "description": "Vendor name, legal name or alias"
           },
           {
             "name": "authorization",
@@ -10022,6 +10630,192 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ReverifyResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/data-quality/lookup": {
+      "post": {
+        "tags": [
+          "data quality"
+        ],
+        "summary": "Lookup Basics",
+        "description": "Search the web with AI for one missing field (website, headquarters country or description) of the chosen\nvendors, about 1-2 US cents each. Answers that check out go to Approvals; the job's result lists every vendor.",
+        "operationId": "lookup_basics_api_v1_admin_data_quality_lookup_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LookupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LookupAccepted"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/data-quality/research": {
+      "post": {
+        "tags": [
+          "data quality"
+        ],
+        "summary": "Research Vendors",
+        "description": "Re-read the websites of the chosen vendors with AI (a full refresh each: equipment, services, certifications\nand their sources). New or changed facts go to Approvals. Vendors without a website are skipped.",
+        "operationId": "research_vendors_api_v1_admin_data_quality_research_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchAccepted"
                 }
               }
             }
@@ -11927,6 +12721,661 @@
         }
       }
     },
+    "/api/v1/webhooks": {
+      "get": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "List Webhooks",
+        "operationId": "list_webhooks_api_v1_webhooks_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EndpointRead"
+                  },
+                  "title": "Response List Webhooks Api V1 Webhooks Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "Create Webhook",
+        "description": "Register an HTTPS endpoint for events. The signing secret is returned once.",
+        "operationId": "create_webhook_api_v1_webhooks_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndpointCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndpointWithSecret"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/{endpoint_id}": {
+      "patch": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "Update Webhook",
+        "operationId": "update_webhook_api_v1_webhooks__endpoint_id__patch",
+        "parameters": [
+          {
+            "name": "endpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Endpoint Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndpointUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndpointRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "Delete Webhook",
+        "operationId": "delete_webhook_api_v1_webhooks__endpoint_id__delete",
+        "parameters": [
+          {
+            "name": "endpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Endpoint Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/{endpoint_id}/rotate-secret": {
+      "post": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "Rotate Secret",
+        "operationId": "rotate_secret_api_v1_webhooks__endpoint_id__rotate_secret_post",
+        "parameters": [
+          {
+            "name": "endpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Endpoint Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndpointWithSecret"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/{endpoint_id}/test": {
+      "post": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "Test Webhook",
+        "description": "Send a `ping` event to this endpoint only.",
+        "operationId": "test_webhook_api_v1_webhooks__endpoint_id__test_post",
+        "parameters": [
+          {
+            "name": "endpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Endpoint Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/{endpoint_id}/deliveries": {
+      "get": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "List Deliveries",
+        "operationId": "list_deliveries_api_v1_webhooks__endpoint_id__deliveries_get",
+        "parameters": [
+          {
+            "name": "endpoint_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Endpoint Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeliveryRead"
+                  },
+                  "title": "Response List Deliveries Api V1 Webhooks  Endpoint Id  Deliveries Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health/live": {
       "get": {
         "tags": [
@@ -12019,6 +13468,67 @@
           "ai"
         ],
         "title": "ActorType"
+      },
+      "AgentStep": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": [
+              "understand",
+              "search_kb",
+              "load_records",
+              "answer",
+              "check",
+              "rank"
+            ],
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "ms": {
+            "type": "integer",
+            "title": "Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "detail",
+          "ms"
+        ],
+        "title": "AgentStep",
+        "description": "One step the assistant took for a message, shown as the agent's plan and in the activity log."
+      },
+      "AiCheck": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "status",
+          "at"
+        ],
+        "title": "AiCheck"
       },
       "AiCheckResult": {
         "properties": {
@@ -12163,6 +13673,13 @@
             "type": "array",
             "maxItems": 20,
             "title": "Ip Allowlist"
+          },
+          "rate_limit_per_minute": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 10.0,
+            "title": "Rate Limit Per Minute",
+            "default": 120
           }
         },
         "additionalProperties": false,
@@ -12238,6 +13755,10 @@
             ],
             "title": "Revoked At"
           },
+          "rate_limit_per_minute": {
+            "type": "integer",
+            "title": "Rate Limit Per Minute"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -12271,6 +13792,7 @@
           "expires_at",
           "last_used_at",
           "revoked_at",
+          "rate_limit_per_minute",
           "created_at",
           "created_by",
           "key"
@@ -12342,6 +13864,10 @@
             ],
             "title": "Revoked At"
           },
+          "rate_limit_per_minute": {
+            "type": "integer",
+            "title": "Rate Limit Per Minute"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -12370,6 +13896,7 @@
           "expires_at",
           "last_used_at",
           "revoked_at",
+          "rate_limit_per_minute",
           "created_at",
           "created_by"
         ],
@@ -12630,6 +14157,128 @@
           "file"
         ],
         "title": "Body_upload_file_api_v1_imports_uploads_post"
+      },
+      "BulkDecision": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Action"
+          },
+          "proposals": {
+            "items": {
+              "$ref": "#/components/schemas/BulkTarget"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Proposals"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Note",
+            "description": "Required when rejecting",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action",
+          "proposals"
+        ],
+        "title": "BulkDecision"
+      },
+      "BulkOutcome": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProposalStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ok"
+        ],
+        "title": "BulkOutcome"
+      },
+      "BulkResult": {
+        "properties": {
+          "done": {
+            "type": "integer",
+            "title": "Done"
+          },
+          "failed": {
+            "type": "integer",
+            "title": "Failed"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/BulkOutcome"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "done",
+          "failed",
+          "results"
+        ],
+        "title": "BulkResult"
+      },
+      "BulkTarget": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version",
+            "description": "The version you saw in the list (optimistic locking)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "version"
+        ],
+        "title": "BulkTarget"
       },
       "CapabilityRequest": {
         "properties": {
@@ -12951,6 +14600,18 @@
             "type": "array",
             "maxItems": 10,
             "title": "Context Vendor Ids"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
           }
         },
         "additionalProperties": false,
@@ -12973,6 +14634,13 @@
             },
             "type": "array",
             "title": "Vendors"
+          },
+          "web_sources": {
+            "items": {
+              "$ref": "#/components/schemas/WebSource"
+            },
+            "type": "array",
+            "title": "Web Sources"
           },
           "follow_ups": {
             "items": {
@@ -12999,6 +14667,54 @@
             "type": "integer",
             "title": "Removed Refs",
             "default": 0
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "requirement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SearchIntent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "shortlist": {
+            "items": {
+              "$ref": "#/components/schemas/ShortlistRow"
+            },
+            "type": "array",
+            "title": "Shortlist"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/AgentStep"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
           }
         },
         "type": "object",
@@ -13064,6 +14780,152 @@
           "avl_status"
         ],
         "title": "CitedVendor"
+      },
+      "ContactRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "contact_type": {
+            "type": "string",
+            "title": "Contact Type"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "contact_type",
+          "label",
+          "email",
+          "phone",
+          "country"
+        ],
+        "title": "ContactRead"
+      },
+      "ConversationDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/SavedMessage"
+            },
+            "type": "array",
+            "title": "Messages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "created_at",
+          "updated_at",
+          "messages"
+        ],
+        "title": "ConversationDetail"
+      },
+      "ConversationRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ConversationRead"
+      },
+      "ConversationRename": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "ConversationRename"
       },
       "Criterion": {
         "properties": {
@@ -13383,6 +15245,90 @@
         "type": "object",
         "title": "DedupScanRequest"
       },
+      "DeliveryRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "event": {
+            "type": "string",
+            "title": "Event"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "response_status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "next_attempt_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Next Attempt At"
+          },
+          "delivered_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "event",
+          "status",
+          "attempts",
+          "response_status",
+          "error",
+          "next_attempt_at",
+          "delivered_at",
+          "created_at",
+          "payload"
+        ],
+        "title": "DeliveryRead"
+      },
       "DiagnosticsJobCreate": {
         "properties": {
           "steps": {
@@ -13416,6 +15362,78 @@
         "additionalProperties": false,
         "type": "object",
         "title": "DiagnosticsJobCreate"
+      },
+      "DimensionScores": {
+        "properties": {
+          "relevance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relevance"
+          },
+          "equipment": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment"
+          },
+          "standards": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Standards"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "track_record": {
+            "type": "number",
+            "title": "Track Record"
+          },
+          "data_quality": {
+            "type": "number",
+            "title": "Data Quality"
+          },
+          "approved_vendor": {
+            "type": "number",
+            "title": "Approved Vendor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "relevance",
+          "equipment",
+          "standards",
+          "industry",
+          "track_record",
+          "data_quality",
+          "approved_vendor"
+        ],
+        "title": "DimensionScores",
+        "description": "0-1 per dimension; None when the request didn't ask about it (the app then leaves it out of the ranking)."
       },
       "DiscoveryAccepted": {
         "properties": {
@@ -13618,6 +15636,283 @@
         "type": "object",
         "title": "DiscoveryRequest",
         "description": "What to look for, never who: categories, industry, region, standards and a free-text brief."
+      },
+      "EndpointCreate": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Url"
+          },
+          "events": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "vendor.updated",
+                "proposal.approved",
+                "job.completed"
+              ]
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Events"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "url",
+          "events"
+        ],
+        "title": "EndpointCreate"
+      },
+      "EndpointRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "events": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "failure_count": {
+            "type": "integer",
+            "title": "Failure Count"
+          },
+          "disabled_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disabled Reason"
+          },
+          "last_delivery_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Delivery At"
+          },
+          "last_status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "events",
+          "description",
+          "active",
+          "failure_count",
+          "disabled_reason",
+          "last_delivery_at",
+          "last_status",
+          "created_at"
+        ],
+        "title": "EndpointRead"
+      },
+      "EndpointUpdate": {
+        "properties": {
+          "url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "events": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "vendor.updated",
+                    "proposal.approved",
+                    "job.completed"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 3,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Events"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EndpointUpdate"
+      },
+      "EndpointWithSecret": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "events": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "failure_count": {
+            "type": "integer",
+            "title": "Failure Count"
+          },
+          "disabled_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disabled Reason"
+          },
+          "last_delivery_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Delivery At"
+          },
+          "last_status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "secret": {
+            "type": "string",
+            "title": "Secret",
+            "description": "Signs every delivery (HMAC-SHA256). Shown only now; store it securely."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "events",
+          "description",
+          "active",
+          "failure_count",
+          "disabled_reason",
+          "last_delivery_at",
+          "last_status",
+          "created_at",
+          "secret"
+        ],
+        "title": "EndpointWithSecret"
       },
       "EquipmentCategoryRead": {
         "properties": {
@@ -14685,6 +16980,70 @@
         ],
         "title": "LoginRequest"
       },
+      "LookupAccepted": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Job Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/JobStatus"
+          },
+          "events_url": {
+            "type": "string",
+            "title": "Events Url"
+          },
+          "vendors": {
+            "type": "integer",
+            "title": "Vendors"
+          },
+          "estimated_cost_usd": {
+            "type": "number",
+            "title": "Estimated Cost Usd"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "status",
+          "events_url",
+          "vendors",
+          "estimated_cost_usd"
+        ],
+        "title": "LookupAccepted"
+      },
+      "LookupRequest": {
+        "properties": {
+          "vendor_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 25,
+            "minItems": 1,
+            "title": "Vendor Ids"
+          },
+          "field": {
+            "type": "string",
+            "enum": [
+              "website",
+              "hq_country",
+              "description",
+              "contacts"
+            ],
+            "title": "Field",
+            "default": "website"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "vendor_ids"
+        ],
+        "title": "LookupRequest"
+      },
       "MatchReason": {
         "properties": {
           "kind": {
@@ -15430,6 +17789,22 @@
         ],
         "title": "PreviewRow"
       },
+      "ProductResearchRequest": {
+        "properties": {
+          "depth": {
+            "type": "string",
+            "enum": [
+              "standard",
+              "deep"
+            ],
+            "title": "Depth",
+            "default": "standard"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProductResearchRequest"
+      },
       "ProjectCreate": {
         "properties": {
           "name": {
@@ -16036,6 +18411,7 @@
           "add_service",
           "add_certification",
           "add_project",
+          "add_contact",
           "merge_vendor"
         ],
         "title": "ProposalItemAction"
@@ -16274,6 +18650,14 @@
             },
             "type": "array",
             "title": "Issues"
+          },
+          "ai_checks": {
+            "items": {
+              "$ref": "#/components/schemas/AiCheck"
+            },
+            "type": "array",
+            "title": "Ai Checks",
+            "description": "The latest AI check of each kind run on this vendor, newest first."
           }
         },
         "type": "object",
@@ -16282,7 +18666,8 @@
           "name",
           "country",
           "score",
-          "issues"
+          "issues",
+          "ai_checks"
         ],
         "title": "QualityVendor"
       },
@@ -16501,6 +18886,94 @@
           "updated"
         ],
         "title": "RescoreResult"
+      },
+      "ResearchAccepted": {
+        "properties": {
+          "queued": {
+            "type": "integer",
+            "title": "Queued"
+          },
+          "vendors": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchQueued"
+            },
+            "type": "array",
+            "title": "Vendors"
+          },
+          "estimated_cost_usd": {
+            "type": "number",
+            "title": "Estimated Cost Usd"
+          }
+        },
+        "type": "object",
+        "required": [
+          "queued",
+          "vendors",
+          "estimated_cost_usd"
+        ],
+        "title": "ResearchAccepted"
+      },
+      "ResearchQueued": {
+        "properties": {
+          "vendor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Vendor Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "skipped": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skipped"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendor_id",
+          "name"
+        ],
+        "title": "ResearchQueued"
+      },
+      "ResearchRequest": {
+        "properties": {
+          "vendor_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 25,
+            "minItems": 1,
+            "title": "Vendor Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "vendor_ids"
+        ],
+        "title": "ResearchRequest"
       },
       "ReverifyRequest": {
         "properties": {
@@ -17106,6 +19579,51 @@
           "permissions"
         ],
         "title": "RoleRead"
+      },
+      "SavedMessage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "reply": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "content",
+          "reply",
+          "created_at"
+        ],
+        "title": "SavedMessage"
       },
       "ScoreBreakdown": {
         "properties": {
@@ -17850,6 +20368,125 @@
           "suggested_mapping"
         ],
         "title": "SheetInfo"
+      },
+      "ShortlistRow": {
+        "properties": {
+          "vendor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Vendor Id"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "avl_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avl Status"
+          },
+          "scores": {
+            "$ref": "#/components/schemas/DimensionScores"
+          },
+          "matched": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched"
+          },
+          "products": {
+            "type": "integer",
+            "title": "Products"
+          },
+          "references": {
+            "type": "integer",
+            "title": "References"
+          },
+          "fpso_references": {
+            "type": "integer",
+            "title": "Fpso References"
+          },
+          "certifications": {
+            "type": "integer",
+            "title": "Certifications"
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Flags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendor_id",
+          "ref",
+          "name",
+          "country",
+          "city",
+          "website",
+          "avl_status",
+          "scores",
+          "matched",
+          "products",
+          "references",
+          "fpso_references",
+          "certifications",
+          "flags"
+        ],
+        "title": "ShortlistRow"
       },
       "SourceKind": {
         "type": "string",
@@ -19031,6 +21668,14 @@
             "type": "array",
             "title": "Locations"
           },
+          "contacts": {
+            "items": {
+              "$ref": "#/components/schemas/ContactRead"
+            },
+            "type": "array",
+            "title": "Contacts",
+            "default": []
+          },
           "equipment": {
             "items": {
               "$ref": "#/components/schemas/EquipmentRead"
@@ -19225,6 +21870,30 @@
           "certification_count"
         ],
         "title": "VendorSummary"
+      },
+      "WebSource": {
+        "properties": {
+          "ref": {
+            "type": "string",
+            "title": "Ref"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ref",
+          "title",
+          "url"
+        ],
+        "title": "WebSource",
+        "description": "A web page the answer cites as [W1], [W2]: found by the AI's web search, not verified like knowledge-base facts."
       }
     }
   }

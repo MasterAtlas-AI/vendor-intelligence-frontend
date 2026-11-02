@@ -13,6 +13,7 @@ import {
   FileSignature,
   FolderKanban,
   KeyRound,
+  Webhook,
   LayoutDashboard,
   ListChecks,
   LogOut,
@@ -92,6 +93,7 @@ const SETTINGS: NavItem[] = [
   { href: "/settings/users", label: "Users & roles", icon: Users, permission: P.USER_READ, needsTenant: true },
   { href: "/settings/ai-usage", label: "AI usage", icon: Wallet, permission: P.DISCOVERY_RUN },
   { href: "/settings/api-keys", label: "API keys", icon: KeyRound, permission: P.APIKEY_MANAGE, needsTenant: true },
+  { href: "/settings/webhooks", label: "Webhooks", icon: Webhook, permission: P.APIKEY_MANAGE, needsTenant: true },
   { href: "/settings/audit-log", label: "Audit log", icon: ScrollText, permission: P.AUDIT_READ, needsTenant: true },
 ];
 

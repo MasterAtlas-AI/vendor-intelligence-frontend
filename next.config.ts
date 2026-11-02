@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   experimental: {
     // The /api/v1 rewrite gives up after 30 s by default and answers 500 even if the API then succeeds.
-    // File uploads and large curator approvals can take longer on slow links.
-    proxyTimeout: 120_000,
+    // File uploads, large curator approvals and assistant answers with web search (often 1-3 minutes) take longer.
+    proxyTimeout: 300_000,
   },
   turbopack: {
     rules: {
@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  // A redirect here rather than in a root page: a page that only calls redirect() fails Next's
+  // `instant` validation in dev. The (app) layout sends signed-out visitors on to /login.
+  async redirects() {
+    return [{ source: "/", destination: "/dashboard", permanent: false }];
   },
   async rewrites() {
     return [{ source: "/api/v1/:path*", destination: `${backendUrl}/api/v1/:path*` }];

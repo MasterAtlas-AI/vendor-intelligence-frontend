@@ -80,6 +80,12 @@ export type ChatMessage = S["ChatMessage"];
 export type ChatResponse = S["ChatResponse"];
 export type CitedVendor = S["CitedVendor"];
 export type ChatAction = S["ChatAction"];
+export type WebSource = S["WebSource"];
+export type ShortlistRow = S["ShortlistRow"];
+export type DimensionScores = S["DimensionScores"];
+export type AgentStep = S["AgentStep"];
+export type Conversation = S["ConversationRead"];
+export type ConversationDetail = S["ConversationDetail"];
 
 // Phase 5: RFQs
 export type Rfq = S["RfqRead"];
@@ -93,6 +99,11 @@ export type ReportRequest = S["ReportRequest"];
 export type PlatformAnalytics = S["PlatformAnalytics"];
 export type OrganizationAnalytics = S["OrganizationAnalytics"];
 export type Bar = S["Bar"];
+
+// Phase 5: webhooks
+export type WebhookEndpoint = S["EndpointRead"];
+export type WebhookEndpointWithSecret = S["EndpointWithSecret"];
+export type WebhookDelivery = S["DeliveryRead"];
 
 export interface CursorPage<T> {
   items: T[];

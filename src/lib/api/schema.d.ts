@@ -740,6 +740,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/proposals/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide In Bulk
+         * @description Approve or reject several proposals (every pending item of each). Each one succeeds or fails on its own: a
+         *     proposal that changed since it was listed, or whose facts clash (e.g. a website another vendor owns), is
+         *     reported and left as it was.
+         */
+        post: operations["decide_in_bulk_api_v1_admin_proposals_bulk_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/proposals/{proposal_id}/reject": {
         parameters: {
             query?: never;
@@ -1115,6 +1137,27 @@ export interface paths {
         put?: never;
         /** Re-research everything about a vendor (all fact types) */
         post: operations["discover_vendor_refresh_api_v1_discovery_vendors__vendor_id__refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/vendors/{vendor_id}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Discover Vendor Products
+         * @description Full product details: reads the vendor's product pages and datasheets (25 pages, or 60 when `deep`) and
+         *     proposes every product line with its specifications, each backed by a quote from the vendor's own pages.
+         */
+        post: operations["discover_vendor_products_api_v1_discovery_vendors__vendor_id__products_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1502,13 +1545,53 @@ export interface paths {
         /**
          * Chat
          * @description Ask about vendors. Answers come only from the knowledge base (and the organization's own vendor records),
-         *     with every vendor cited; two AI calls per message, charged to the organization's AI budget.
+         *     with every vendor cited; two AI calls per message, charged to the organization's AI budget. The question and
+         *     answer are saved to the user's chat history (`conversation_id`, or a new chat when it's empty).
          */
         post: operations["chat_api_v1_assistant_chat_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Conversations
+         * @description The user's saved chats, most recently used first.
+         */
+        get: operations["list_conversations_api_v1_assistant_conversations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/conversations/{conversation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Conversation */
+        get: operations["get_conversation_api_v1_assistant_conversations__conversation_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Conversation */
+        delete: operations["delete_conversation_api_v1_assistant_conversations__conversation_id__delete"];
+        options?: never;
+        head?: never;
+        /** Rename Conversation */
+        patch: operations["rename_conversation_api_v1_assistant_conversations__conversation_id__patch"];
         trace?: never;
     };
     "/api/v1/admin/data-quality": {
@@ -1565,6 +1648,48 @@ export interface paths {
          * @description Re-read the websites of the stalest vendors (a full AI refresh each, proposals go to review as usual).
          */
         post: operations["reverify_stale_api_v1_admin_data_quality_reverify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/data-quality/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Lookup Basics
+         * @description Search the web with AI for one missing field (website, headquarters country or description) of the chosen
+         *     vendors, about 1-2 US cents each. Answers that check out go to Approvals; the job's result lists every vendor.
+         */
+        post: operations["lookup_basics_api_v1_admin_data_quality_lookup_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/data-quality/research": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Research Vendors
+         * @description Re-read the websites of the chosen vendors with AI (a full refresh each: equipment, services, certifications
+         *     and their sources). New or changed facts go to Approvals. Vendors without a website are skipped.
+         */
+        post: operations["research_vendors_api_v1_admin_data_quality_research_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1835,6 +1960,99 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/webhooks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Webhooks */
+        get: operations["list_webhooks_api_v1_webhooks_get"];
+        put?: never;
+        /**
+         * Create Webhook
+         * @description Register an HTTPS endpoint for events. The signing secret is returned once.
+         */
+        post: operations["create_webhook_api_v1_webhooks_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/{endpoint_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Webhook */
+        delete: operations["delete_webhook_api_v1_webhooks__endpoint_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Webhook */
+        patch: operations["update_webhook_api_v1_webhooks__endpoint_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/webhooks/{endpoint_id}/rotate-secret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rotate Secret */
+        post: operations["rotate_secret_api_v1_webhooks__endpoint_id__rotate_secret_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/{endpoint_id}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Test Webhook
+         * @description Send a `ping` event to this endpoint only.
+         */
+        post: operations["test_webhook_api_v1_webhooks__endpoint_id__test_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/{endpoint_id}/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Deliveries */
+        get: operations["list_deliveries_api_v1_webhooks__endpoint_id__deliveries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -1887,6 +2105,35 @@ export interface components {
          * @enum {string}
          */
         ActorType: "user" | "api_key" | "system" | "ai";
+        /**
+         * AgentStep
+         * @description One step the assistant took for a message, shown as the agent's plan and in the activity log.
+         */
+        AgentStep: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "understand" | "search_kb" | "load_records" | "answer" | "check" | "rank";
+            /** Label */
+            label: string;
+            /** Detail */
+            detail: string;
+            /** Ms */
+            ms: number;
+        };
+        /** AiCheck */
+        AiCheck: {
+            /** Field */
+            field: string;
+            /** Status */
+            status: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+        };
         /** AiCheckResult */
         AiCheckResult: {
             /** Ok */
@@ -1938,6 +2185,11 @@ export interface components {
             expires_at?: string | null;
             /** Ip Allowlist */
             ip_allowlist?: string[];
+            /**
+             * Rate Limit Per Minute
+             * @default 120
+             */
+            rate_limit_per_minute: number;
         };
         /** ApiKeyCreated */
         ApiKeyCreated: {
@@ -1960,6 +2212,8 @@ export interface components {
             last_used_at: string | null;
             /** Revoked At */
             revoked_at: string | null;
+            /** Rate Limit Per Minute */
+            rate_limit_per_minute: number;
             /**
              * Created At
              * Format: date-time
@@ -1994,6 +2248,8 @@ export interface components {
             last_used_at: string | null;
             /** Revoked At */
             revoked_at: string | null;
+            /** Rate Limit Per Minute */
+            rate_limit_per_minute: number;
             /**
              * Created At
              * Format: date-time
@@ -2090,6 +2346,57 @@ export interface components {
         Body_upload_file_api_v1_imports_uploads_post: {
             /** File */
             file: string;
+        };
+        /** BulkDecision */
+        BulkDecision: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "approve" | "reject";
+            /** Proposals */
+            proposals: components["schemas"]["BulkTarget"][];
+            /**
+             * Note
+             * @description Required when rejecting
+             * @default
+             */
+            note: string;
+        };
+        /** BulkOutcome */
+        BulkOutcome: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Ok */
+            ok: boolean;
+            status?: components["schemas"]["ProposalStatus"] | null;
+            /** Error */
+            error?: string | null;
+        };
+        /** BulkResult */
+        BulkResult: {
+            /** Done */
+            done: number;
+            /** Failed */
+            failed: number;
+            /** Results */
+            results: components["schemas"]["BulkOutcome"][];
+        };
+        /** BulkTarget */
+        BulkTarget: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Version
+             * @description The version you saw in the list (optimistic locking)
+             */
+            version: number;
         };
         /** CapabilityRequest */
         CapabilityRequest: {
@@ -2208,6 +2515,8 @@ export interface components {
             messages: components["schemas"]["ChatMessage"][];
             /** Context Vendor Ids */
             context_vendor_ids?: string[];
+            /** Conversation Id */
+            conversation_id?: string | null;
         };
         /** ChatResponse */
         ChatResponse: {
@@ -2215,6 +2524,8 @@ export interface components {
             answer: string;
             /** Vendors */
             vendors: components["schemas"]["CitedVendor"][];
+            /** Web Sources */
+            web_sources?: components["schemas"]["WebSource"][];
             /** Follow Ups */
             follow_ups: string[];
             /** Actions */
@@ -2226,6 +2537,15 @@ export interface components {
              * @default 0
              */
             removed_refs: number;
+            /** Conversation Id */
+            conversation_id?: string | null;
+            requirement?: components["schemas"]["SearchIntent"] | null;
+            /** Shortlist */
+            shortlist?: components["schemas"]["ShortlistRow"][];
+            /** Steps */
+            steps?: components["schemas"]["AgentStep"][];
+            /** Started At */
+            started_at?: string | null;
         };
         /** CitedVendor */
         CitedVendor: {
@@ -2244,6 +2564,71 @@ export interface components {
             avl_status: string | null;
             /** Sources */
             sources?: string[];
+        };
+        /** ContactRead */
+        ContactRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Contact Type */
+            contact_type: string;
+            /** Label */
+            label: string;
+            /** Email */
+            email: string | null;
+            /** Phone */
+            phone: string | null;
+            /** Country */
+            country: string | null;
+        };
+        /** ConversationDetail */
+        ConversationDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Messages */
+            messages: components["schemas"]["SavedMessage"][];
+        };
+        /** ConversationRead */
+        ConversationRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ConversationRename */
+        ConversationRename: {
+            /** Title */
+            title: string;
         };
         /** Criterion */
         Criterion: {
@@ -2377,6 +2762,40 @@ export interface components {
              */
             use_ai: boolean;
         };
+        /** DeliveryRead */
+        DeliveryRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Event */
+            event: string;
+            /** Status */
+            status: string;
+            /** Attempts */
+            attempts: number;
+            /** Response Status */
+            response_status: number | null;
+            /** Error */
+            error: string | null;
+            /**
+             * Next Attempt At
+             * Format: date-time
+             */
+            next_attempt_at: string;
+            /** Delivered At */
+            delivered_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+        };
         /** DiagnosticsJobCreate */
         DiagnosticsJobCreate: {
             /**
@@ -2391,6 +2810,26 @@ export interface components {
             step_seconds: number;
             /** Fail At Step */
             fail_at_step?: number | null;
+        };
+        /**
+         * DimensionScores
+         * @description 0-1 per dimension; None when the request didn't ask about it (the app then leaves it out of the ranking).
+         */
+        DimensionScores: {
+            /** Relevance */
+            relevance: number | null;
+            /** Equipment */
+            equipment: number | null;
+            /** Standards */
+            standards: number | null;
+            /** Industry */
+            industry: number | null;
+            /** Track Record */
+            track_record: number;
+            /** Data Quality */
+            data_quality: number;
+            /** Approved Vendor */
+            approved_vendor: number;
         };
         /** DiscoveryAccepted */
         DiscoveryAccepted: {
@@ -2471,6 +2910,92 @@ export interface components {
              * @default 6
              */
             pages_per_vendor: number;
+        };
+        /** EndpointCreate */
+        EndpointCreate: {
+            /** Url */
+            url: string;
+            /** Events */
+            events: ("vendor.updated" | "proposal.approved" | "job.completed")[];
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+        };
+        /** EndpointRead */
+        EndpointRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Url */
+            url: string;
+            /** Events */
+            events: string[];
+            /** Description */
+            description: string;
+            /** Active */
+            active: boolean;
+            /** Failure Count */
+            failure_count: number;
+            /** Disabled Reason */
+            disabled_reason: string | null;
+            /** Last Delivery At */
+            last_delivery_at: string | null;
+            /** Last Status */
+            last_status: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** EndpointUpdate */
+        EndpointUpdate: {
+            /** Url */
+            url?: string | null;
+            /** Events */
+            events?: ("vendor.updated" | "proposal.approved" | "job.completed")[] | null;
+            /** Description */
+            description?: string | null;
+            /** Active */
+            active?: boolean | null;
+        };
+        /** EndpointWithSecret */
+        EndpointWithSecret: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Url */
+            url: string;
+            /** Events */
+            events: string[];
+            /** Description */
+            description: string;
+            /** Active */
+            active: boolean;
+            /** Failure Count */
+            failure_count: number;
+            /** Disabled Reason */
+            disabled_reason: string | null;
+            /** Last Delivery At */
+            last_delivery_at: string | null;
+            /** Last Status */
+            last_status: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Secret
+             * @description Signs every delivery (HMAC-SHA256). Shown only now; store it securely.
+             */
+            secret: string;
         };
         /** EquipmentCategoryRead */
         EquipmentCategoryRead: {
@@ -2855,6 +3380,32 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** LookupAccepted */
+        LookupAccepted: {
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            status: components["schemas"]["JobStatus"];
+            /** Events Url */
+            events_url: string;
+            /** Vendors */
+            vendors: number;
+            /** Estimated Cost Usd */
+            estimated_cost_usd: number;
+        };
+        /** LookupRequest */
+        LookupRequest: {
+            /** Vendor Ids */
+            vendor_ids: string[];
+            /**
+             * Field
+             * @default website
+             * @enum {string}
+             */
+            field: "website" | "hq_country" | "description" | "contacts";
+        };
         /**
          * MatchReason
          * @description One reason a vendor matched, with the knowledge-base fact and where it came from.
@@ -3122,6 +3673,15 @@ export interface components {
             /** Messages */
             messages: string[];
         };
+        /** ProductResearchRequest */
+        ProductResearchRequest: {
+            /**
+             * Depth
+             * @default standard
+             * @enum {string}
+             */
+            depth: "standard" | "deep";
+        };
         /** ProjectCreate */
         ProjectCreate: {
             /** Name */
@@ -3293,7 +3853,7 @@ export interface components {
          * ProposalItemAction
          * @enum {string}
          */
-        ProposalItemAction: "create_vendor" | "update_vendor_field" | "add_domain" | "add_alias" | "add_location" | "add_industry" | "add_equipment" | "add_service" | "add_certification" | "add_project" | "merge_vendor";
+        ProposalItemAction: "create_vendor" | "update_vendor_field" | "add_domain" | "add_alias" | "add_location" | "add_industry" | "add_equipment" | "add_service" | "add_certification" | "add_project" | "add_contact" | "merge_vendor";
         /**
          * ProposalItemStatus
          * @enum {string}
@@ -3380,6 +3940,11 @@ export interface components {
             score: number;
             /** Issues */
             issues: string[];
+            /**
+             * Ai Checks
+             * @description The latest AI check of each kind run on this vendor, newest first.
+             */
+            ai_checks: components["schemas"]["AiCheck"][];
         };
         /** ReindexRequest */
         ReindexRequest: {
@@ -3471,6 +4036,34 @@ export interface components {
         RescoreResult: {
             /** Updated */
             updated: number;
+        };
+        /** ResearchAccepted */
+        ResearchAccepted: {
+            /** Queued */
+            queued: number;
+            /** Vendors */
+            vendors: components["schemas"]["ResearchQueued"][];
+            /** Estimated Cost Usd */
+            estimated_cost_usd: number;
+        };
+        /** ResearchQueued */
+        ResearchQueued: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /** Name */
+            name: string;
+            /** Job Id */
+            job_id?: string | null;
+            /** Skipped */
+            skipped?: string | null;
+        };
+        /** ResearchRequest */
+        ResearchRequest: {
+            /** Vendor Ids */
+            vendor_ids: string[];
         };
         /** ReverifyRequest */
         ReverifyRequest: {
@@ -3646,6 +4239,27 @@ export interface components {
             is_system: boolean;
             /** Permissions */
             permissions: string[];
+        };
+        /** SavedMessage */
+        SavedMessage: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+            reply: components["schemas"]["ChatResponse"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** ScoreBreakdown */
         ScoreBreakdown: {
@@ -3919,6 +4533,39 @@ export interface components {
             suggested_mapping: {
                 [key: string]: number;
             };
+        };
+        /** ShortlistRow */
+        ShortlistRow: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /** Ref */
+            ref: string | null;
+            /** Name */
+            name: string;
+            /** Country */
+            country: string | null;
+            /** City */
+            city: string | null;
+            /** Website */
+            website: string | null;
+            /** Avl Status */
+            avl_status: string | null;
+            scores: components["schemas"]["DimensionScores"];
+            /** Matched */
+            matched: string[];
+            /** Products */
+            products: number;
+            /** References */
+            references: number;
+            /** Fpso References */
+            fpso_references: number;
+            /** Certifications */
+            certifications: number;
+            /** Flags */
+            flags: string[];
         };
         /**
          * SourceKind
@@ -4367,6 +5014,11 @@ export interface components {
             knowledge_version: number;
             /** Locations */
             locations: components["schemas"]["LocationRead"][];
+            /**
+             * Contacts
+             * @default []
+             */
+            contacts: components["schemas"]["ContactRead"][];
             /** Equipment */
             equipment: components["schemas"]["EquipmentRead"][];
             /** Services */
@@ -4417,6 +5069,18 @@ export interface components {
             /** Certification Count */
             certification_count: number;
             tenant?: components["schemas"]["TenantOverlayRead"] | null;
+        };
+        /**
+         * WebSource
+         * @description A web page the answer cites as [W1], [W2]: found by the AI's web search, not verified like knowledge-base facts.
+         */
+        WebSource: {
+            /** Ref */
+            ref: string;
+            /** Title */
+            title: string;
+            /** Url */
+            url: string;
         };
     };
     responses: never;
@@ -6156,6 +6820,43 @@ export interface operations {
             };
         };
     };
+    decide_in_bulk_api_v1_admin_proposals_bulk_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     reject_api_v1_admin_proposals__proposal_id__reject_post: {
         parameters: {
             query?: never;
@@ -6878,6 +7579,45 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/json": components["schemas"]["CapabilityRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discover_vendor_products_api_v1_discovery_vendors__vendor_id__products_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ProductResearchRequest"] | null;
             };
         };
         responses: {
@@ -7953,11 +8693,157 @@ export interface operations {
             };
         };
     };
+    list_conversations_api_v1_assistant_conversations_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_conversation_api_v1_assistant_conversations__conversation_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_conversation_api_v1_assistant_conversations__conversation_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rename_conversation_api_v1_assistant_conversations__conversation_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConversationRename"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_dashboard_api_v1_admin_data_quality_get: {
         parameters: {
             query?: {
                 issue?: string | null;
                 limit?: number;
+                /** @description Leave out vendors the AI already checked for this list */
+                hide_checked?: boolean;
+                /** @description Vendor name, legal name or alias */
+                q?: string | null;
             };
             header?: {
                 authorization?: string | null;
@@ -8046,6 +8932,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReverifyResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lookup_basics_api_v1_admin_data_quality_lookup_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LookupRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LookupAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    research_vendors_api_v1_admin_data_quality_research_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResearchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResearchAccepted"];
                 };
             };
             /** @description Validation Error */
@@ -8746,6 +9706,255 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrganizationAnalytics"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_webhooks_api_v1_webhooks_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EndpointRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_webhook_api_v1_webhooks_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EndpointCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EndpointWithSecret"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_webhook_api_v1_webhooks__endpoint_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_webhook_api_v1_webhooks__endpoint_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EndpointUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EndpointRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rotate_secret_api_v1_webhooks__endpoint_id__rotate_secret_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EndpointWithSecret"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    test_webhook_api_v1_webhooks__endpoint_id__test_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliveryRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_deliveries_api_v1_webhooks__endpoint_id__deliveries_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliveryRead"][];
                 };
             };
             /** @description Validation Error */

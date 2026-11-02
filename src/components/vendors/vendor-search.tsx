@@ -3,9 +3,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Search, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { FilterSelect } from "@/components/filter-select";
 import { LoadMore } from "@/components/load-more";
+import { AiFillBar, MAX_AI_SELECTED } from "@/components/quality/ai-fill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VendorTable } from "@/components/vendors/vendor-table";
@@ -43,12 +45,14 @@ const EMPTY: Filters = {
   avl_status: "",
 };
 
-/** Vendor search over the global knowledge base. `mine` limits it to the organization's own list. */
-export function VendorSearch({ mine = false }: { mine?: boolean }) {
+/** Vendor search over the global knowledge base. `mine` limits it to the organization's own list; `aiFill` lets
+ *  curators tick vendors and have the AI look up missing details or research websites, approving results in place. */
+export function VendorSearch({ mine = false, aiFill = false }: { mine?: boolean; aiFill?: boolean }) {
   const user = useAuth((s) => s.user);
   const actAs = useAuth((s) => s.actAs);
   const hasTenant = Boolean(user?.tenant || actAs);
   const [filters, setFilters] = useState<Filters>(EMPTY);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const q = useDebounced(filters.q.trim(), 300);
   const country = useDebounced(filters.country.trim(), 300);
   const query = { ...filters, q, country };
@@ -72,6 +76,19 @@ export function VendorSearch({ mine = false }: { mine?: boolean }) {
   const set = (key: keyof Filters) => (value: string) => setFilters((f) => ({ ...f, [key]: value }));
   const rows = vendors.data?.pages.flatMap((p) => p.items) ?? [];
   const filtered = Object.values(filters).some(Boolean);
+  const toggle = (id: string, on: boolean) => {
+    if (on && selected.size >= MAX_AI_SELECTED) {
+      toast.error(`Up to ${MAX_AI_SELECTED} vendors at a time`);
+      return;
+    }
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (on) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  };
+  const toggleAll = (on: boolean) => setSelected(on ? new Set(rows.slice(0, MAX_AI_SELECTED).map((v) => v.id)) : new Set());
 
   return (
     <>
@@ -138,6 +155,16 @@ export function VendorSearch({ mine = false }: { mine?: boolean }) {
           </Button>
         )}
       </div>
+      {aiFill && rows.length > 0 && (
+        <div className="mb-4 grid gap-4">
+          <AiFillBar
+            selected={[...selected]}
+            actions={["website", "hq_country", "description", "contacts", "research"]}
+            onStarted={() => setSelected(new Set())}
+            hint={`Tick up to ${MAX_AI_SELECTED} vendors to look up missing websites, headquarters, descriptions or contact details, or research their websites.`}
+          />
+        </div>
+      )}
       {vendors.isError ? (
         <p className="text-sm text-destructive">{errorMessage(vendors.error)}</p>
       ) : (
@@ -145,6 +172,7 @@ export function VendorSearch({ mine = false }: { mine?: boolean }) {
           rows={rows}
           loading={vendors.isPending}
           showOwnFields={hasTenant}
+          selection={aiFill ? { selected, onToggle: toggle, onToggleAll: toggleAll } : undefined}
           empty={
             filtered
               ? "No vendors match these filters."

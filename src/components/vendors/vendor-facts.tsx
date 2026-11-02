@@ -20,6 +20,39 @@ function Row({ title, sub, children }: { title: React.ReactNode; sub?: React.Rea
   );
 }
 
+/** A product's overview and specifications (folded away when there are many). */
+function ProductSpecs({ specs }: { specs: Record<string, unknown> }) {
+  const overview = typeof specs.Overview === "string" ? specs.Overview : null;
+  const entries = Object.entries(specs).filter(([k]) => k !== "Overview");
+  if (!overview && !entries.length) return null;
+  const list = (
+    <dl className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 pt-1 text-sm sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto]">
+      {entries.map(([k, v]) => (
+        <div key={k} className="contents">
+          <dt className="truncate text-muted-foreground" title={k}>
+            {k}
+          </dt>
+          <dd className="text-right font-mono text-xs leading-5 tabular-nums">{String(v)}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+  return (
+    <div className="grid gap-1">
+      {overview && <p className="text-sm text-muted-foreground">{overview}</p>}
+      {entries.length > 0 &&
+        (entries.length <= 6 ? (
+          list
+        ) : (
+          <details className="group">
+            <summary className="cursor-pointer text-xs text-primary hover:underline">{entries.length} specifications</summary>
+            {list}
+          </details>
+        ))}
+    </div>
+  );
+}
+
 /** Every approved fact about a vendor, grouped in tabs. */
 export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
   const tabs = [
@@ -27,6 +60,7 @@ export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
     { key: "services", label: "Services", count: vendor.services.length },
     { key: "certifications", label: "Certifications", count: vendor.certifications.length },
     { key: "projects", label: "Projects", count: vendor.projects.length },
+    { key: "contacts", label: "Contacts", count: vendor.contacts?.length ?? 0 },
     { key: "locations", label: "Locations", count: vendor.locations.length },
     { key: "sources", label: "Sources", count: vendor.sources.length },
   ];
@@ -47,6 +81,7 @@ export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
           <ul className="divide-y">
             {vendor.equipment.map((e) => (
               <Row key={e.id} title={e.name} sub={[e.category.name, e.model_series].filter(Boolean).join(" · ")}>
+                <ProductSpecs specs={e.specs} />
                 {(e.standards.length > 0 || e.applications.length > 0) && (
                   <div className="flex flex-wrap gap-1">
                     {e.standards.map((s) => (
@@ -61,6 +96,31 @@ export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
                     ))}
                   </div>
                 )}
+              </Row>
+            ))}
+          </ul>
+        )}
+      </TabsContent>
+
+      <TabsContent value="contacts">
+        {!vendor.contacts?.length ? (
+          <Empty what="company contacts" />
+        ) : (
+          <ul className="divide-y">
+            {vendor.contacts.map((c) => (
+              <Row key={c.id} title={c.label || humanize(c.contact_type)} sub={[humanize(c.contact_type), c.country && countryName(c.country)].filter(Boolean).join(" · ")}>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                  {c.email && (
+                    <a href={`mailto:${c.email}`} className="text-primary hover:underline">
+                      {c.email}
+                    </a>
+                  )}
+                  {c.phone && (
+                    <a href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} className="hover:underline">
+                      {c.phone}
+                    </a>
+                  )}
+                </div>
               </Row>
             ))}
           </ul>

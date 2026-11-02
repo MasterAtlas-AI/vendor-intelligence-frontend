@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 // The browser only ever talks to this origin. `/api/v1/*` is proxied to the FastAPI backend, so the
 // httpOnly refresh cookie (path /api/v1/auth) is first-party and no CORS setup is needed in any environment.
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
+// Trailing slashes are dropped: "https://api.example.com/" would otherwise proxy to "//api/v1/..." and 404.
+const backendUrl = (process.env.BACKEND_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
   cacheComponents: true,

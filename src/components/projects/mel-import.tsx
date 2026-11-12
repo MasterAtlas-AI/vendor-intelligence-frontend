@@ -335,6 +335,11 @@ function JobSummary({ jobId }: { jobId: string }) {
       <Badge variant="secondary">{String(r.categorised ?? 0)} categorised</Badge>
       <Badge variant="secondary">{String(r.vendors_matched ?? 0)} vendors matched</Badge>
       {Number(r.with_issues ?? 0) > 0 && <Badge variant="outline">{String(r.with_issues)} with issues</Badge>}
+      {Number(r.duplicates ?? 0) > 0 && (
+        <Badge variant="outline" title="Lines already recorded on this project (or repeated in the file). Approving one updates the recorded line instead of adding a copy.">
+          {String(r.duplicates)} already recorded
+        </Badge>
+      )}
       {Number(r.sections ?? 0) > 0 && (
         <Badge variant="outline" title="Section headings (systems, packages, modules) label the rows below them; they aren't equipment">
           {String(r.sections)} section headings
@@ -418,7 +423,7 @@ function ReviewStep({ uploadId }: { uploadId: string }) {
   const decide = useMutation({
     mutationFn: async (decision: "approve" | "reject") => {
       const ids = [...selected];
-      const total: MelDecisionResult = { approved: 0, rejected: 0, skipped: 0, vendors_linked: 0 };
+      const total: MelDecisionResult = { approved: 0, rejected: 0, skipped: 0, vendors_linked: 0, updated: 0 };
       for (let i = 0; i < ids.length; i += BATCH) {
         const r = await api<MelDecisionResult>("/mel/rows/decide", {
           method: "POST",
@@ -428,12 +433,14 @@ function ReviewStep({ uploadId }: { uploadId: string }) {
         total.rejected += r.rejected;
         total.skipped += r.skipped;
         total.vendors_linked += r.vendors_linked;
+        total.updated = (total.updated ?? 0) + (r.updated ?? 0);
       }
       return total;
     },
     onSuccess: (r) => {
       const parts = [
         r.approved && `${r.approved} approved`,
+        r.updated && `${r.updated} updated existing lines`,
         r.rejected && `${r.rejected} rejected`,
         r.skipped && `${r.skipped} skipped`,
         r.vendors_linked && `${r.vendors_linked} vendors added to your list`,

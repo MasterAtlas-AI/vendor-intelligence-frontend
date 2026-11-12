@@ -232,6 +232,14 @@ function RecentSearches({ onPick }: { onPick: (entry: SearchHistoryEntry) => voi
   );
 }
 
+/** "Norway, KR" -> ["Norway", "KR"] (the server turns names into ISO codes and refuses unknown ones). */
+const splitList = (text: string) =>
+  text
+    .split(/[,;]/)
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .slice(0, 20);
+
 export default function SearchPage() {
   const canSearch = useCan(P.SEARCH_RUN);
   const hasTenant = useAuth((s) => Boolean(s.user?.tenant || s.actAs));
@@ -245,6 +253,8 @@ export default function SearchPage() {
   const [category, setCategory] = useState(useSearchParams().get("category") ?? "");
   const [usedByUs, setUsedByUs] = useState(false);
   const [acceptedByUs, setAcceptedByUs] = useState(false);
+  const [factoryIn, setFactoryIn] = useState("");
+  const [supportIn, setSupportIn] = useState("");
   const canHistory = useCan(P.EQUIPMENT_READ);
   const categories = useEquipmentCategories();
   const categoryOptions = (categories.data ?? []).map((c) => ({ value: c.code, label: `${"\u00a0\u00a0".repeat(c.level)}${c.name}` }));
@@ -266,6 +276,8 @@ export default function SearchPage() {
     equipment_category: category || null,
     used_by_us: usedByUs,
     technically_accepted_by_us: acceptedByUs,
+    factory_countries: splitList(factoryIn),
+    support_countries: splitList(supportIn),
   };
   function submit(q = query) {
     if (!q.trim()) return;
@@ -346,6 +358,22 @@ export default function SearchPage() {
                 maxLength={80}
                 className="h-8 w-64"
               />
+              <Input
+                aria-label="Factory in country"
+                placeholder="Factory in (e.g. Norway, KR)"
+                value={factoryIn}
+                onChange={(e) => setFactoryIn(e.target.value)}
+                maxLength={200}
+                className="h-8 w-52"
+              />
+              <Input
+                aria-label="Support in country"
+                placeholder="Service support in (e.g. Malaysia)"
+                value={supportIn}
+                onChange={(e) => setSupportIn(e.target.value)}
+                maxLength={200}
+                className="h-8 w-60"
+              />
             </div>
           </form>
 
@@ -387,6 +415,8 @@ export default function SearchPage() {
               setCategory(typeof f.equipment_category === "string" ? f.equipment_category : "");
               setUsedByUs(Boolean(f.used_by_us));
               setAcceptedByUs(Boolean(f.technically_accepted_by_us));
+              setFactoryIn(Array.isArray(f.factory_countries) ? f.factory_countries.join(", ") : "");
+              setSupportIn(Array.isArray(f.support_countries) ? f.support_countries.join(", ") : "");
               setUseAi(Boolean(f.use_ai));
               const { use_ai: ai, ...stored } = f;
               run.mutate({ query: saved.query, parser: ai ? "ai" : "local", filters: { ...filters, ...stored } as typeof filters, limit: 25 });

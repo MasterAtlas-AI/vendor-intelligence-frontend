@@ -49,6 +49,8 @@ function Button({
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      // Rendered as something else (a <Link>): not a native <button>, so Base UI adds the button role itself.
+      nativeButton={props.render ? false : undefined}
       {...props}
     />
   )

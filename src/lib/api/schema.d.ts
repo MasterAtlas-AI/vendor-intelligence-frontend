@@ -690,6 +690,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/vendors/{vendor_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Vendor Documents
+         * @description Documents your organization uploaded that facts on this vendor came from (newest first).
+         */
+        get: operations["list_vendor_documents_api_v1_vendors__vendor_id__documents_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vendors/{vendor_id}/documents/{upload_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download Vendor Document
+         * @description The original file (only one of your organization's documents linked to this vendor).
+         */
+        get: operations["download_vendor_document_api_v1_vendors__vendor_id__documents__upload_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/my-vendors/{vendor_id}": {
         parameters: {
             query?: never;
@@ -706,6 +746,207 @@ export interface paths {
         post?: never;
         /** Remove My Vendor */
         delete: operations["remove_my_vendor_api_v1_my_vendors__vendor_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Source Register
+         * @description Sources grouped by domain (web) or kind, most-cited first.
+         */
+        get: operations["source_register_api_v1_admin_sources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/sources/reliability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Reliability
+         * @description Rates every source in a group (a domain, or a kind). Audited; the facts themselves are untouched.
+         */
+        put: operations["set_reliability_api_v1_admin_sources_reliability_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/supplier-risk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Supplier Risk
+         * @description The organization's vendors with risk signals, riskiest first, each with its reasons.
+         */
+        get: operations["supplier_risk_api_v1_supplier_risk_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Documents
+         * @description The project's documents, newest first; filter by type, by equipment line, or by number / title text.
+         */
+        get: operations["list_documents_api_v1_projects__project_id__documents_get"];
+        put?: never;
+        /**
+         * Add Document
+         * @description Adds a document with its file (any type: PDF, DWG, Word, e-mail...). Title defaults to the file name.
+         */
+        post: operations["add_document_api_v1_projects__project_id__documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/project-documents/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Documents
+         * @description Every project's documents by their words (reports, letters, datasheets...), number, title or file name.
+         */
+        get: operations["search_documents_api_v1_project_documents_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/project-documents/{document_id}/ratings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Document Ratings
+         * @description The ratings a datasheet or specification gives ("Rated flow: 120 m3/h"), beside its equipment line's
+         *     current values; copying them onto the line is an ordinary equipment edit.
+         */
+        get: operations["document_ratings_api_v1_project_documents__document_id__ratings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/project-documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Document */
+        delete: operations["delete_document_api_v1_project_documents__document_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Document */
+        patch: operations["update_document_api_v1_project_documents__document_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/project-documents/{document_id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Document */
+        get: operations["download_document_api_v1_project_documents__document_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/equipment/benchmarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Benchmarks
+         * @description Lead-time and unit-price benchmarks from your procurement records, by category or by vendor.
+         */
+        get: operations["benchmarks_api_v1_equipment_benchmarks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/equipment/trends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Technology Trends
+         * @description How one equipment category changed over your projects' years: ratings, design choices, standards, makers.
+         *     Without a category, the one with the most lines.
+         */
+        get: operations["technology_trends_api_v1_equipment_trends_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2860,6 +3101,80 @@ export interface components {
             /** Value */
             value: number;
         };
+        /** Benchmark */
+        Benchmark: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Records */
+            records: number;
+            /** Lead Records */
+            lead_records: number;
+            /** Lead P25 */
+            lead_p25: number | null;
+            /** Lead Median */
+            lead_median: number | null;
+            /** Lead P80 */
+            lead_p80: number | null;
+            /** Expected */
+            expected: string;
+            /** On Time Rate */
+            on_time_rate: number | null;
+            /**
+             * Prices
+             * @default []
+             */
+            prices: components["schemas"]["PriceStat"][];
+        };
+        /** Benchmarks */
+        Benchmarks: {
+            /**
+             * Group By
+             * @enum {string}
+             */
+            group_by: "category" | "vendor";
+            /** Rows */
+            rows: components["schemas"]["Benchmark"][];
+            /** Commercial Hidden */
+            commercial_hidden: boolean;
+        };
+        /** Body_add_document_api_v1_projects__project_id__documents_post */
+        Body_add_document_api_v1_projects__project_id__documents_post: {
+            /** File */
+            file: string;
+            /**
+             * Doc Type
+             * @enum {string}
+             */
+            doc_type: "drawing" | "datasheet" | "specification" | "correspondence" | "schedule" | "report" | "certificate" | "other";
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * Doc Number
+             * @default
+             */
+            doc_number: string;
+            /**
+             * Revision
+             * @default
+             */
+            revision: string;
+            /** Doc Date */
+            doc_date?: string | null;
+            /** Equipment Id */
+            equipment_id?: string | null;
+            /** Vendor Id */
+            vendor_id?: string | null;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+        };
         /** Body_upload_file_api_v1_imports_uploads_post */
         Body_upload_file_api_v1_imports_uploads_post: {
             /** File */
@@ -2967,6 +3282,15 @@ export interface components {
             equipment_count: number;
             /** Children */
             children?: components["schemas"]["CategoryNode"][];
+        };
+        /** CategoryOption */
+        CategoryOption: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Lines */
+            lines: number;
         };
         /** CategoryRead */
         CategoryRead: {
@@ -3129,6 +3453,8 @@ export interface components {
             web_limited_to?: string[];
             /** History Matches */
             history_matches?: components["schemas"]["HistoryMatch"][];
+            /** Document Matches */
+            document_matches?: components["schemas"]["DocumentMatch"][];
         };
         /** CitedVendor */
         CitedVendor: {
@@ -3497,6 +3823,116 @@ export interface components {
              * @default 6
              */
             pages_per_vendor: number;
+        };
+        /** DocumentHit */
+        DocumentHit: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /** Equipment Id */
+            equipment_id: string | null;
+            /**
+             * Equipment Label
+             * @default
+             */
+            equipment_label: string;
+            /** Vendor Id */
+            vendor_id: string | null;
+            /**
+             * Vendor Name
+             * @default
+             */
+            vendor_name: string;
+            /**
+             * Doc Type
+             * @enum {string}
+             */
+            doc_type: "drawing" | "datasheet" | "specification" | "correspondence" | "schedule" | "report" | "certificate" | "other";
+            /** Doc Number */
+            doc_number: string;
+            /** Title */
+            title: string;
+            /** Revision */
+            revision: string;
+            /** Doc Date */
+            doc_date: string | null;
+            /** Department */
+            department: string | null;
+            /** Notes */
+            notes: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Text Chars */
+            text_chars: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Project Name */
+            project_name: string;
+            /** Project Code */
+            project_code: string | null;
+            /** Snippet */
+            snippet: string;
+        };
+        /**
+         * DocumentMatch
+         * @description One of the organization's project documents (report, letter, datasheet...) whose words match the request
+         *     (SOW 25.4: unstructured information beside the structured records).
+         */
+        DocumentMatch: {
+            /** Ref */
+            ref: string;
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /** Project Name */
+            project_name: string;
+            /** Doc Type */
+            doc_type: string;
+            /** Doc Number */
+            doc_number: string;
+            /** Title */
+            title: string;
+            /** Snippet */
+            snippet: string;
+        };
+        /** DocumentRatings */
+        DocumentRatings: {
+            /** Equipment Id */
+            equipment_id: string | null;
+            /** Equipment Label */
+            equipment_label: string;
+            /** Equipment Version */
+            equipment_version: number | null;
+            /** Ratings */
+            ratings: components["schemas"]["RatingFound"][];
+        };
+        /** DocumentSearch */
+        DocumentSearch: {
+            /** Items */
+            items: components["schemas"]["DocumentHit"][];
+            /** Total */
+            total: number;
         };
         /** EndpointCreate */
         EndpointCreate: {
@@ -4288,7 +4724,7 @@ export interface components {
              * @default website
              * @enum {string}
              */
-            field: "website" | "hq_country" | "description" | "contacts";
+            field: "website" | "hq_country" | "description" | "contacts" | "class_approvals";
         };
         /**
          * MatchReason
@@ -4333,6 +4769,11 @@ export interface components {
             skipped: number;
             /** Vendors Linked */
             vendors_linked: number;
+            /**
+             * Updated
+             * @default 0
+             */
+            updated: number;
         };
         /** MelParseRequest */
         MelParseRequest: {
@@ -4580,6 +5021,32 @@ export interface components {
              */
             verification: "verified" | "historical" | "vendor_provided" | "public" | "ai_extracted" | "user_entered" | "archived";
         };
+        /** NumericPoint */
+        NumericPoint: {
+            /** Year */
+            year: number;
+            /** Lines */
+            lines: number;
+            /** Median */
+            median: number;
+            /** Low */
+            low: number;
+            /** High */
+            high: number;
+        };
+        /** NumericTrend */
+        NumericTrend: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            /** Points */
+            points: components["schemas"]["NumericPoint"][];
+            /** Change */
+            change: number | null;
+        };
         /** OrganizationAnalytics */
         OrganizationAnalytics: {
             /** Days */
@@ -4812,6 +5279,19 @@ export interface components {
             /** Messages */
             messages: string[];
         };
+        /** PriceStat */
+        PriceStat: {
+            /** Currency */
+            currency: string;
+            /** Records */
+            records: number;
+            /** Median */
+            median: string;
+            /** Low */
+            low: string;
+            /** High */
+            high: string;
+        };
         /** ProcurementRead */
         ProcurementRead: {
             /**
@@ -4840,7 +5320,7 @@ export interface components {
              * @default po
              * @enum {string}
              */
-            record_type: "po" | "quotation";
+            record_type: "pr" | "mr" | "po" | "quotation";
             /** Technical Status */
             technical_status?: ("accepted" | "conditional" | "rejected") | null;
             /** Po Number */
@@ -4863,7 +5343,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "ordered" | "manufacturing" | "shipped" | "delivered" | "cancelled";
+            status: "raised" | "approved" | "ordered" | "manufacturing" | "shipped" | "delivered" | "cancelled";
             /** On Time */
             on_time: boolean | null;
             /** Performance Rating */
@@ -4904,7 +5384,7 @@ export interface components {
              * @default po
              * @enum {string}
              */
-            record_type: "po" | "quotation";
+            record_type: "pr" | "mr" | "po" | "quotation";
             /** Technical Status */
             technical_status?: ("accepted" | "conditional" | "rejected") | null;
             /**
@@ -4931,7 +5411,7 @@ export interface components {
              * @default ordered
              * @enum {string}
              */
-            status: "ordered" | "manufacturing" | "shipped" | "delivered" | "cancelled";
+            status: "raised" | "approved" | "ordered" | "manufacturing" | "shipped" | "delivered" | "cancelled";
             /** Performance Rating */
             performance_rating?: number | null;
             /**
@@ -4984,6 +5464,82 @@ export interface components {
             year?: number | null;
             /** Location */
             location?: ("offshore" | "onshore") | null;
+        };
+        /** ProjectDocumentRead */
+        ProjectDocumentRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /** Equipment Id */
+            equipment_id: string | null;
+            /**
+             * Equipment Label
+             * @default
+             */
+            equipment_label: string;
+            /** Vendor Id */
+            vendor_id: string | null;
+            /**
+             * Vendor Name
+             * @default
+             */
+            vendor_name: string;
+            /**
+             * Doc Type
+             * @enum {string}
+             */
+            doc_type: "drawing" | "datasheet" | "specification" | "correspondence" | "schedule" | "report" | "certificate" | "other";
+            /** Doc Number */
+            doc_number: string;
+            /** Title */
+            title: string;
+            /** Revision */
+            revision: string;
+            /** Doc Date */
+            doc_date: string | null;
+            /** Department */
+            department: string | null;
+            /** Notes */
+            notes: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Text Chars */
+            text_chars: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ProjectDocumentUpdate */
+        ProjectDocumentUpdate: {
+            /** Doc Type */
+            doc_type?: ("drawing" | "datasheet" | "specification" | "correspondence" | "schedule" | "report" | "certificate" | "other") | null;
+            /** Doc Number */
+            doc_number?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Revision */
+            revision?: string | null;
+            /** Doc Date */
+            doc_date?: string | null;
+            /** Equipment Id */
+            equipment_id?: string | null;
+            /** Vendor Id */
+            vendor_id?: string | null;
+            /** Notes */
+            notes?: string | null;
         };
         /** ProjectEquipmentRead */
         ProjectEquipmentRead: {
@@ -5308,6 +5864,11 @@ export interface components {
             issues: components["schemas"]["IssueCount"][];
             /** Worst */
             worst: components["schemas"]["QualityVendor"][];
+            /**
+             * Worst Total
+             * @default 0
+             */
+            worst_total: number;
         };
         /** QualityVendor */
         QualityVendor: {
@@ -5330,10 +5891,38 @@ export interface components {
              */
             ai_checks: components["schemas"]["AiCheck"][];
         };
+        /** RatingFound */
+        RatingFound: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            /** Found */
+            found: number | number[];
+            /** Current */
+            current: number | number[] | string | null;
+            /** Source */
+            source: string;
+        };
         /** ReindexRequest */
         ReindexRequest: {
             /** Vendor Ids */
             vendor_ids?: string[];
+        };
+        /** ReliabilityResult */
+        ReliabilityResult: {
+            /** Updated */
+            updated: number;
+        };
+        /** ReliabilityUpdate */
+        ReliabilityUpdate: {
+            kind: components["schemas"]["SourceKind"];
+            /** Key */
+            key: string;
+            /** Reliability */
+            reliability?: number | string | null;
         };
         /** ReportRead */
         ReportRead: {
@@ -5606,6 +6195,17 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** RiskFactor */
+        RiskFactor: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Detail */
+            detail: string;
+            /** Weight */
+            weight: number;
+        };
         /** RoleCreate */
         RoleCreate: {
             /** Name */
@@ -5872,6 +6472,10 @@ export interface components {
              * @default false
              */
             technically_accepted_by_us: boolean;
+            /** Factory Countries */
+            factory_countries?: string[];
+            /** Support Countries */
+            support_countries?: string[];
         };
         /** SearchHistoryRead */
         SearchHistoryRead: {
@@ -5988,6 +6592,28 @@ export interface components {
             /** Regions */
             regions: string[];
         };
+        /** ShareRow */
+        ShareRow: {
+            /** Value */
+            value: string;
+            /** By Year */
+            by_year: {
+                [key: string]: number;
+            };
+            /** First Year */
+            first_year: number;
+            /** Lines */
+            lines: number;
+        };
+        /** ShareTrend */
+        ShareTrend: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Rows */
+            rows: components["schemas"]["ShareRow"][];
+        };
         /** SheetInfo */
         SheetInfo: {
             /** Name */
@@ -6097,6 +6723,18 @@ export interface components {
              * @default
              */
             service: string;
+            /**
+             * Material
+             * @default
+             */
+            material: string;
+            /**
+             * Package Configuration
+             * @default
+             */
+            package_configuration: string;
+            /** Location */
+            location?: ("offshore" | "onshore") | null;
             /** Attributes */
             attributes?: {
                 [key: string]: number;
@@ -6128,6 +6766,22 @@ export interface components {
              */
             notice: string;
         };
+        /** SourceGroup */
+        SourceGroup: {
+            /** Key */
+            key: string;
+            kind: components["schemas"]["SourceKind"];
+            /** Sources */
+            sources: number;
+            /** Vendors */
+            vendors: number;
+            /** Facts */
+            facts: number;
+            /** Last Retrieved */
+            last_retrieved: string | null;
+            /** Reliability */
+            reliability: string | null;
+        };
         /**
          * SourceKind
          * @enum {string}
@@ -6147,6 +6801,8 @@ export interface components {
             title: string;
             /** Retrieved At */
             retrieved_at: string | null;
+            /** Reliability */
+            reliability?: string | null;
         };
         /** SourceRef */
         SourceRef: {
@@ -6163,6 +6819,13 @@ export interface components {
              */
             snippet: string;
         };
+        /** SourceRegister */
+        SourceRegister: {
+            /** Groups */
+            groups: components["schemas"]["SourceGroup"][];
+            /** Total */
+            total: number;
+        };
         /** Suggestion */
         Suggestion: {
             /**
@@ -6174,6 +6837,37 @@ export interface components {
             label: string;
             /** Value */
             value: string;
+        };
+        /** SupplierRisk */
+        SupplierRisk: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /** Name */
+            name: string;
+            avl_status: components["schemas"]["AvlStatus"];
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "high" | "medium" | "low";
+            /** Score */
+            score: number;
+            /** Factors */
+            factors: components["schemas"]["RiskFactor"][];
+        };
+        /** SupplierRiskPage */
+        SupplierRiskPage: {
+            /** Items */
+            items: components["schemas"]["SupplierRisk"][];
+            /** Total */
+            total: number;
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
         };
         /** TemplateCreate */
         TemplateCreate: {
@@ -6455,6 +7149,25 @@ export interface components {
              */
             note: string;
         };
+        /** Trends */
+        Trends: {
+            /** Categories */
+            categories: components["schemas"]["CategoryOption"][];
+            /** Category Code */
+            category_code: string;
+            /** Category Name */
+            category_name: string;
+            /** Years */
+            years: components["schemas"]["YearCount"][];
+            /** Undated Lines */
+            undated_lines: number;
+            /** Numeric */
+            numeric: components["schemas"]["NumericTrend"][];
+            /** Shares */
+            shares: components["schemas"]["ShareTrend"][];
+            /** Highlights */
+            highlights: string[];
+        };
         /**
          * UploadKind
          * @enum {string}
@@ -6582,6 +7295,11 @@ export interface components {
             description: string;
             /** Parent Company */
             parent_company?: string | null;
+            /**
+             * Manufacturing Capability
+             * @default
+             */
+            manufacturing_capability: string;
             /** Domains */
             domains: string[];
             /** Aliases */
@@ -6611,6 +7329,30 @@ export interface components {
             projects: components["schemas"]["ProjectRead"][];
             /** Sources */
             sources: components["schemas"]["SourceRead"][];
+        };
+        /**
+         * VendorDocument
+         * @description A document your organization uploaded that facts on this vendor came from (SOW 17.3). Private to you.
+         */
+        VendorDocument: {
+            /**
+             * Upload Id
+             * Format: uuid
+             */
+            upload_id: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /**
+             * Uploaded At
+             * Format: date-time
+             */
+            uploaded_at: string;
+            /** Facts */
+            facts: number;
         };
         /**
          * VendorHistory
@@ -6662,6 +7404,8 @@ export interface components {
             next_cursor: string | null;
             /** Has More */
             has_more: boolean;
+            /** Total */
+            total?: number | null;
         };
         /** VendorPerformance */
         VendorPerformance: {
@@ -6718,6 +7462,15 @@ export interface components {
             title: string;
             /** Url */
             url: string;
+        };
+        /** YearCount */
+        YearCount: {
+            /** Year */
+            year: number;
+            /** Lines */
+            lines: number;
+            /** Projects */
+            projects: number;
         };
     };
     responses: never;
@@ -8314,6 +9067,8 @@ export interface operations {
                 include_inactive?: boolean;
                 limit?: number;
                 cursor?: string | null;
+                /** @description Numbered pages: skip this many; the reply has `total` */
+                offset?: number | null;
             };
             header?: {
                 authorization?: string | null;
@@ -8368,6 +9123,75 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["VendorDetail"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_vendor_documents_api_v1_vendors__vendor_id__documents_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorDocument"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_vendor_document_api_v1_vendors__vendor_id__documents__upload_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                vendor_id: string;
+                upload_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -8440,6 +9264,447 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    source_register_api_v1_admin_sources_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                kind?: ("web" | "document" | "excel" | "manual" | "ai") | null;
+                limit?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceRegister"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_reliability_api_v1_admin_sources_reliability_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReliabilityUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliabilityResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    supplier_risk_api_v1_supplier_risk_get: {
+        parameters: {
+            query?: {
+                min_level?: "high" | "medium" | "low";
+                q?: string;
+                limit?: number;
+                offset?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierRiskPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_documents_api_v1_projects__project_id__documents_get: {
+        parameters: {
+            query?: {
+                doc_type?: ("drawing" | "datasheet" | "specification" | "correspondence" | "schedule" | "report" | "certificate" | "other") | null;
+                equipment_id?: string | null;
+                q?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectDocumentRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_document_api_v1_projects__project_id__documents_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_add_document_api_v1_projects__project_id__documents_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectDocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_documents_api_v1_project_documents_search_get: {
+        parameters: {
+            query: {
+                q: string;
+                doc_type?: ("drawing" | "datasheet" | "specification" | "correspondence" | "schedule" | "report" | "certificate" | "other") | null;
+                project_id?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentSearch"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    document_ratings_api_v1_project_documents__document_id__ratings_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentRatings"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_document_api_v1_project_documents__document_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_document_api_v1_project_documents__document_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectDocumentUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectDocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_document_api_v1_project_documents__document_id__file_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    benchmarks_api_v1_equipment_benchmarks_get: {
+        parameters: {
+            query?: {
+                group_by?: "category" | "vendor";
+                category_code?: string | null;
+                vendor_id?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Benchmarks"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    technology_trends_api_v1_equipment_trends_get: {
+        parameters: {
+            query?: {
+                category_code?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Trends"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -11673,6 +12938,7 @@ export interface operations {
                 hide_checked?: boolean;
                 /** @description Vendor name, legal name or alias */
                 q?: string | null;
+                offset?: number;
             };
             header?: {
                 authorization?: string | null;

@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { VerificationBadge } from "@/components/verification-badge";
+import { EquipmentDocuments } from "@/components/projects/documents-tab";
 import { api, download } from "@/lib/api/client";
 import type { Equipment } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
@@ -246,6 +247,9 @@ export default function EquipmentProfilePage() {
         </Card>
         <div className="lg:col-span-2">
           <ProcurementPanel equipmentId={e.id} />
+        </div>
+        <div className="lg:col-span-2">
+          <EquipmentDocuments projectId={e.project.id} equipmentId={e.id} />
         </div>
         <div className="lg:col-span-2">
           <NotesPanel equipment={e} />

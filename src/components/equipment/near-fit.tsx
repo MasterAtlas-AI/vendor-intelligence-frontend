@@ -49,6 +49,9 @@ export function NearFit() {
   const categories = useCategoryOptions();
   const [category, setCategory] = useState("");
   const [service, setService] = useState("");
+  const [material, setMaterial] = useState("");
+  const [packageConfig, setPackageConfig] = useState("");
+  const [location, setLocation] = useState("");
   const [targets, setTargets] = useState<TargetRow[]>([{ key: "", value: "" }]);
   const [standards, setStandards] = useState("");
   const [estimate, setEstimate] = useState<string[]>([]);
@@ -64,6 +67,9 @@ export function NearFit() {
   const request: SimilarRequest = {
     category_code: category || null,
     service: service.trim(),
+    material: material.trim(),
+    package_configuration: packageConfig.trim(),
+    location: (location || null) as SimilarRequest["location"],
     attributes,
     standards: standards
       .split(/[,;]/)
@@ -116,6 +122,30 @@ export function NearFit() {
               value={service}
               onChange={(e) => setService(e.target.value)}
             />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor="nf-material">Material (optional)</Label>
+              <Input id="nf-material" placeholder="e.g. Duplex, SS316L" value={material} onChange={(e) => setMaterial(e.target.value)} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="nf-package">Package configuration (optional)</Label>
+              <Input id="nf-package" placeholder="e.g. skid-mounted, 2 x 100%" value={packageConfig} onChange={(e) => setPackageConfig(e.target.value)} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>Environment (optional)</Label>
+              <FilterSelect
+                label="Environment"
+                anyLabel="Any"
+                value={location}
+                onChange={setLocation}
+                options={[
+                  { value: "offshore", label: "Offshore" },
+                  { value: "onshore", label: "Onshore" },
+                ]}
+                className="w-full"
+              />
+            </div>
           </div>
           <div className="grid gap-2">
             <Label>Required values</Label>

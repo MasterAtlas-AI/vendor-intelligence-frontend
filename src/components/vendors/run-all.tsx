@@ -15,7 +15,7 @@ import type { DiscoveryAccepted, VendorDetail } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
 import { errorMessage } from "@/lib/validation";
 
-type LookupField = "website" | "hq_country" | "description" | "contacts";
+type LookupField = "website" | "hq_country" | "description" | "contacts" | "class_approvals";
 type Step = "website" | "hq_country" | "description" | "products" | "research" | "contacts";
 
 /** The jobs one "do everything" run started, so the vendor page can show each result panel. */

@@ -43,3 +43,10 @@ const ORIGIN_LABELS: Record<string, string> = {
 export function originLabel(origin: string): string {
   return ORIGIN_LABELS[origin] ?? origin;
 }
+
+/** A source's rating set on Admin > Data sources (0-1), as words; empty when not rated. */
+export function reliabilityLabel(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return "";
+  const n = Number(value);
+  return n >= 0.75 ? "High reliability" : n >= 0.45 ? "Medium reliability" : "Low reliability";
+}

@@ -27,7 +27,15 @@ import { errorMessage } from "@/lib/validation";
 
 import { dateInput } from "./shared";
 
-const PO_STATUSES: ProcurementRecord["status"][] = ["ordered", "manufacturing", "shipped", "delivered", "cancelled"];
+const PO_STATUSES: ProcurementRecord["status"][] = ["raised", "approved", "ordered", "manufacturing", "shipped", "delivered", "cancelled"];
+
+/** Record types: requisitions (SOW 3.6, 3.7) before the order, quotations with their TBE result. */
+const RECORD_LABELS: Record<ProcurementRecord["record_type"], { label: string; number: string }> = {
+  po: { label: "PO", number: "PO number" },
+  pr: { label: "Purchase requisition", number: "Requisition number" },
+  mr: { label: "Material requisition", number: "Requisition number" },
+  quotation: { label: "Quotation", number: "Quotation number" },
+};
 
 type TechnicalStatus = NonNullable<ProcurementRecord["technical_status"]>;
 
@@ -180,20 +188,29 @@ function PoDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{record ? "Edit purchase order" : "Add purchase order"}</DialogTitle>
+          <DialogTitle>{record ? "Edit procurement record" : "Add procurement record"}</DialogTitle>
           <DialogDescription>Dates, lead times and how the vendor performed on this order.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-3 sm:grid-cols-2">
           {text("vendor_name", "Vendor")}
-          {text("po_number", form.record_type === "quotation" ? "Quotation number" : "PO number")}
+          {text("po_number", RECORD_LABELS[form.record_type].number)}
           <div className="grid gap-1.5">
             <Label>Record type</Label>
             <FilterSelect
               label="Record type"
               anyLabel="Purchase order"
               value={form.record_type === "po" ? "" : form.record_type}
-              onChange={(v) => setForm({ ...form, record_type: (v || "po") as PoForm["record_type"] })}
-              options={[{ value: "quotation", label: "Quotation" }]}
+              onChange={(v) => {
+                const record_type = (v || "po") as PoForm["record_type"];
+                // A new requisition starts as raised, a new order as ordered.
+                const fresh = !record && (form.status === "ordered" || form.status === "raised");
+                setForm({ ...form, record_type, ...(fresh && { status: record_type === "pr" || record_type === "mr" ? "raised" : "ordered" }) });
+              }}
+              options={[
+                { value: "pr", label: "Purchase requisition" },
+                { value: "mr", label: "Material requisition" },
+                { value: "quotation", label: "Quotation" },
+              ]}
               className="w-full"
             />
           </div>
@@ -384,7 +401,7 @@ export function ProjectProcurement({ projectId }: { projectId: string }) {
                       <VerificationBadge value={r.verification} />
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm">{r.record_type === "quotation" ? "Quotation" : "PO"}</TableCell>
+                  <TableCell className="text-sm">{RECORD_LABELS[r.record_type]?.label ?? "PO"}</TableCell>
                   <TableCell className="max-w-40 text-sm whitespace-normal">
                     {r.vendor_id ? (
                       <Link href={`/vendors/${r.vendor_id}`} className="hover:underline">

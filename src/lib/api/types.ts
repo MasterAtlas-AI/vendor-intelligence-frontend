@@ -25,6 +25,7 @@ export type TenantStatus = S["TenantStatus"];
 // Phase 2: knowledge base, proposals, imports
 export type VendorSummary = S["VendorSummary"];
 export type VendorDetail = S["VendorDetail"];
+export type VendorDocument = S["VendorDocument"];
 export type VendorPage = S["VendorPage"];
 export type TenantOverlayRead = S["TenantOverlayRead"];
 export type TenantOverlayUpdate = S["TenantOverlayUpdate"];
@@ -85,6 +86,7 @@ export type ShortlistRow = S["ShortlistRow"];
 export type DimensionScores = S["DimensionScores"];
 export type AgentStep = S["AgentStep"];
 export type HistoryMatch = S["HistoryMatch"];
+export type DocumentMatch = S["DocumentMatch"];
 export type Conversation = S["ConversationRead"];
 export type ConversationDetail = S["ConversationDetail"];
 

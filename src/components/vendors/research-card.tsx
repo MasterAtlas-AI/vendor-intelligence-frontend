@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Contact, Sparkles } from "lucide-react";
+import { Contact, Sparkles, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -25,12 +25,34 @@ const KINDS: Record<Kind, { label: string; what: string }> = {
 
 /** Starts AI research of a known vendor's own website; findings go to curator review. Curators can also look up the
  *  company's contact details here (results open on the vendor page via `onContactsStarted`). */
-export function ResearchCard({ vendor, onContactsStarted }: { vendor: VendorDetail; onContactsStarted?: (jobId: string) => void }) {
+export function ResearchCard({
+  vendor,
+  onContactsStarted,
+  onClassStarted,
+}: {
+  vendor: VendorDetail;
+  onContactsStarted?: (jobId: string) => void;
+  onClassStarted?: (jobId: string) => void;
+}) {
   const router = useRouter();
   const canRun = useCan(P.DISCOVERY_RUN);
   const canCurate = useCan(P.KNOWLEDGE_APPROVE);
   const [kind, setKind] = useState<Kind | null>(null);
   const [askContacts, setAskContacts] = useState(false);
+  const [askClass, setAskClass] = useState(false);
+  // SOW 7.4: the class societies' type-approval registers (no website needed).
+  const classLookup = useMutation({
+    mutationFn: () =>
+      api<components["schemas"]["LookupAccepted"]>("/admin/data-quality/lookup", {
+        method: "POST",
+        body: { vendor_ids: [vendor.id], field: "class_approvals" },
+      }),
+    onSuccess: (r) => {
+      setAskClass(false);
+      onClassStarted?.(r.job_id);
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
   const contacts = useMutation({
     mutationFn: () =>
       api<components["schemas"]["LookupAccepted"]>("/admin/data-quality/lookup", {
@@ -76,6 +98,11 @@ export function ResearchCard({ vendor, onContactsStarted }: { vendor: VendorDeta
             <Contact /> Contact details
           </Button>
         )}
+        {canCurate && onClassStarted && (
+          <Button variant="outline" size="sm" className="justify-start" disabled={classLookup.isPending} onClick={() => setAskClass(true)}>
+            <ShieldCheck /> Class type approvals
+          </Button>
+        )}
       </CardContent>
       <ConfirmDialog
         open={askContacts}
@@ -85,6 +112,15 @@ export function ResearchCard({ vendor, onContactsStarted }: { vendor: VendorDeta
         confirmLabel="Find contact details"
         pending={contacts.isPending}
         onConfirm={() => contacts.mutate()}
+      />
+      <ConfirmDialog
+        open={askClass}
+        onOpenChange={setAskClass}
+        title={`Check class registers for ${vendor.display_name}?`}
+        description="The AI searches the classification societies' type-approval registers (DNV, ABS, Lloyd's Register, Bureau Veritas, IRS, CCS, KR, ClassNK) for this company's certificates (about 1-2 US cents). Only certificates shown on a register page are kept; you approve them here."
+        confirmLabel="Check registers"
+        pending={classLookup.isPending}
+        onConfirm={() => classLookup.mutate()}
       />
       <ConfirmDialog
         open={kind !== null}

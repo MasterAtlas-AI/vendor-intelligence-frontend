@@ -128,3 +128,11 @@
     @apply font-sans;
   }
 }
+/* Print / save as PDF (Analytics export): the page content only, no navigation. */
+@media print {
+  [data-slot="sidebar"],
+  [data-slot="sidebar-gap"],
+  [data-slot="sidebar-container"] {
+    display: none !important;
+  }
+}

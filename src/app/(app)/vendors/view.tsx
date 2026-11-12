@@ -27,7 +27,7 @@ export default function VendorsPage() {
           )
         }
       />
-      <VendorSearch aiFill={canCurate} />
+      <VendorSearch aiFill={canCurate} paged />
     </>
   );
 }

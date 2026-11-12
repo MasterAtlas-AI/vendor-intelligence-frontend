@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { VendorDetail } from "@/lib/api/types";
 import { formatDateTime, humanize } from "@/lib/format";
 import { formatAttribute } from "@/lib/history";
-import { countryName } from "@/lib/vendors";
+import { countryName, reliabilityLabel } from "@/lib/vendors";
 
 function Empty({ what }: { what: string }) {
   return <p className="py-6 text-center text-sm text-muted-foreground">No {what} recorded yet.</p>;
@@ -308,7 +308,7 @@ export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
                     s.title
                   )
                 }
-                sub={[humanize(s.kind), s.retrieved_at && `retrieved ${formatDateTime(s.retrieved_at)}`]
+                sub={[humanize(s.kind), s.retrieved_at && `retrieved ${formatDateTime(s.retrieved_at)}`, reliabilityLabel(s.reliability)]
                   .filter(Boolean)
                   .join(" · ")}
               />

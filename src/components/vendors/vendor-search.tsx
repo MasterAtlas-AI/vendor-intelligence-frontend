@@ -1,17 +1,19 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Search, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { FilterSelect } from "@/components/filter-select";
 import { LoadMore } from "@/components/load-more";
+import { Pager } from "@/components/pager";
 import { AiFillBar, MAX_AI_SELECTED } from "@/components/quality/ai-fill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VendorTable } from "@/components/vendors/vendor-table";
 import { useDebounced } from "@/hooks/use-debounced";
+import { usePageParam } from "@/hooks/use-page-param";
 import {
   treeItems,
   useCertificationTypes,
@@ -45,9 +47,13 @@ const EMPTY: Filters = {
   avl_status: "",
 };
 
+const PAGE_SIZE = 25;
+
 /** Vendor search over the global knowledge base. `mine` limits it to the organization's own list; `aiFill` lets
- *  curators tick vendors and have the AI look up missing details or research websites, approving results in place. */
-export function VendorSearch({ mine = false, aiFill = false }: { mine?: boolean; aiFill?: boolean }) {
+ *  curators tick vendors and have the AI look up missing details or research websites, approving results in place.
+ *  `paged`: numbered pages kept in the URL (?page=3) instead of "Load more". */
+export function VendorSearch({ mine = false, aiFill = false, paged = false }: { mine?: boolean; aiFill?: boolean; paged?: boolean }) {
+  const [page, setPage] = usePageParam();
   const user = useAuth((s) => s.user);
   const actAs = useAuth((s) => s.actAs);
   const hasTenant = Boolean(user?.tenant || actAs);
@@ -62,7 +68,18 @@ export function VendorSearch({ mine = false, aiFill = false }: { mine?: boolean;
   const certifications = useCertificationTypes();
   const industries = useIndustries();
 
+  const pageQuery = useQuery({
+    queryKey: ["vendors", "page", actAs?.id, mine, query, page],
+    queryFn: ({ signal }) =>
+      api<VendorPage>("/vendors", {
+        query: { ...query, mine: mine || undefined, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE },
+        signal,
+      }),
+    placeholderData: (previous) => previous,
+    enabled: paged,
+  });
   const vendors = useInfiniteQuery({
+    enabled: !paged,
     queryKey: ["vendors", "search", actAs?.id, mine, query],
     queryFn: ({ pageParam, signal }) =>
       api<VendorPage>("/vendors", {
@@ -73,8 +90,13 @@ export function VendorSearch({ mine = false, aiFill = false }: { mine?: boolean;
     getNextPageParam: (last) => last.next_cursor ?? undefined,
   });
 
-  const set = (key: keyof Filters) => (value: string) => setFilters((f) => ({ ...f, [key]: value }));
-  const rows = vendors.data?.pages.flatMap((p) => p.items) ?? [];
+  const set = (key: keyof Filters) => (value: string) => {
+    setFilters((f) => ({ ...f, [key]: value }));
+    if (paged) setPage(1); // new filters start again at the first page
+  };
+  const rows = paged ? (pageQuery.data?.items ?? []) : (vendors.data?.pages.flatMap((p) => p.items) ?? []);
+  const listError = paged ? pageQuery.error : vendors.error;
+  const listPending = paged ? pageQuery.isPending : vendors.isPending;
   const filtered = Object.values(filters).some(Boolean);
   const toggle = (id: string, on: boolean) => {
     if (on && selected.size >= MAX_AI_SELECTED) {
@@ -165,12 +187,12 @@ export function VendorSearch({ mine = false, aiFill = false }: { mine?: boolean;
           />
         </div>
       )}
-      {vendors.isError ? (
-        <p className="text-sm text-destructive">{errorMessage(vendors.error)}</p>
+      {listError ? (
+        <p className="text-sm text-destructive">{errorMessage(listError)}</p>
       ) : (
         <VendorTable
           rows={rows}
-          loading={vendors.isPending}
+          loading={listPending}
           showOwnFields={hasTenant}
           selection={aiFill ? { selected, onToggle: toggle, onToggleAll: toggleAll } : undefined}
           empty={
@@ -182,11 +204,25 @@ export function VendorSearch({ mine = false, aiFill = false }: { mine?: boolean;
           }
         />
       )}
-      <LoadMore
-        hasNextPage={vendors.hasNextPage}
-        isFetchingNextPage={vendors.isFetchingNextPage}
-        fetchNextPage={vendors.fetchNextPage}
-      />
+      {paged ? (
+        <Pager
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={pageQuery.data?.total}
+          loading={pageQuery.isFetching}
+          onPage={(p) => {
+            setPage(p);
+            setSelected(new Set());
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      ) : (
+        <LoadMore
+          hasNextPage={vendors.hasNextPage}
+          isFetchingNextPage={vendors.isFetchingNextPage}
+          fetchNextPage={vendors.fetchNextPage}
+        />
+      )}
     </>
   );
 }

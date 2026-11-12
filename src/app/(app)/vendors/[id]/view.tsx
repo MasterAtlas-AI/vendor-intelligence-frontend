@@ -21,6 +21,7 @@ import { FullDetailsButton, ProductResults } from "@/components/vendors/product-
 import { ProjectsCard } from "@/components/vendors/projects-card";
 import { ResearchCard } from "@/components/vendors/research-card";
 import { RunAllButton, type RunAllJobs } from "@/components/vendors/run-all";
+import { ManufacturingCapability, SupportNetwork, VendorDocuments } from "@/components/vendors/vendor-capability";
 import { AfterSalesSummary, VendorFacts } from "@/components/vendors/vendor-facts";
 import { api } from "@/lib/api/client";
 import type { VendorDetail } from "@/lib/api/types";
@@ -184,6 +185,14 @@ export default function VendorDetailPage() {
                 <dd className="flex flex-wrap gap-1">
                   {v.industries.length ? v.industries.map((i) => <Badge key={i.id} variant="secondary">{i.name}</Badge>) : "—"}
                 </dd>
+                <dt className="text-muted-foreground">Manufacturing capability</dt>
+                <dd>
+                  <ManufacturingCapability vendor={v} />
+                </dd>
+                <dt className="text-muted-foreground">Support network</dt>
+                <dd>
+                  <SupportNetwork vendor={v} />
+                </dd>
                 <dt className="text-muted-foreground">After-sales &amp; spares</dt>
                 <dd>
                   <AfterSalesSummary vendor={v} />
@@ -206,8 +215,13 @@ export default function VendorDetailPage() {
           {hasTenant && <YourRecord vendor={v} />}
           {hasTenant && <ProjectsCard vendor={v} />}
           {hasTenant && <OurHistory vendorId={v.id} />}
+          {hasTenant && <VendorDocuments vendorId={v.id} />}
           {v.status !== "retired" && (
-            <ResearchCard vendor={v} onContactsStarted={(jobId) => startedAll({ lookups: [{ field: "contacts", jobId }] })} />
+            <ResearchCard
+              vendor={v}
+              onContactsStarted={(jobId) => startedAll({ lookups: [{ field: "contacts", jobId }] })}
+              onClassStarted={(jobId) => startedAll({ lookups: [{ field: "class_approvals", jobId }] })}
+            />
           )}
         </div>
       </div>

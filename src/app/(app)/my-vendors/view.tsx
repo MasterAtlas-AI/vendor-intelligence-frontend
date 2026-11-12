@@ -31,7 +31,7 @@ export default function MyVendorsPage() {
           </>
         }
       />
-      <VendorSearch mine />
+      <VendorSearch mine paged />
     </>
   );
 }

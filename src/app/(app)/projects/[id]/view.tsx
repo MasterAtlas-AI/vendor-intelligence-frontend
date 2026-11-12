@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { FilterSelect } from "@/components/filter-select";
 import { NewRfqDialog } from "@/components/rfqs/new-rfq-dialog";
 import { PageHeader } from "@/components/page-header";
+import { ProjectDocuments } from "@/components/projects/documents-tab";
 import { ProjectEquipment } from "@/components/projects/equipment-tab";
 import { MelImport } from "@/components/projects/mel-import";
 import { ProjectNotes } from "@/components/projects/notes-tab";
@@ -395,6 +396,7 @@ export default function ProjectPage() {
           {canReadHistory && <TabsTrigger value="equipment">Equipment</TabsTrigger>}
           {canManageHistory && <TabsTrigger value="mel">MEL import</TabsTrigger>}
           {canReadHistory && <TabsTrigger value="procurement">Procurement</TabsTrigger>}
+          {canReadHistory && <TabsTrigger value="documents">Documents</TabsTrigger>}
           {canReadHistory && <TabsTrigger value="notes">Notes</TabsTrigger>}
         </TabsList>
         <TabsContent value="vendors">
@@ -418,6 +420,11 @@ export default function ProjectPage() {
         {canReadHistory && (
           <TabsContent value="procurement">
             <ProjectProcurement projectId={p.id} />
+          </TabsContent>
+        )}
+        {canReadHistory && (
+          <TabsContent value="documents">
+            <ProjectDocuments projectId={p.id} />
           </TabsContent>
         )}
         {canReadHistory && (

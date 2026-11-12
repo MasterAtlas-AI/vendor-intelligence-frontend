@@ -27,7 +27,7 @@ import { countryName } from "@/lib/vendors";
 type LookupAccepted = components["schemas"]["LookupAccepted"];
 type ResearchAccepted = components["schemas"]["ResearchAccepted"];
 type ResearchQueued = components["schemas"]["ResearchQueued"];
-type LookupField = "website" | "hq_country" | "description" | "contacts";
+type LookupField = "website" | "hq_country" | "description" | "contacts" | "class_approvals";
 
 interface LookupRow {
   vendor_id: string;
@@ -53,13 +53,14 @@ export const MAX_AI_SELECTED = 25;
 const LOOKUP_USD = 0.014; // one AI web search per vendor
 const RESEARCH_USD = 0.05; // reading the vendor's website with AI
 
-export type AiAction = "website" | "hq_country" | "description" | "contacts" | "research";
+export type AiAction = "website" | "hq_country" | "description" | "contacts" | "class_approvals" | "research";
 
 const ACTIONS: Record<AiAction, { label: string; noun: string }> = {
   website: { label: "Find websites", noun: "websites" },
   hq_country: { label: "Find headquarters", noun: "headquarters countries" },
   description: { label: "Write descriptions", noun: "descriptions" },
   contacts: { label: "Find contact details", noun: "contact details" },
+  class_approvals: { label: "Check class registers", noun: "class type approvals" },
   research: { label: "Research websites", noun: "website research" },
 };
 
@@ -68,8 +69,15 @@ const FOUND_LABEL: Record<LookupField, string> = {
   hq_country: "Headquarters found",
   description: "Description",
   contacts: "Found on their site",
+  class_approvals: "Type approvals found",
 };
-const TITLE: Record<LookupField, string> = { website: "Website", hq_country: "Headquarters", description: "Description", contacts: "Contact details" };
+const TITLE: Record<LookupField, string> = {
+  website: "Website",
+  hq_country: "Headquarters",
+  description: "Description",
+  contacts: "Contact details",
+  class_approvals: "Class type approvals",
+};
 
 const OUTCOME: Record<LookupRow["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   proposed: { label: "Passed the checks", variant: "default" },
@@ -185,7 +193,7 @@ function Found({ r, field }: { r: LookupRow; field: LookupField }) {
         )}
       </>
     );
-  if (field === "contacts")
+  if (field === "contacts" || field === "class_approvals")
     return (
       <>
         <ul className="grid gap-0.5 text-sm whitespace-normal">
@@ -267,6 +275,7 @@ const CHECK_LABEL: Record<string, string> = {
   hq_country: "Headquarters",
   description: "Description",
   contacts: "Contacts",
+  class_approvals: "Class approvals",
   research: "Research",
 };
 const CHECK_STATUS: Record<string, string> = {
@@ -314,6 +323,19 @@ export function LookupResults({ jobId, field, onClose }: { jobId: string; field:
     for (const r of open) await run(r.vendor_id, r.name, () => decide(r.proposal_id!, "approve"), "approved");
     toast.success("Approved");
   };
+  // The rows' own buttons, in bulk (each list holds exactly the rows that show that button):
+  // "Save as group website" where another vendor already has the website, "Use this anyway" for other answers
+  // the checks did not accept. Both override the AI's checks, so each asks first.
+  const [bulk, setBulk] = useState<"group" | "anyway" | null>(null);
+  const undecided = (result?.rows ?? []).filter((r) => !decided[r.vendor_id] && r.value);
+  const groupRows = undecided.filter((r) => Boolean(conflicts[r.vendor_id] || r.other_vendor_id));
+  const anywayRows = undecided.filter((r) => !conflicts[r.vendor_id] && !r.other_vendor_id && r.status === "rejected");
+  const runBulk = async (which: "group" | "anyway") => {
+    setBulk(null);
+    if (which === "group") for (const r of groupRows) await saveAsGroupSite(r);
+    else for (const r of anywayRows) await run(r.vendor_id, r.name, () => approveAnyway(r, field), "approved");
+    toast.success("Saved");
+  };
 
   return (
     <Card>
@@ -329,6 +351,16 @@ export function LookupResults({ jobId, field, onClose }: { jobId: string; field:
           </CardDescription>
         </div>
         <div className="flex shrink-0 gap-2">
+          {groupRows.length > 1 && (
+            <Button size="sm" variant="outline" disabled={busy.size > 0} onClick={() => setBulk("group")}>
+              Save all as group website ({groupRows.length})
+            </Button>
+          )}
+          {anywayRows.length > 1 && (
+            <Button size="sm" variant="outline" disabled={busy.size > 0} onClick={() => setBulk("anyway")}>
+              Use all anyway ({anywayRows.length})
+            </Button>
+          )}
           {open.length > 1 && (
             <Button size="sm" disabled={busy.size > 0} onClick={() => void approveAll()}>
               <Check /> Approve all ({open.length})
@@ -401,6 +433,23 @@ export function LookupResults({ jobId, field, onClose }: { jobId: string; field:
           </div>
         )}
       </CardContent>
+      <ConfirmDialog
+        open={bulk !== null}
+        onOpenChange={(o) => !o && setBulk(null)}
+        title={
+          bulk === "group"
+            ? `Save ${groupRows.length} websites as group websites?`
+            : `Use ${anywayRows.length} answers the checks did not accept?`
+        }
+        description={
+          bulk === "group"
+            ? "Each vendor gets the website another vendor already has, as a group company's site: the domain stays with the vendor that owns it. You are confirming them as a curator; review the list first."
+            : "Each answer is saved as found, overriding the AI's checks. You are confirming them as a curator; review the list first."
+        }
+        confirmLabel={bulk === "group" ? `Save all ${groupRows.length}` : `Use all ${anywayRows.length}`}
+        pending={busy.size > 0}
+        onConfirm={() => bulk && void runBulk(bulk)}
+      />
     </Card>
   );
 }
@@ -565,7 +614,9 @@ export function AiFillBar({
       : {
           title: `Find ${pending ? ACTIONS[pending].noun : ""} for ${n} vendor${n === 1 ? "" : "s"}?`,
           description:
-            pending === "contacts"
+            pending === "class_approvals"
+              ? `The AI searches the classification societies' type-approval registers (DNV, ABS, Lloyd's Register, Bureau Veritas, IRS, CCS, KR, ClassNK) for each vendor's certificates, about US${cost} in total. Only certificates shown on a register page are kept, as certification facts that wait for your approval.`
+              : pending === "contacts"
               ? `The AI reads each vendor's own website (home, contact and about pages) for company emails, phone numbers and office addresses, about US$${cost} in total. Only values that appear on those pages are kept, and never a named person's email or mobile. Vendors without a website are skipped. Results wait for your approval.`
               : `The AI searches the web for each vendor (about US$${cost} in total, from the platform AI budget). Only answers that pass the checks are proposed, and they wait for your approval.`,
         };

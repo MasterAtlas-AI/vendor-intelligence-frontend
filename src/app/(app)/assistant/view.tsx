@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { CHATS_KEY, ChatList } from "@/components/assistant/chat-list";
 import { type Exchange, Workspace } from "@/components/assistant/workspace";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { Snippet } from "@/components/projects/snippet";
 import { VerificationBadge } from "@/components/verification-badge";
 import { NoAccess } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
@@ -18,7 +19,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api/client";
-import type { ChatAction, ChatMessage, ChatResponse, CitedVendor, Conversation, ConversationDetail, DiscoveryAccepted, WebSource, HistoryMatch } from "@/lib/api/types";
+import type { ChatAction, ChatMessage, ChatResponse, CitedVendor, Conversation, ConversationDetail, DiscoveryAccepted, DocumentMatch, WebSource, HistoryMatch } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
 import { errorMessage } from "@/lib/validation";
 import { countryName } from "@/lib/vendors";
@@ -46,14 +47,39 @@ function hostname(url: string): string {
 
 /** Answer text with [V1] citations linked to the cited vendors, [W1] citations linked to the web pages found,
  *  and "- " lines as a list. */
-function AnswerText({ text, vendors, web, history = [] }: { text: string; vendors: CitedVendor[]; web: WebSource[]; history?: HistoryMatch[] }) {
+function AnswerText({
+  text,
+  vendors,
+  web,
+  history = [],
+  documents = [],
+}: {
+  text: string;
+  vendors: CitedVendor[];
+  web: WebSource[];
+  history?: HistoryMatch[];
+  documents?: DocumentMatch[];
+}) {
   const byRef = Object.fromEntries(vendors.map((v) => [v.ref, v]));
   const pages = Object.fromEntries(web.map((w) => [w.ref, w]));
   const lines = Object.fromEntries(history.map((h) => [h.ref, h]));
+  const docs = Object.fromEntries(documents.map((d) => [d.ref, d]));
   const inline = (line: string) =>
-    line.split(/(\[[VWH]\d{1,2}\])/g).map((part, i) => {
-      const ref = /^\[([VWH]\d{1,2})\]$/.exec(part)?.[1];
+    line.split(/(\[[VWHD]\d{1,2}\])/g).map((part, i) => {
+      const ref = /^\[([VWHD]\d{1,2})\]$/.exec(part)?.[1];
       if (!ref) return <Fragment key={i}>{part}</Fragment>;
+      const doc = docs[ref];
+      if (doc)
+        return (
+          <Link
+            key={i}
+            href={`/documents?q=${encodeURIComponent(doc.doc_number || doc.title)}`}
+            title={`${doc.title} · ${doc.project_name}`}
+            className="mx-0.5 rounded bg-amber-500/15 px-1 text-xs font-medium text-amber-800 hover:underline dark:text-amber-300"
+          >
+            {ref}
+          </Link>
+        );
       const own = lines[ref];
       if (own)
         return (
@@ -243,7 +269,7 @@ function Reply({
   return (
     <div className="grid gap-3">
       <Steps reply={reply} />
-      <AnswerText text={reply.answer} vendors={reply.vendors} web={reply.web_sources ?? []} history={reply.history_matches ?? []} />
+      <AnswerText text={reply.answer} vendors={reply.vendors} web={reply.web_sources ?? []} history={reply.history_matches ?? []} documents={reply.document_matches ?? []} />
       <Actions actions={reply.actions ?? []} />
       {reply.vendors.length > 0 && (
         <div className="grid gap-1.5 rounded-md border p-3 text-sm">
@@ -303,6 +329,23 @@ function Reply({
                 {[h.category_name, h.vendor_name, h.project_year ? `${h.project_name} (${h.project_year})` : h.project_name].filter(Boolean).join(" · ")}
               </span>
               <VerificationBadge value={h.verification} />
+            </div>
+          ))}
+        </div>
+      )}
+      {(reply.document_matches ?? []).length > 0 && (
+        <div className="grid gap-2 rounded-md border border-amber-500/30 p-3 text-sm">
+          <span className="text-xs font-medium text-muted-foreground">From your project documents (your organization&apos;s own files)</span>
+          {(reply.document_matches ?? []).map((d) => (
+            <div key={d.ref} className="grid gap-0.5">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className="shrink-0 rounded bg-amber-500/15 px-1 text-xs font-medium text-amber-800 dark:text-amber-300">{d.ref}</span>
+                <Link href={`/documents?q=${encodeURIComponent(d.doc_number || d.title)}`} className="font-medium hover:underline">
+                  {d.title}
+                </Link>
+                <span className="text-xs text-muted-foreground">{[d.doc_number, d.project_name].filter(Boolean).join(" · ")}</span>
+              </div>
+              <Snippet text={d.snippet} className="text-xs text-muted-foreground" />
             </div>
           ))}
         </div>

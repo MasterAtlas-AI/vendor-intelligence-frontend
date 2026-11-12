@@ -23,33 +23,44 @@ import type { components } from "@/lib/api/schema";
 import { P, useCan } from "@/lib/auth/permissions";
 import { errorMessage } from "@/lib/validation";
 import { countryName } from "@/lib/vendors";
+import { Pager } from "@/components/pager";
+import { usePageParam, useQueryParam } from "@/hooks/use-page-param";
+import { usePathname, useRouter } from "next/navigation";
 
 type Dashboard = components["schemas"]["QualityDashboard"];
 type Reverify = components["schemas"]["ReverifyResult"];
 
 const pct = (score: number) => `${Math.round(score * 100)}%`;
-const ALL_ACTIONS: AiAction[] = ["website", "hq_country", "description", "contacts", "research"];
-/** The AI action that fixes each list comes first; lists without their own research the websites. */
+const PAGE_SIZE = 50;
+const ALL_ACTIONS: AiAction[] = ["website", "hq_country", "description", "contacts", "class_approvals", "research"];
+/** A list with its own fix offers only that action (no menu); other lists research the websites first, with the
+ *  other lookups in the menu. */
 const MAIN_ACTION: Record<string, AiAction> = { no_website: "website", no_country: "hq_country", no_description: "description" };
 const actionsFor = (issue: string | null): AiAction[] => {
-  const main = (issue && MAIN_ACTION[issue]) || "research";
-  // Vendors without a website have nothing to research yet.
-  return [main, ...ALL_ACTIONS.filter((a) => a !== main && !(issue === "no_website" && a === "research"))];
+  if (issue && MAIN_ACTION[issue]) return [MAIN_ACTION[issue]];
+  return ["research", ...ALL_ACTIONS.filter((a) => a !== "research")];
 };
 
 export default function DataQualityPage() {
   const canReview = useCan(P.KNOWLEDGE_APPROVE);
   const queryClient = useQueryClient();
-  const [issue, setIssue] = useState<string | null>(null);
+  // The list and the page live in the URL: /admin/data-quality?issue=no_website&page=3
+  const router = useRouter();
+  const pathname = usePathname();
+  const [issueParam] = useQueryParam("issue");
+  const issue = issueParam || null;
+  const [page, setPage] = usePageParam();
   const [confirm, setConfirm] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [hideChecked, setHideChecked] = useState(false);
   const [search, setSearch] = useState("");
   const q = useDebounced(search.trim(), 300);
   const board = useQuery({
-    queryKey: ["data-quality", issue, hideChecked, q],
+    queryKey: ["data-quality", issue, hideChecked, q, page],
     queryFn: () =>
-      api<Dashboard>("/admin/data-quality", { query: { issue, limit: 100, hide_checked: hideChecked || undefined, q: q || undefined } }),
+      api<Dashboard>("/admin/data-quality", {
+        query: { issue, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE, hide_checked: hideChecked || undefined, q: q || undefined },
+      }),
     placeholderData: (previous) => previous,
     enabled: canReview,
   });
@@ -88,7 +99,12 @@ export default function DataQualityPage() {
     });
   };
   const chooseIssue = (key: string | null) => {
-    setIssue(key);
+    // One URL update for both (two would race): the new list, back to its first page.
+    const query = new URLSearchParams(window.location.search);
+    if (key) query.set("issue", key);
+    else query.delete("issue");
+    query.delete("page");
+    router.replace(query.toString() ? `${pathname}?${query}` : pathname, { scroll: false });
     setSelected(new Set());
   };
 
@@ -162,6 +178,7 @@ export default function DataQualityPage() {
                   onChange={(e) => {
                     setSearch(e.target.value);
                     setSelected(new Set());
+                    setPage(1);
                   }}
                 />
               </div>
@@ -172,6 +189,7 @@ export default function DataQualityPage() {
                   onCheckedChange={(c) => {
                     setHideChecked(Boolean(c));
                     setSelected(new Set());
+                    setPage(1);
                   }}
                 />
                 Hide vendors the AI already checked
@@ -250,6 +268,17 @@ export default function DataQualityPage() {
               </TableBody>
             </Table>
           </div>
+          <Pager
+            page={page}
+            pageSize={PAGE_SIZE}
+            total={d.worst_total}
+            loading={board.isFetching}
+            onPage={(p) => {
+              setPage(p);
+              setSelected(new Set());
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
         </div>
       )}
       <ConfirmDialog

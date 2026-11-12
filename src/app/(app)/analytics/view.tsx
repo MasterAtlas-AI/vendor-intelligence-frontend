@@ -4,12 +4,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { BarList, StatTile } from "@/components/analytics/bar-list";
+import { BenchmarksPanel } from "@/components/analytics/benchmarks";
+import { ExportDashboard } from "@/components/analytics/export-dashboard";
 import { HistoryPanels } from "@/components/analytics/history-panels";
+import { TrendsPanel } from "@/components/analytics/trends";
 import { FilterSelect } from "@/components/filter-select";
 import { PageHeader } from "@/components/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api/client";
 import type { OrganizationAnalytics } from "@/lib/api/types";
+import { P, useCan } from "@/lib/auth/permissions";
 import { useAuth } from "@/lib/auth/store";
 import { humanize } from "@/lib/format";
 import { errorMessage } from "@/lib/validation";
@@ -23,6 +27,7 @@ const PERIODS = [
 
 export default function AnalyticsPage() {
   const actAs = useAuth((s) => s.actAs);
+  const canHistory = useCan(P.EQUIPMENT_READ);
   const [days, setDays] = useState("");
   const period = days || "30";
   const data = useQuery({
@@ -36,7 +41,14 @@ export default function AnalyticsPage() {
       <PageHeader
         title="Analytics"
         description="Your vendor list and how your organization uses MasterAtlas."
-        actions={<FilterSelect label="Period" anyLabel="Last 30 days" value={days} onChange={setDays} options={PERIODS} className="w-40" />}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportDashboard name={`analytics-${period}d`} data={d} />
+            <div className="print:hidden">
+              <FilterSelect label="Period" anyLabel="Last 30 days" value={days} onChange={setDays} options={PERIODS} className="w-40" />
+            </div>
+          </div>
+        }
       />
       {data.isPending && <Skeleton className="h-64" />}
       {data.isError && <p className="text-sm text-destructive">{errorMessage(data.error)}</p>}
@@ -61,6 +73,8 @@ export default function AnalyticsPage() {
           </div>
           <h2 className="mt-2 text-lg font-semibold tracking-tight">Project history</h2>
           <HistoryPanels h={d.history} />
+          {canHistory && <TrendsPanel />}
+          {canHistory && <BenchmarksPanel />}
         </div>
       )}
     </>

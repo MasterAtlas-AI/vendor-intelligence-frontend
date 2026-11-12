@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { BarList, StatTile } from "@/components/analytics/bar-list";
+import { HistoryPanels } from "@/components/analytics/history-panels";
 import { FilterSelect } from "@/components/filter-select";
 import { PageHeader } from "@/components/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -58,6 +59,8 @@ export default function AnalyticsPage() {
             <BarList title="By country" description="Headquarters country." items={d.by_country} labelFor={(c) => (c === "Unknown" ? c : countryName(c))} />
             <BarList title="RFQs by status" items={d.rfqs_by_status} labelFor={(s) => humanize(s)} empty="No RFQs yet." />
           </div>
+          <h2 className="mt-2 text-lg font-semibold tracking-tight">Project history</h2>
+          <HistoryPanels h={d.history} />
         </div>
       )}
     </>

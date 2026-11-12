@@ -1,21 +1,25 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { FilterSelect } from "@/components/filter-select";
 import { FormField } from "@/components/form-field";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api/client";
 import type { CurrentUser, UserRead } from "@/lib/api/types";
 import { useAuth } from "@/lib/auth/store";
 import { humanize } from "@/lib/format";
+import { DEPARTMENTS } from "@/lib/history";
 import { errorMessage, passwordSchema } from "@/lib/validation";
 
 const nameSchema = z.object({ full_name: z.string().trim().min(1, "Required").max(200) });
@@ -59,6 +63,60 @@ function NameCard({ user }: { user: CurrentUser }) {
           </Button>
         </CardFooter>
       </form>
+    </Card>
+  );
+}
+
+// The signed-in user object carries no department, so it is read from the user record (needs user:read; without
+// it the select starts empty and saving still works, since editing your own profile is self-service).
+function DepartmentCard({ user }: { user: CurrentUser }) {
+  const queryClient = useQueryClient();
+  const record = useQuery({
+    queryKey: ["users", "detail", user.id],
+    queryFn: () => api<UserRead>(`/users/${user.id}`),
+    retry: false,
+  });
+  // The signed-in user carries its department; the user record is only a fallback (it needs user:read).
+  const current = record.data?.department ?? user.department ?? "";
+  const [department, setDepartment] = useState<string | null>(null);
+  const value = department ?? current;
+
+  const save = useMutation({
+    mutationFn: () => api<UserRead>(`/users/${user.id}`, { method: "PATCH", body: { department: value } }),
+    onSuccess: (u) => {
+      queryClient.setQueryData(["users", "detail", user.id], u);
+      void queryClient.invalidateQueries({ queryKey: ["users"] });
+      setDepartment(null);
+      toast.success("Department updated");
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Department</CardTitle>
+        <CardDescription>The team you work in.</CardDescription>
+      </CardHeader>
+      <CardContent className="py-4">
+        {record.isPending ? (
+          <Skeleton className="h-8 w-64" />
+        ) : (
+          <FilterSelect
+            label="Department"
+            value={value}
+            anyLabel="No department"
+            options={DEPARTMENTS.map(([v, label]) => ({ value: v, label }))}
+            onChange={setDepartment}
+            className="w-64"
+          />
+        )}
+      </CardContent>
+      <CardFooter>
+        <Button disabled={save.isPending || record.isPending || value === current} onClick={() => save.mutate()}>
+          Save
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
@@ -119,6 +177,7 @@ export default function ProfilePage() {
       <div className="grid max-w-xl gap-6">
         {/* Profile edits go through the tenant user API; platform staff names are set with the CLI. */}
         {user.tenant && <NameCard user={user} />}
+        {user.tenant && <DepartmentCard user={user} />}
         <PasswordCard />
       </div>
     </>

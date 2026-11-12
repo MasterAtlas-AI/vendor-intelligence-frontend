@@ -84,6 +84,7 @@ export type WebSource = S["WebSource"];
 export type ShortlistRow = S["ShortlistRow"];
 export type DimensionScores = S["DimensionScores"];
 export type AgentStep = S["AgentStep"];
+export type HistoryMatch = S["HistoryMatch"];
 export type Conversation = S["ConversationRead"];
 export type ConversationDetail = S["ConversationDetail"];
 
@@ -99,6 +100,35 @@ export type ReportRequest = S["ReportRequest"];
 export type PlatformAnalytics = S["PlatformAnalytics"];
 export type OrganizationAnalytics = S["OrganizationAnalytics"];
 export type Bar = S["Bar"];
+
+// SOW review: the organization's own project history
+export type Equipment = S["ProjectEquipmentRead"];
+export type EquipmentPage = S["EquipmentPage"];
+export type EquipmentSearch = S["EquipmentSearch"];
+export type EquipmentWrite = S["EquipmentWrite"];
+export type ProjectRef = S["ProjectRef"];
+export type ProcurementRecord = S["ProcurementRead"];
+export type ProcurementWrite = S["ProcurementWrite"];
+export type KnowledgeNote = S["NoteRead"];
+export type NoteWrite = S["NoteWrite"];
+export type VendorHistory = S["VendorHistory"];
+export type EquipmentAttribute = S["AttributeRead"];
+export type AttributeWrite = S["AttributeWrite"];
+export type MelUpload = S["MelUploadRead"];
+export type MelUploadSummary = S["MelUploadSummary"];
+export type MelSheet = S["MelSheet"];
+export type MelRows = S["MelRows"];
+export type MelRow = S["MelRowRead"];
+export type MelDecisionResult = S["MelDecisionResult"];
+export type SimilarRequest = S["SimilarRequest"];
+export type SimilarResult = S["SimilarResult"];
+export type SimilarMatch = S["SimilarMatch"];
+export type Estimate = S["Estimate"];
+export type SavedSearch = S["SavedSearchRead"];
+export type CategoryNode = S["CategoryNode"];
+export type HistoryAnalytics = S["HistoryAnalytics"];
+export type AiControls = S["AiControls"];
+export type Verification = Equipment["verification"];
 
 // Phase 5: webhooks
 export type WebhookEndpoint = S["EndpointRead"];

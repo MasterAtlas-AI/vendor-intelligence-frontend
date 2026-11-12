@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { treeItems, useEquipmentCategories } from "@/hooks/use-taxonomy";
 import { api, download } from "@/lib/api/client";
+import { P, useCan } from "@/lib/auth/permissions";
 import type { ProjectRead, ReportRead, ReportRequest, Rfq } from "@/lib/api/types";
 import { useAuth } from "@/lib/auth/store";
 import { timeAgo } from "@/lib/format";
@@ -127,6 +128,7 @@ function NewReportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
 
 export default function ReportsPage() {
   const actAs = useAuth((s) => s.actAs);
+  const canExport = useCan(P.DATA_EXPORT);
   const [creating, setCreating] = useState(false);
   const reports = useQuery({
     queryKey: ["reports", actAs?.id],
@@ -183,7 +185,7 @@ export default function ReportsPage() {
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{timeAgo(r.created_at)}</TableCell>
                 <TableCell className="text-right">
-                  {r.status === "ready" && (
+                  {r.status === "ready" && canExport && (
                     <Button
                       size="xs"
                       variant="outline"

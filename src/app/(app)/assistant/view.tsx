@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { CHATS_KEY, ChatList } from "@/components/assistant/chat-list";
 import { type Exchange, Workspace } from "@/components/assistant/workspace";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { VerificationBadge } from "@/components/verification-badge";
 import { NoAccess } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api/client";
-import type { ChatAction, ChatMessage, ChatResponse, CitedVendor, Conversation, ConversationDetail, DiscoveryAccepted, WebSource } from "@/lib/api/types";
+import type { ChatAction, ChatMessage, ChatResponse, CitedVendor, Conversation, ConversationDetail, DiscoveryAccepted, WebSource, HistoryMatch } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
 import { errorMessage } from "@/lib/validation";
 import { countryName } from "@/lib/vendors";
@@ -45,13 +46,26 @@ function hostname(url: string): string {
 
 /** Answer text with [V1] citations linked to the cited vendors, [W1] citations linked to the web pages found,
  *  and "- " lines as a list. */
-function AnswerText({ text, vendors, web }: { text: string; vendors: CitedVendor[]; web: WebSource[] }) {
+function AnswerText({ text, vendors, web, history = [] }: { text: string; vendors: CitedVendor[]; web: WebSource[]; history?: HistoryMatch[] }) {
   const byRef = Object.fromEntries(vendors.map((v) => [v.ref, v]));
   const pages = Object.fromEntries(web.map((w) => [w.ref, w]));
+  const lines = Object.fromEntries(history.map((h) => [h.ref, h]));
   const inline = (line: string) =>
-    line.split(/(\[[VW]\d{1,2}\])/g).map((part, i) => {
-      const ref = /^\[([VW]\d{1,2})\]$/.exec(part)?.[1];
+    line.split(/(\[[VWH]\d{1,2}\])/g).map((part, i) => {
+      const ref = /^\[([VWH]\d{1,2})\]$/.exec(part)?.[1];
       if (!ref) return <Fragment key={i}>{part}</Fragment>;
+      const own = lines[ref];
+      if (own)
+        return (
+          <Link
+            key={i}
+            href={`/equipment/${own.equipment_id}`}
+            title={`${own.name} · ${own.project_name}`}
+            className="mx-0.5 rounded bg-emerald-500/15 px-1 text-xs font-medium text-emerald-800 hover:underline dark:text-emerald-300"
+          >
+            {ref}
+          </Link>
+        );
       const page = pages[ref];
       if (page)
         return (
@@ -186,6 +200,35 @@ function Steps({ reply }: { reply: ChatResponse }) {
   );
 }
 
+/** Where each part of the answer comes from (SOW 12): records, public web, calculated ranking, AI wording. */
+function Provenance({ reply }: { reply: ChatResponse }) {
+  const limited = reply.web_limited_to ?? [];
+  return (
+    <div className="grid gap-1 rounded-md bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span>
+          <span className="rounded bg-primary/10 px-1 font-medium text-primary">V</span> knowledge-base record
+        </span>
+        <span>
+          <span className="rounded bg-emerald-500/15 px-1 font-medium text-emerald-800 dark:text-emerald-300">H</span> your project history
+        </span>
+        <span>
+          <span className="rounded bg-sky-500/15 px-1 font-medium text-sky-700 dark:text-sky-300">W</span> public web, not verified
+        </span>
+        <span>Shortlist scores: calculated from records</span>
+        <span>Wording and suggestions: AI-generated</span>
+      </p>
+      <p>{reply.notice}</p>
+      <p>
+        {reply.private_data_shared
+          ? "Your organization's own data (AVL status, project history) was included in the AI prompt."
+          : "Your organization's own data stayed on the server; project history is matched locally."}
+        {limited.length > 0 && ` Web search limited to approved sources: ${limited.join(", ")}.`}
+      </p>
+    </div>
+  );
+}
+
 function Reply({
   reply,
   onAsk,
@@ -200,7 +243,7 @@ function Reply({
   return (
     <div className="grid gap-3">
       <Steps reply={reply} />
-      <AnswerText text={reply.answer} vendors={reply.vendors} web={reply.web_sources ?? []} />
+      <AnswerText text={reply.answer} vendors={reply.vendors} web={reply.web_sources ?? []} history={reply.history_matches ?? []} />
       <Actions actions={reply.actions ?? []} />
       {reply.vendors.length > 0 && (
         <div className="grid gap-1.5 rounded-md border p-3 text-sm">
@@ -246,6 +289,25 @@ function Reply({
           <span>Searched the knowledge base for: {reply.searched.join(" · ")}</span>
         </p>
       )}
+      {(reply.history_matches ?? []).length > 0 && (
+        <div className="grid gap-1.5 rounded-md border border-emerald-500/30 p-3 text-sm">
+          <span className="text-xs font-medium text-muted-foreground">From your project history (your organization&apos;s own records)</span>
+          {(reply.history_matches ?? []).map((h) => (
+            <div key={h.ref} className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="shrink-0 rounded bg-emerald-500/15 px-1 text-xs font-medium text-emerald-800 dark:text-emerald-300">{h.ref}</span>
+              <Link href={`/equipment/${h.equipment_id}`} className="font-medium hover:underline">
+                {h.tag ? `${h.tag} · ` : ""}
+                {h.name}
+              </Link>
+              <span className="text-xs text-muted-foreground">
+                {[h.category_name, h.vendor_name, h.project_year ? `${h.project_name} (${h.project_year})` : h.project_name].filter(Boolean).join(" · ")}
+              </span>
+              <VerificationBadge value={h.verification} />
+            </div>
+          ))}
+        </div>
+      )}
+      <Provenance reply={reply} />
       {onShowWorkspace && (reply.shortlist ?? []).length > 0 && (
         <Button size="sm" variant={inWorkspace ? "secondary" : "outline"} className="w-fit" onClick={onShowWorkspace}>
           <LayoutDashboard /> {inWorkspace ? "Shown in the workspace" : `Show shortlist of ${reply.shortlist?.length} in the workspace`}

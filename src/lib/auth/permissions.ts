@@ -18,6 +18,12 @@ export const P = {
   REPORT_READ: "report:read",
   SCORECARD_MANAGE: "scorecard:manage",
   TENANT_VENDOR_APPROVE: "tenant_vendor:approve",
+  TAXONOMY_MANAGE: "taxonomy:manage",
+  ROLE_MANAGE: "role:manage",
+  EQUIPMENT_READ: "equipment:read",
+  EQUIPMENT_MANAGE: "equipment:manage",
+  COMMERCIAL_READ: "commercial:read",
+  DATA_EXPORT: "data:export",
 } as const;
 
 // Scopes an API key may carry (backend: API_KEY_ALLOWED_SCOPES).
@@ -28,6 +34,10 @@ export const API_KEY_SCOPES: { key: string; label: string }[] = [
   { key: "user:read", label: "Read users" },
   { key: "upload:create", label: "Upload files / run imports" },
   { key: "discovery:run", label: "Run AI discovery" },
+  { key: "equipment:read", label: "Read project history (equipment, procurement, notes)" },
+  { key: "equipment:manage", label: "Import MELs and edit project history" },
+  { key: "commercial:read", label: "See commercial values (PO amounts)" },
+  { key: "data:export", label: "Export data" },
 ];
 
 export function useCan(permission: string): boolean {

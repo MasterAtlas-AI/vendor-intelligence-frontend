@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+import { DepartmentView } from "@/components/dashboard/department-view";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,11 +14,6 @@ import type { CursorPage, JobRead, TenantRead } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
 import { useAuth } from "@/lib/auth/store";
 import { humanize, timeAgo } from "@/lib/format";
-
-const NEXT_UP = [
-  "AI discovery of vendors, equipment and services (Phase 3)",
-  "Semantic search, scorecards and the AI assistant (Phase 4)",
-];
 
 export default function DashboardPage() {
   const user = useAuth((s) => s.user)!;
@@ -86,19 +82,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Coming next</CardTitle>
-            <CardDescription>The vendor intelligence features build on this foundation</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="grid list-disc gap-1.5 pl-4 text-sm text-muted-foreground">
-              {NEXT_UP.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+      </div>
+      <div className="mt-6">
+        <DepartmentView />
       </div>
     </>
   );

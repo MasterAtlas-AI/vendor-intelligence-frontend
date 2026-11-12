@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,6 +10,7 @@ import { z } from "zod";
 
 import { ChoiceList } from "@/components/choice-list";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { FilterSelect } from "@/components/filter-select";
 import { FormField } from "@/components/form-field";
 import { LoadMore } from "@/components/load-more";
 import { NoAccess, PageHeader } from "@/components/page-header";
@@ -32,20 +33,71 @@ import type { CursorPage, RoleRead, UserRead } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
 import { useAuth } from "@/lib/auth/store";
 import { humanize, timeAgo } from "@/lib/format";
+import { DEPARTMENTS, departmentLabel } from "@/lib/history";
 import { errorMessage } from "@/lib/validation";
+
+import { RolesSection, useRoles } from "./roles-section";
 
 const STATUS_FILTERS = { all: "All statuses", active: "Active", invited: "Invited", disabled: "Disabled" };
 
-function useRoles() {
-  return useQuery({ queryKey: ["roles"], queryFn: () => api<RoleRead[]>("/roles"), staleTime: 5 * 60_000 });
+function roleChoices(roles: RoleRead[] | undefined) {
+  // Built-in roles first, then the organization's custom roles.
+  return [...(roles ?? [])]
+    .sort((a, b) => Number(!a.is_system) - Number(!b.is_system))
+    .map((r) => ({
+      value: r.key,
+      label: r.is_system ? r.name : `${r.name} (custom)`,
+      description: [r.description, `${r.permissions.length} permissions`].filter(Boolean).join(" · "),
+    }));
 }
 
-function roleChoices(roles: RoleRead[] | undefined) {
-  return (roles ?? []).map((r) => ({
-    value: r.key,
-    label: r.name,
-    description: `${r.permissions.length} permissions`,
-  }));
+// ---------------------------------------------------------------- department
+
+function DepartmentDialog({ user, onClose }: { user: UserRead | null; onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const [department, setDepartment] = useState("");
+  const [forUser, setForUser] = useState<string | null>(null);
+  if (user && forUser !== user.id) {
+    setForUser(user.id);
+    setDepartment(user.department ?? "");
+  }
+
+  const save = useMutation({
+    mutationFn: () => api<UserRead>(`/users/${user!.id}`, { method: "PATCH", body: { department } }),
+    onSuccess: (u) => {
+      toast.success(`Department updated for ${u.full_name}`);
+      void queryClient.invalidateQueries({ queryKey: ["users"] });
+      onClose();
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+
+  return (
+    <Dialog open={Boolean(user)} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Department for {user?.full_name}</DialogTitle>
+          <DialogDescription>The team they work in. They can also set this themselves under My profile.</DialogDescription>
+        </DialogHeader>
+        <FilterSelect
+          label="Department"
+          value={department}
+          anyLabel="No department"
+          options={DEPARTMENTS.map(([value, label]) => ({ value, label }))}
+          onChange={setDepartment}
+          className="w-full"
+        />
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button disabled={save.isPending || department === (user?.department ?? "")} onClick={() => save.mutate()}>
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 // ---------------------------------------------------------------- invite
@@ -172,6 +224,9 @@ export default function UsersPage() {
   const [status, setStatus] = useState<keyof typeof STATUS_FILTERS>("all");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [editing, setEditing] = useState<UserRead | null>(null);
+  const [editingDept, setEditingDept] = useState<UserRead | null>(null);
+  const roles = useRoles();
+  const roleNames = Object.fromEntries((roles.data ?? []).map((r) => [r.key, r.name]));
   const [toggling, setToggling] = useState<UserRead | null>(null);
 
   const search = useDebounced(q.trim());
@@ -240,6 +295,7 @@ export default function UsersPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Department</TableHead>
               <TableHead>Roles</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Last sign-in</TableHead>
@@ -250,14 +306,14 @@ export default function UsersPage() {
             {users.isPending &&
               Array.from({ length: 3 }, (_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={5}>
+                  <TableCell colSpan={6}>
                     <Skeleton className="h-6" />
                   </TableCell>
                 </TableRow>
               ))}
             {!users.isPending && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                   No users match.
                 </TableCell>
               </TableRow>
@@ -268,7 +324,8 @@ export default function UsersPage() {
                   <div className="font-medium">{u.full_name}</div>
                   <div className="text-xs text-muted-foreground">{u.email}</div>
                 </TableCell>
-                <TableCell className="text-sm">{u.roles.map(humanize).join(", ") || "—"}</TableCell>
+                <TableCell className="text-sm">{departmentLabel(u.department)}</TableCell>
+                <TableCell className="text-sm">{u.roles.map((k) => roleNames[k] ?? humanize(k)).join(", ") || "—"}</TableCell>
                 <TableCell>
                   <StatusBadge status={u.status} />
                 </TableCell>
@@ -281,6 +338,7 @@ export default function UsersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => setEditing(u)}>Change roles</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setEditingDept(u)}>Change department</DropdownMenuItem>
                         {u.status !== "invited" && (
                           <DropdownMenuItem
                             variant={u.status === "disabled" ? "default" : "destructive"}
@@ -306,6 +364,7 @@ export default function UsersPage() {
 
       <InviteDialog open={inviteOpen} onOpenChange={setInviteOpen} />
       <RolesDialog user={editing} onClose={() => setEditing(null)} />
+      <DepartmentDialog user={editingDept} onClose={() => setEditingDept(null)} />
       <ConfirmDialog
         open={Boolean(toggling)}
         onOpenChange={(o) => !o && setToggling(null)}
@@ -320,6 +379,8 @@ export default function UsersPage() {
         pending={toggle.isPending}
         onConfirm={() => toggling && toggle.mutate(toggling)}
       />
+
+      <RolesSection />
     </>
   );
 }

@@ -43,8 +43,9 @@ export function ReportButton({
 }) {
   const queryClient = useQueryClient();
   const canRead = useCan(P.REPORT_READ);
+  const canExport = useCan(P.DATA_EXPORT); // downloading a report is a data export (SOW 21)
   const [busy, setBusy] = useState(false);
-  if (!canRead) return null;
+  if (!canRead || !canExport) return null;
 
   async function run(format: "pdf" | "xlsx") {
     setBusy(true);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ClipboardList, FilePlus, Plus, Trash2, UserPlus } from "lucide-react";
+import { ArrowLeft, ClipboardList, FilePlus, Pencil, Plus, Trash2, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,13 +10,22 @@ import { toast } from "sonner";
 import { FilterSelect } from "@/components/filter-select";
 import { NewRfqDialog } from "@/components/rfqs/new-rfq-dialog";
 import { PageHeader } from "@/components/page-header";
+import { ProjectEquipment } from "@/components/projects/equipment-tab";
+import { MelImport } from "@/components/projects/mel-import";
+import { ProjectNotes } from "@/components/projects/notes-tab";
+import { ProjectProcurement } from "@/components/projects/procurement-tab";
+import { ProjectFields, formToBody, projectToForm, yearInvalid, type ProjectFormValues } from "@/components/projects/project-form";
+import { kindLabel } from "@/components/projects/shared";
 import { ReportButton } from "@/components/reports/report-button";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDebounced } from "@/hooks/use-debounced";
 import { api } from "@/lib/api/client";
 import type { CursorPage, ProjectMember, ProjectRead, ProjectVendor, Scorecard, UserRead, VendorPage } from "@/lib/api/types";
@@ -275,12 +284,52 @@ function Members({ project }: { project: ProjectRead }) {
   );
 }
 
+function EditProjectDialog({ project, open, onOpenChange }: { project: ProjectRead; open: boolean; onOpenChange: (o: boolean) => void }) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<ProjectFormValues>(() => projectToForm(project));
+  const save = useMutation({
+    mutationFn: () => api<ProjectRead>(`/projects/${project.id}`, { method: "PATCH", body: { ...formToBody(form), version: project.version } }),
+    onSuccess: (p) => {
+      queryClient.setQueryData(["project", project.id], p);
+      void queryClient.invalidateQueries({ queryKey: ["projects"] });
+      toast.success("Project updated");
+      onOpenChange(false);
+    },
+    onError: (e) => {
+      toast.error(errorMessage(e));
+      void queryClient.invalidateQueries({ queryKey: ["project", project.id] });
+    },
+  });
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Edit project</DialogTitle>
+          <DialogDescription>Executed projects&apos; year, location and facility make their equipment history searchable.</DialogDescription>
+        </DialogHeader>
+        <ProjectFields form={form} onChange={setForm} />
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button disabled={!form.name.trim() || yearInvalid(form) || save.isPending} onClick={() => save.mutate()}>
+            {save.isPending ? "Saving…" : "Save"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const project = useQuery({ queryKey: ["project", id], queryFn: () => api<ProjectRead>(`/projects/${id}`) });
   const canRfq = useCan(P.RFQ_MANAGE);
+  const canReadHistory = useCan(P.EQUIPMENT_READ);
+  const canManageHistory = useCan(P.EQUIPMENT_MANAGE);
   const [rfqOpen, setRfqOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
   const setStatus = useMutation({
     mutationFn: (status: string) =>
       api<ProjectRead>(`/projects/${id}`, { method: "PATCH", body: { status, version: project.data!.version } }),
@@ -305,9 +354,17 @@ export default function ProjectPage() {
       </Link>
       <PageHeader
         title={p.name}
-        description={[p.code, p.client, p.facility_type, p.country && countryName(p.country)].filter(Boolean).join(" · ")}
+        description={[p.code, p.client, p.facility_type, p.country && countryName(p.country), p.location && humanize(p.location), p.year]
+          .filter(Boolean)
+          .join(" · ")}
         actions={
           <>
+            <Badge variant={p.kind === "historical" ? "secondary" : "outline"}>{kindLabel(p.kind)}</Badge>
+            {p.can_edit && (
+              <Button variant="outline" onClick={() => setEditing(true)}>
+                <Pencil /> Edit
+              </Button>
+            )}
             <ReportButton reportType="vendor_comparison" parameters={{ project_id: p.id }} label="Comparison" size="default" />
             {canRfq && (
               <Button variant="outline" onClick={() => setRfqOpen(true)}>
@@ -330,13 +387,45 @@ export default function ProjectPage() {
         }
       />
       <NewRfqDialog open={rfqOpen} onOpenChange={setRfqOpen} projectId={p.id} />
+      {editing && <EditProjectDialog project={p} open onOpenChange={setEditing} />}
       {p.description &&<p className="mb-4 max-w-3xl text-sm whitespace-pre-wrap text-muted-foreground">{p.description}</p>}
-      <div className="grid gap-4 lg:grid-cols-[1fr_20rem]">
-        <Vendors project={p} />
-        <div className="grid content-start gap-4">
-          <Members project={p} />
-        </div>
-      </div>
+      <Tabs defaultValue={p.kind === "historical" && canReadHistory ? "equipment" : "vendors"}>
+        <TabsList className="h-auto flex-wrap">
+          <TabsTrigger value="vendors">Vendors &amp; members</TabsTrigger>
+          {canReadHistory && <TabsTrigger value="equipment">Equipment</TabsTrigger>}
+          {canManageHistory && <TabsTrigger value="mel">MEL import</TabsTrigger>}
+          {canReadHistory && <TabsTrigger value="procurement">Procurement</TabsTrigger>}
+          {canReadHistory && <TabsTrigger value="notes">Notes</TabsTrigger>}
+        </TabsList>
+        <TabsContent value="vendors">
+          <div className="grid gap-4 lg:grid-cols-[1fr_20rem]">
+            <Vendors project={p} />
+            <div className="grid content-start gap-4">
+              <Members project={p} />
+            </div>
+          </div>
+        </TabsContent>
+        {canReadHistory && (
+          <TabsContent value="equipment">
+            <ProjectEquipment projectId={p.id} />
+          </TabsContent>
+        )}
+        {canManageHistory && (
+          <TabsContent value="mel">
+            <MelImport projectId={p.id} />
+          </TabsContent>
+        )}
+        {canReadHistory && (
+          <TabsContent value="procurement">
+            <ProjectProcurement projectId={p.id} />
+          </TabsContent>
+        )}
+        {canReadHistory && (
+          <TabsContent value="notes">
+            <ProjectNotes projectId={p.id} />
+          </TabsContent>
+        )}
+      </Tabs>
     </>
   );
 }

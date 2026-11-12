@@ -27,6 +27,10 @@ import {
   Upload,
   UserRound,
   Users,
+  Cog,
+  FolderTree,
+  Network,
+  SlidersHorizontal,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -72,6 +76,8 @@ const WORKSPACE: NavItem[] = [
   { href: "/search", label: "Search", icon: Search, permission: P.SEARCH_RUN },
   { href: "/assistant", label: "Assistant", icon: MessageSquare, permission: P.SEARCH_RUN },
   { href: "/vendors", label: "Vendors", icon: Factory, permission: P.VENDOR_READ },
+  { href: "/equipment", label: "Equipment history", icon: Cog, permission: P.EQUIPMENT_READ, needsTenant: true },
+  { href: "/categories", label: "Categories", icon: FolderTree, permission: P.VENDOR_READ },
   { href: "/projects", label: "Projects", icon: FolderKanban, permission: P.VENDOR_READ, needsTenant: true },
   { href: "/rfqs", label: "RFQs", icon: FileSignature, permission: P.VENDOR_READ, needsTenant: true },
   { href: "/reports", label: "Reports", icon: FileBarChart, permission: P.REPORT_READ, needsTenant: true },
@@ -85,12 +91,14 @@ const CURATION: NavItem[] = [
   { href: "/admin/proposals", label: "Approvals", icon: ClipboardCheck, permission: P.KNOWLEDGE_APPROVE },
   { href: "/admin/data-quality", label: "Data quality", icon: Gauge, permission: P.KNOWLEDGE_APPROVE },
   { href: "/admin/analytics", label: "Platform analytics", icon: BarChart3, permission: P.KNOWLEDGE_APPROVE },
+  { href: "/admin/taxonomy", label: "Taxonomy", icon: Network, permission: P.TAXONOMY_MANAGE },
 ];
 
 const SETTINGS: NavItem[] = [
   { href: "/settings/profile", label: "My profile", icon: UserRound },
   { href: "/settings/organization", label: "Organization", icon: Settings2, permission: P.TENANT_SETTINGS_MANAGE, needsTenant: true },
   { href: "/settings/users", label: "Users & roles", icon: Users, permission: P.USER_READ, needsTenant: true },
+  { href: "/settings/attributes", label: "Equipment attributes", icon: SlidersHorizontal, permission: P.EQUIPMENT_READ, needsTenant: true },
   { href: "/settings/ai-usage", label: "AI usage", icon: Wallet, permission: P.DISCOVERY_RUN },
   { href: "/settings/api-keys", label: "API keys", icon: KeyRound, permission: P.APIKEY_MANAGE, needsTenant: true },
   { href: "/settings/webhooks", label: "Webhooks", icon: Webhook, permission: P.APIKEY_MANAGE, needsTenant: true },

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Download, FileText, FolderPlus, RotateCcw } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -111,6 +112,8 @@ export function ShortlistTab({
 }) {
   const router = useRouter();
   const canProject = useCan(P.PROJECT_MANAGE);
+  const canExport = useCan(P.DATA_EXPORT);
+  const showOurs = (reply.shortlist ?? []).some((r) => r.scores.our_experience !== null && r.scores.our_experience !== undefined);
   const canRfq = useCan(P.RFQ_MANAGE);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [projectOpen, setProjectOpen] = useState(false);
@@ -206,9 +209,11 @@ export function ShortlistTab({
         title="Ranked vendor shortlist"
         actions={
           <>
-            <Button variant="outline" size="sm" onClick={() => download("vendor-shortlist.csv", csv(ranked))} disabled={!ranked.length}>
-              <Download /> Export CSV
-            </Button>
+            {canExport && (
+              <Button variant="outline" size="sm" onClick={() => download("vendor-shortlist.csv", csv(ranked))} disabled={!ranked.length}>
+                <Download /> Export CSV
+              </Button>
+            )}
             {canProject && (
               <Button variant="outline" size="sm" onClick={() => setProjectOpen(true)} disabled={!ranked.length}>
                 <FolderPlus /> Add {chosen.length ? chosen.length : "top 5"} to project
@@ -233,6 +238,7 @@ export function ShortlistTab({
                 <th className="p-2">Equipment</th>
                 <th className="p-2">Standards</th>
                 <th className="p-2">References</th>
+                {showOurs && <th className="p-2">Our projects</th>}
                 <th className="p-2">AVL</th>
                 <th className="p-2">Flags</th>
               </tr>
@@ -274,6 +280,17 @@ export function ShortlistTab({
                     {r.references}
                     {r.fpso_references > 0 && <span className="text-xs text-muted-foreground"> ({r.fpso_references} FPSO)</span>}
                   </td>
+                  {showOurs && (
+                    <td className="p-2 tabular-nums">
+                      {r.our_projects ? (
+                        <Link href={`/vendors/${r.vendor_id}`} className="hover:underline" onClick={(e) => e.stopPropagation()} title="Your organization's own records">
+                          {r.our_projects} <span className="text-xs text-muted-foreground">({r.our_equipment} lines)</span>
+                        </Link>
+                      ) : (
+                        <span className="text-muted-foreground">0</span>
+                      )}
+                    </td>
+                  )}
                   <td className="p-2">{r.avl_status ? <StatusBadge status={r.avl_status} /> : <span className="text-xs text-muted-foreground">—</span>}</td>
                   <td className="p-2">
                     <div className="flex flex-wrap gap-1">

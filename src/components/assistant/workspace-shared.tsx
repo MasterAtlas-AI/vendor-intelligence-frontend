@@ -16,6 +16,7 @@ export const DIMS: { key: Dim; label: string; weight: number }[] = [
   { key: "track_record", label: "Track record", weight: 10 },
   { key: "data_quality", label: "Data completeness", weight: 10 },
   { key: "approved_vendor", label: "Approved vendor (AVL)", weight: 5 },
+  { key: "our_experience", label: "Used on our projects", weight: 15 },
 ];
 
 export type Weights = Record<Dim, number>;

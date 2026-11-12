@@ -3,10 +3,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Award, ExternalLink, Factory, History, Search, Sparkles, Trash2, Wrench, X } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { FilterSelect } from "@/components/filter-select";
+import { SavedVendorSearches } from "@/components/search/saved-vendor-searches";
 import { NoAccess, PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
@@ -238,6 +240,14 @@ export default function SearchPage() {
   const [useAi, setUseAi] = useState(false);
   const [myVendors, setMyVendors] = useState(false);
   const [avl, setAvl] = useState("");
+  // SOW 16 filters: a standard or certification on a product, an equipment category, vendors from our own projects.
+  const [standard, setStandard] = useState("");
+  const [category, setCategory] = useState(useSearchParams().get("category") ?? "");
+  const [usedByUs, setUsedByUs] = useState(false);
+  const [acceptedByUs, setAcceptedByUs] = useState(false);
+  const canHistory = useCan(P.EQUIPMENT_READ);
+  const categories = useEquipmentCategories();
+  const categoryOptions = (categories.data ?? []).map((c) => ({ value: c.code, label: `${"\u00a0\u00a0".repeat(c.level)}${c.name}` }));
   const [result, setResult] = useState<SearchResponse | null>(null);
 
   const run = useMutation({
@@ -249,7 +259,14 @@ export default function SearchPage() {
     onError: (e) => toast.error(errorMessage(e)),
   });
 
-  const filters = { my_vendors_only: myVendors, avl_status: avl ? [avl as AvlStatus] : [] };
+  const filters = {
+    my_vendors_only: myVendors,
+    avl_status: avl ? [avl as AvlStatus] : [],
+    standards: standard.trim() ? [standard.trim()] : [],
+    equipment_category: category || null,
+    used_by_us: usedByUs,
+    technically_accepted_by_us: acceptedByUs,
+  };
   function submit(q = query) {
     if (!q.trim()) return;
     run.mutate({ query: q, parser: useAi ? "ai" : "local", filters, limit: 25 });
@@ -302,8 +319,33 @@ export default function SearchPage() {
                     Only my vendors
                   </Label>
                   <FilterSelect label="AVL status" anyLabel="Any AVL status" value={avl} onChange={setAvl} options={AVL_OPTIONS} className="w-44" />
+                  {canHistory && (
+                    <Label className="flex items-center gap-2 font-normal">
+                      <Checkbox aria-label="Only vendors used on our projects" checked={usedByUs} onCheckedChange={(c) => setUsedByUs(Boolean(c))} />
+                      Used on our projects
+                    </Label>
+                  )}
+                  {canHistory && (
+                    <Label className="flex items-center gap-2 font-normal">
+                      <Checkbox
+                        aria-label="Only vendors we technically accepted before"
+                        checked={acceptedByUs}
+                        onCheckedChange={(c) => setAcceptedByUs(Boolean(c))}
+                      />
+                      Technically accepted by us
+                    </Label>
+                  )}
                 </>
               )}
+              <FilterSelect label="Equipment category" anyLabel="Any category" value={category} onChange={setCategory} options={categoryOptions} className="w-56" />
+              <Input
+                aria-label="Standard or certification"
+                placeholder="Standard / certification, e.g. API 610, ABS"
+                value={standard}
+                onChange={(e) => setStandard(e.target.value)}
+                maxLength={80}
+                className="h-8 w-64"
+              />
             </div>
           </form>
 
@@ -333,6 +375,23 @@ export default function SearchPage() {
           </div>
         </div>
         <div className="grid content-start gap-4">
+          <SavedVendorSearches
+            query={query}
+            filters={{ ...filters, use_ai: useAi }}
+            onRun={(saved) => {
+              const f = saved.filters as Record<string, unknown>;
+              setQuery(saved.query);
+              setMyVendors(Boolean(f.my_vendors_only));
+              setAvl(Array.isArray(f.avl_status) && f.avl_status.length ? String(f.avl_status[0]) : "");
+              setStandard(Array.isArray(f.standards) && f.standards.length ? String(f.standards[0]) : "");
+              setCategory(typeof f.equipment_category === "string" ? f.equipment_category : "");
+              setUsedByUs(Boolean(f.used_by_us));
+              setAcceptedByUs(Boolean(f.technically_accepted_by_us));
+              setUseAi(Boolean(f.use_ai));
+              const { use_ai: ai, ...stored } = f;
+              run.mutate({ query: saved.query, parser: ai ? "ai" : "local", filters: { ...filters, ...stored } as typeof filters, limit: 25 });
+            }}
+          />
           <RecentSearches
             onPick={(h) => {
               setQuery(h.query);

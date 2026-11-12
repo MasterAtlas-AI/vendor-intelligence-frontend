@@ -14,13 +14,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OurHistory } from "@/components/vendors/our-history";
 import { OverlayDialog } from "@/components/vendors/overlay-dialog";
 import { LookupResults, ResearchResults } from "@/components/quality/ai-fill";
 import { FullDetailsButton, ProductResults } from "@/components/vendors/product-research";
 import { ProjectsCard } from "@/components/vendors/projects-card";
 import { ResearchCard } from "@/components/vendors/research-card";
 import { RunAllButton, type RunAllJobs } from "@/components/vendors/run-all";
-import { VendorFacts } from "@/components/vendors/vendor-facts";
+import { AfterSalesSummary, VendorFacts } from "@/components/vendors/vendor-facts";
 import { api } from "@/lib/api/client";
 import type { VendorDetail } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
@@ -131,7 +132,7 @@ export default function VendorDetailPage() {
       </Link>
       <PageHeader
         title={v.display_name}
-        description={[v.legal_name !== v.display_name ? v.legal_name : null, hq].filter(Boolean).join(" · ")}
+        description={[v.legal_name !== v.display_name ? v.legal_name : null, v.parent_company ? `Part of ${v.parent_company}` : null, hq].filter(Boolean).join(" · ")}
         actions={
           <>
             {v.website && (
@@ -169,6 +170,12 @@ export default function VendorDetailPage() {
                 <dd>
                   <StatusBadge status={v.status} />
                 </dd>
+                {v.parent_company && (
+                  <>
+                    <dt className="text-muted-foreground">Parent company</dt>
+                    <dd>{v.parent_company}</dd>
+                  </>
+                )}
                 <dt className="text-muted-foreground">Domains</dt>
                 <dd>{v.domains.join(", ") || "—"}</dd>
                 <dt className="text-muted-foreground">Also known as</dt>
@@ -176,6 +183,10 @@ export default function VendorDetailPage() {
                 <dt className="text-muted-foreground">Industries</dt>
                 <dd className="flex flex-wrap gap-1">
                   {v.industries.length ? v.industries.map((i) => <Badge key={i.id} variant="secondary">{i.name}</Badge>) : "—"}
+                </dd>
+                <dt className="text-muted-foreground">After-sales &amp; spares</dt>
+                <dd>
+                  <AfterSalesSummary vendor={v} />
                 </dd>
                 <dt className="text-muted-foreground">Knowledge version</dt>
                 <dd>
@@ -194,6 +205,7 @@ export default function VendorDetailPage() {
         <div className="grid content-start gap-4">
           {hasTenant && <YourRecord vendor={v} />}
           {hasTenant && <ProjectsCard vendor={v} />}
+          {hasTenant && <OurHistory vendorId={v.id} />}
           {v.status !== "retired" && (
             <ResearchCard vendor={v} onContactsStarted={(jobId) => startedAll({ lookups: [{ field: "contacts", jobId }] })} />
           )}

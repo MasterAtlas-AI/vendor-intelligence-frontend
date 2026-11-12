@@ -1,9 +1,11 @@
 import { BadgeCheck, ExternalLink } from "lucide-react";
 
+import { useAttributeIndex } from "@/components/projects/shared";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { VendorDetail } from "@/lib/api/types";
 import { formatDateTime, humanize } from "@/lib/format";
+import { formatAttribute } from "@/lib/history";
 import { countryName } from "@/lib/vendors";
 
 function Empty({ what }: { what: string }) {
@@ -17,6 +19,25 @@ function Row({ title, sub, children }: { title: React.ReactNode; sub?: React.Rea
       {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
       {children}
     </li>
+  );
+}
+
+/** Structured ratings read from a product's specs ({key: [min, max]}), with units when the definitions are known. */
+function ProductAttributes({ attributes }: { attributes: Record<string, unknown> | undefined }) {
+  const units = useAttributeIndex();
+  const entries = Object.entries(attributes ?? {});
+  if (!entries.length) return null;
+  return (
+    <div className="grid gap-1">
+      <div className="flex flex-wrap gap-1">
+        {entries.map(([k, v]) => (
+          <Badge key={k} variant="outline" className="font-normal">
+            {units[k]?.label ?? humanize(k)}: {formatAttribute(v, units[k]?.unit)}
+          </Badge>
+        ))}
+      </div>
+      <span className="text-[11px] text-muted-foreground">Extracted from specs, pending verification</span>
+    </div>
   );
 }
 
@@ -53,8 +74,91 @@ function ProductSpecs({ specs }: { specs: Record<string, unknown> }) {
   );
 }
 
+/** Service categories (taxonomy code roots) that count as after-sales support and spares. */
+const AFTER_SALES_ROOTS = ["spare_parts", "field_service", "long_term_service", "maintenance", "repair", "training", "calibration"];
+
+/** The vendor's after-sales and spares services (maintenance, repair, spares, field service, LTSA, training, calibration). */
+export function afterSalesServices(vendor: VendorDetail): VendorDetail["services"] {
+  return vendor.services.filter((s) => AFTER_SALES_ROOTS.some((root) => s.category.code === root || s.category.code.startsWith(`${root}.`)));
+}
+
+/** Class-society type approvals (DNV_TA, ABS_TA, ...) as opposed to quality and product certifications. */
+function isClassApproval(c: VendorDetail["certifications"][number]): boolean {
+  return c.certification.code.endsWith("_TA");
+}
+
+/** Yes/no summary of after-sales & spares support, with the matching services and regions. */
+export function AfterSalesSummary({ vendor }: { vendor: VendorDetail }) {
+  const services = afterSalesServices(vendor);
+  if (!services.length) return <span className="text-muted-foreground">None recorded</span>;
+  const regions = [...new Set(services.flatMap((s) => s.regions))];
+  return (
+    <div className="grid gap-1">
+      <span>Yes — {[...new Set(services.map((s) => s.name))].join(", ")}</span>
+      {regions.length > 0 && <span className="text-xs text-muted-foreground">Regions: {regions.join(", ")}</span>}
+    </div>
+  );
+}
+
+function GroupHeading({ children }: { children: React.ReactNode }) {
+  return <h4 className="pt-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">{children}</h4>;
+}
+
+function ContactRows({ contacts }: { contacts: VendorDetail["contacts"] }) {
+  return (
+    <ul className="divide-y">
+      {contacts.map((c) => (
+        <Row key={c.id} title={c.label || humanize(c.contact_type)} sub={[humanize(c.contact_type), c.country && countryName(c.country)].filter(Boolean).join(" · ")}>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            {c.email && (
+              <a href={`mailto:${c.email}`} className="text-primary hover:underline">
+                {c.email}
+              </a>
+            )}
+            {c.phone && (
+              <a href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} className="hover:underline">
+                {c.phone}
+              </a>
+            )}
+          </div>
+        </Row>
+      ))}
+    </ul>
+  );
+}
+
+function CertificationRows({ certifications }: { certifications: VendorDetail["certifications"] }) {
+  return (
+    <ul className="divide-y">
+      {certifications.map((c) => (
+        <Row
+          key={c.id}
+          title={
+            <span className="inline-flex items-center gap-1.5">
+              {c.certification.name}
+              {c.verified && <BadgeCheck className="size-4 text-emerald-600" aria-label="Verified" />}
+            </span>
+          }
+          sub={[
+            c.certificate_number && `No. ${c.certificate_number}`,
+            c.valid_to && `valid until ${c.valid_to}`,
+            c.scope,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        />
+      ))}
+    </ul>
+  );
+}
+
 /** Every approved fact about a vendor, grouped in tabs. */
 export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
+  const contacts = vendor.contacts ?? [];
+  const ownContacts = contacts.filter((c) => c.contact_type !== "agent");
+  const agents = contacts.filter((c) => c.contact_type === "agent");
+  const classApprovals = vendor.certifications.filter(isClassApproval);
+  const otherCertifications = vendor.certifications.filter((c) => !isClassApproval(c));
   const tabs = [
     { key: "equipment", label: "Equipment", count: vendor.equipment.length },
     { key: "services", label: "Services", count: vendor.services.length },
@@ -82,6 +186,7 @@ export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
             {vendor.equipment.map((e) => (
               <Row key={e.id} title={e.name} sub={[e.category.name, e.model_series].filter(Boolean).join(" · ")}>
                 <ProductSpecs specs={e.specs} />
+                <ProductAttributes attributes={e.attributes} />
                 {(e.standards.length > 0 || e.applications.length > 0) && (
                   <div className="flex flex-wrap gap-1">
                     {e.standards.map((s) => (
@@ -103,27 +208,18 @@ export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
       </TabsContent>
 
       <TabsContent value="contacts">
-        {!vendor.contacts?.length ? (
+        {contacts.length === 0 ? (
           <Empty what="company contacts" />
         ) : (
-          <ul className="divide-y">
-            {vendor.contacts.map((c) => (
-              <Row key={c.id} title={c.label || humanize(c.contact_type)} sub={[humanize(c.contact_type), c.country && countryName(c.country)].filter(Boolean).join(" · ")}>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                  {c.email && (
-                    <a href={`mailto:${c.email}`} className="text-primary hover:underline">
-                      {c.email}
-                    </a>
-                  )}
-                  {c.phone && (
-                    <a href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} className="hover:underline">
-                      {c.phone}
-                    </a>
-                  )}
-                </div>
-              </Row>
-            ))}
-          </ul>
+          <>
+            {ownContacts.length > 0 && <ContactRows contacts={ownContacts} />}
+            {agents.length > 0 && (
+              <>
+                <GroupHeading>Authorized agents &amp; representatives</GroupHeading>
+                <ContactRows contacts={agents} />
+              </>
+            )}
+          </>
         )}
       </TabsContent>
 
@@ -147,26 +243,15 @@ export function VendorFacts({ vendor }: { vendor: VendorDetail }) {
         {vendor.certifications.length === 0 ? (
           <Empty what="certifications" />
         ) : (
-          <ul className="divide-y">
-            {vendor.certifications.map((c) => (
-              <Row
-                key={c.id}
-                title={
-                  <span className="inline-flex items-center gap-1.5">
-                    {c.certification.name}
-                    {c.verified && <BadgeCheck className="size-4 text-emerald-600" aria-label="Verified" />}
-                  </span>
-                }
-                sub={[
-                  c.certificate_number && `No. ${c.certificate_number}`,
-                  c.valid_to && `valid until ${c.valid_to}`,
-                  c.scope,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              />
-            ))}
-          </ul>
+          <>
+            {otherCertifications.length > 0 && <CertificationRows certifications={otherCertifications} />}
+            {classApprovals.length > 0 && (
+              <>
+                <GroupHeading>Class approvals</GroupHeading>
+                <CertificationRows certifications={classApprovals} />
+              </>
+            )}
+          </>
         )}
       </TabsContent>
 

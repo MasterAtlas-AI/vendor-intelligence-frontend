@@ -2562,11 +2562,113 @@
       }
     },
     "/api/v1/api-keys/{key_id}": {
+      "patch": {
+        "tags": [
+          "api-keys"
+        ],
+        "summary": "Update Api Key",
+        "description": "Edit a key's name, scopes, expiry, IP allowlist or rate limit (the secret is unchanged).",
+        "operationId": "update_api_key_api_v1_api_keys__key_id__patch",
+        "parameters": [
+          {
+            "name": "key_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Key Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiKeyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "tags": [
           "api-keys"
         ],
         "summary": "Revoke Api Key",
+        "description": "Revokes the key (it stays listed as revoked), or with `permanent=true` deletes it from the list.",
         "operationId": "revoke_api_key_api_v1_api_keys__key_id__delete",
         "parameters": [
           {
@@ -2578,6 +2680,18 @@
               "format": "uuid",
               "title": "Key Id"
             }
+          },
+          {
+            "name": "permanent",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Delete the key for good instead of revoking it",
+              "default": false,
+              "title": "Permanent"
+            },
+            "description": "Delete the key for good instead of revoking it"
           },
           {
             "name": "authorization",
@@ -4622,7 +4736,7 @@
           "vendors"
         ],
         "summary": "Download Vendor Document",
-        "description": "The original file (only one of your organization's documents linked to this vendor).",
+        "description": "The original file (only one of your organization's documents linked to this vendor). Import files can hold\nprices and internal vendor lists, so downloading one needs upload:create or commercial:read; everyone who reads\nthe vendor still sees which documents its facts came from.",
         "operationId": "download_vendor_document_api_v1_vendors__vendor_id__documents__upload_id__get",
         "parameters": [
           {
@@ -18246,6 +18360,7 @@
               "search_kb",
               "load_records",
               "history",
+              "documents",
               "answer",
               "check",
               "rank"
@@ -18699,6 +18814,83 @@
           "created_by"
         ],
         "title": "ApiKeyRead"
+      },
+      "ApiKeyUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "scopes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 20,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scopes"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "ip_allowlist": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip Allowlist"
+          },
+          "rate_limit_per_minute": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "minimum": 10.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Limit Per Minute"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ApiKeyUpdate",
+        "description": "Changes to an existing key; the secret stays the same. Only the fields sent change; `expires_at: null`\nremoves the expiry."
       },
       "ApprovalAction": {
         "type": "string",

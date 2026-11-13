@@ -432,11 +432,18 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Revoke Api Key */
+        /**
+         * Revoke Api Key
+         * @description Revokes the key (it stays listed as revoked), or with `permanent=true` deletes it from the list.
+         */
         delete: operations["revoke_api_key_api_v1_api_keys__key_id__delete"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Api Key
+         * @description Edit a key's name, scopes, expiry, IP allowlist or rate limit (the secret is unchanged).
+         */
+        patch: operations["update_api_key_api_v1_api_keys__key_id__patch"];
         trace?: never;
     };
     "/api/v1/audit-logs": {
@@ -719,7 +726,9 @@ export interface paths {
         };
         /**
          * Download Vendor Document
-         * @description The original file (only one of your organization's documents linked to this vendor).
+         * @description The original file (only one of your organization's documents linked to this vendor). Import files can hold
+         *     prices and internal vendor lists, so downloading one needs upload:create or commercial:read; everyone who reads
+         *     the vendor still sees which documents its facts came from.
          */
         get: operations["download_vendor_document_api_v1_vendors__vendor_id__documents__upload_id__get"];
         put?: never;
@@ -2793,7 +2802,7 @@ export interface components {
              * Key
              * @enum {string}
              */
-            key: "understand" | "search_kb" | "load_records" | "history" | "answer" | "check" | "rank";
+            key: "understand" | "search_kb" | "load_records" | "history" | "documents" | "answer" | "check" | "rank";
             /** Label */
             label: string;
             /** Detail */
@@ -2952,6 +2961,23 @@ export interface components {
             created_at: string;
             /** Created By */
             created_by: string | null;
+        };
+        /**
+         * ApiKeyUpdate
+         * @description Changes to an existing key; the secret stays the same. Only the fields sent change; `expires_at: null`
+         *     removes the expiry.
+         */
+        ApiKeyUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Scopes */
+            scopes?: string[] | null;
+            /** Expires At */
+            expires_at?: string | null;
+            /** Ip Allowlist */
+            ip_allowlist?: string[] | null;
+            /** Rate Limit Per Minute */
+            rate_limit_per_minute?: number | null;
         };
         /**
          * ApprovalAction
@@ -8544,7 +8570,10 @@ export interface operations {
     };
     revoke_api_key_api_v1_api_keys__key_id__delete: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Delete the key for good instead of revoking it */
+                permanent?: boolean;
+            };
             header?: {
                 authorization?: string | null;
                 "x-api-key"?: string | null;
@@ -8563,6 +8592,45 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_api_key_api_v1_api_keys__key_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApiKeyUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyRead"];
+                };
             };
             /** @description Validation Error */
             422: {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Copy, KeyRound, Plus } from "lucide-react";
+import { Ban, Copy, KeyRound, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -29,31 +29,55 @@ function keyStatus(k: ApiKeyRead): string {
   return "active";
 }
 
-function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+/** A date input's value (local yyyy-mm-dd) for an ISO timestamp. */
+function dateInput(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+const endOfDay = (date: string) => new Date(`${date}T23:59:59`).toISOString();
+
+/** Create a key, or (with `editing`) change an existing key's name, scopes, expiry, limit and IPs. The secret
+ *  never changes on edit. */
+function KeyDialog({ open, onOpenChange, editing }: { open: boolean; onOpenChange: (o: boolean) => void; editing?: ApiKeyRead | null }) {
   const queryClient = useQueryClient();
   const permissions = useAuth((s) => s.user?.permissions ?? []);
-  const [name, setName] = useState("");
-  const [scopes, setScopes] = useState<string[]>(["vendor:read"]);
-  const [expires, setExpires] = useState("");
-  const [ips, setIps] = useState("");
-  const [limit, setLimit] = useState("120");
+  const [name, setName] = useState(editing?.name ?? "");
+  const [scopes, setScopes] = useState<string[]>(editing?.scopes ?? ["vendor:read"]);
+  const [expires, setExpires] = useState(dateInput(editing?.expires_at));
+  const [ips, setIps] = useState((editing?.ip_allowlist ?? []).join(", "));
+  const [limit, setLimit] = useState(String(editing?.rate_limit_per_minute ?? 120));
   const [created, setCreated] = useState<ApiKeyCreated | null>(null);
 
-  const create = useMutation({
-    mutationFn: () =>
-      api<ApiKeyCreated>("/api-keys", {
+  const fields = () => ({
+    name: name.trim(),
+    scopes,
+    ip_allowlist: ips.split(/[\s,]+/).filter(Boolean),
+    rate_limit_per_minute: Math.min(10000, Math.max(10, Math.round(Number(limit)) || 120)),
+  });
+  const save = useMutation({
+    mutationFn: () => {
+      if (editing) {
+        // The expiry is sent only when it changed (an already-passed date can't be saved again).
+        const changed = expires !== dateInput(editing.expires_at);
+        return api<ApiKeyRead>(`/api-keys/${editing.id}`, {
+          method: "PATCH",
+          body: { ...fields(), ...(changed ? { expires_at: expires ? endOfDay(expires) : null } : {}) },
+        });
+      }
+      return api<ApiKeyCreated>("/api-keys", {
         method: "POST",
-        body: {
-          name: name.trim(),
-          scopes,
-          expires_at: expires ? new Date(`${expires}T23:59:59`).toISOString() : null,
-          ip_allowlist: ips.split(/[\s,]+/).filter(Boolean),
-          rate_limit_per_minute: Math.min(10000, Math.max(10, Math.round(Number(limit)) || 120)),
-        },
-      }),
+        body: { ...fields(), expires_at: expires ? endOfDay(expires) : null },
+      });
+    },
     onSuccess: (key) => {
-      setCreated(key);
       void queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      if (editing) {
+        toast.success("API key updated. The changes apply to its next request.");
+        close();
+      } else setCreated(key as ApiKeyCreated);
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
@@ -61,19 +85,22 @@ function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
   function close() {
     onOpenChange(false);
     setCreated(null);
-    setName("");
-    setScopes(["vendor:read"]);
-    setExpires("");
-    setIps("");
-    setLimit("120");
+    if (!editing) {
+      setName("");
+      setScopes(["vendor:read"]);
+      setExpires("");
+      setIps("");
+      setLimit("120");
+    }
   }
 
   const choices = API_KEY_SCOPES.map((s) => ({
     value: s.key,
     label: s.label,
     description: s.key,
-    // A key can never carry more than its creator holds; the API enforces the same rule.
-    disabled: !permissions.includes(s.key),
+    // A key can never carry more than its editor holds; the API enforces the same rule. A scope the key already
+    // has stays removable.
+    disabled: !permissions.includes(s.key) && !scopes.includes(s.key),
   }));
 
   return (
@@ -114,8 +141,12 @@ function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Create API key</DialogTitle>
-              <DialogDescription>For integrations such as ERP or procurement systems.</DialogDescription>
+              <DialogTitle>{editing ? `Edit "${editing.name}"` : "Create API key"}</DialogTitle>
+              <DialogDescription>
+                {editing
+                  ? "Change what this key may do. The key itself stays the same, so systems using it need no change."
+                  : "For integrations such as ERP or procurement systems."}
+              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4">
               <FormField id="key-name" label="Name">
@@ -138,8 +169,8 @@ function CreateKeyDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
               <Button variant="outline" onClick={close}>
                 Cancel
               </Button>
-              <Button disabled={!name.trim() || !scopes.length || create.isPending} onClick={() => create.mutate()}>
-                {create.isPending ? "Creating…" : "Create key"}
+              <Button disabled={!name.trim() || !scopes.length || save.isPending} onClick={() => save.mutate()}>
+                {save.isPending ? "Saving…" : editing ? "Save changes" : "Create key"}
               </Button>
             </DialogFooter>
           </>
@@ -153,7 +184,9 @@ export default function ApiKeysPage() {
   const queryClient = useQueryClient();
   const canManage = useCan(P.APIKEY_MANAGE);
   const [createOpen, setCreateOpen] = useState(false);
+  const [editing, setEditing] = useState<ApiKeyRead | null>(null);
   const [revoking, setRevoking] = useState<ApiKeyRead | null>(null);
+  const [deleting, setDeleting] = useState<ApiKeyRead | null>(null);
 
   const keys = useQuery({ queryKey: ["api-keys"], queryFn: () => api<ApiKeyRead[]>("/api-keys"), enabled: canManage });
   const revoke = useMutation({
@@ -162,6 +195,15 @@ export default function ApiKeysPage() {
       toast.success("API key revoked");
       void queryClient.invalidateQueries({ queryKey: ["api-keys"] });
       setRevoking(null);
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+  const remove = useMutation({
+    mutationFn: (k: ApiKeyRead) => api(`/api-keys/${k.id}`, { method: "DELETE", query: { permanent: true } }),
+    onSuccess: () => {
+      toast.success("API key deleted");
+      void queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      setDeleting(null);
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
@@ -185,7 +227,7 @@ export default function ApiKeysPage() {
           <AlertDescription>No API keys yet.</AlertDescription>
         </Alert>
       ) : (
-        <div className="rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -196,7 +238,7 @@ export default function ApiKeysPage() {
                 <TableHead>Last used</TableHead>
                 <TableHead>Expires</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-24" />
+                <TableHead className="w-36" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -211,7 +253,7 @@ export default function ApiKeysPage() {
                 <TableRow key={k.id}>
                   <TableCell className="font-medium">{k.name}</TableCell>
                   <TableCell className="font-mono text-xs">mai_live_{k.prefix}_…</TableCell>
-                  <TableCell className="max-w-56 text-xs text-muted-foreground">{k.scopes.join(", ")}</TableCell>
+                  <TableCell className="max-w-72 min-w-48 text-xs whitespace-normal text-muted-foreground">{k.scopes.join(", ")}</TableCell>
                   <TableCell className="text-right text-sm tabular-nums">{k.rate_limit_per_minute.toLocaleString()}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{timeAgo(k.last_used_at)}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{k.expires_at ? formatDateTime(k.expires_at) : "Never"}</TableCell>
@@ -219,11 +261,28 @@ export default function ApiKeysPage() {
                     <StatusBadge status={keyStatus(k)} />
                   </TableCell>
                   <TableCell>
-                    {!k.revoked_at && (
-                      <Button size="sm" variant="destructive" onClick={() => setRevoking(k)}>
-                        Revoke
+                    <div className="flex justify-end gap-1">
+                      {!k.revoked_at && (
+                        <>
+                          <Button size="icon-sm" variant="ghost" aria-label={`Edit ${k.name}`} title="Edit" onClick={() => setEditing(k)}>
+                            <Pencil />
+                          </Button>
+                          <Button size="icon-sm" variant="ghost" aria-label={`Revoke ${k.name}`} title="Revoke" onClick={() => setRevoking(k)}>
+                            <Ban />
+                          </Button>
+                        </>
+                      )}
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive"
+                        aria-label={`Delete ${k.name}`}
+                        title="Delete"
+                        onClick={() => setDeleting(k)}
+                      >
+                        <Trash2 />
                       </Button>
-                    )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -232,16 +291,31 @@ export default function ApiKeysPage() {
         </div>
       )}
 
-      <CreateKeyDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <KeyDialog open={createOpen} onOpenChange={setCreateOpen} />
+      {editing && <KeyDialog key={editing.id} open editing={editing} onOpenChange={(o) => !o && setEditing(null)} />}
       <ConfirmDialog
         open={Boolean(revoking)}
         onOpenChange={(o) => !o && setRevoking(null)}
         title={`Revoke "${revoking?.name}"?`}
-        description="Any system using this key will immediately stop working. This can't be undone."
+        description="Any system using this key will immediately stop working. The key stays in this list as revoked. This can't be undone."
         confirmLabel="Revoke key"
         destructive
         pending={revoke.isPending}
         onConfirm={() => revoking && revoke.mutate(revoking)}
+      />
+      <ConfirmDialog
+        open={Boolean(deleting)}
+        onOpenChange={(o) => !o && setDeleting(null)}
+        title={`Delete "${deleting?.name}"?`}
+        description={
+          deleting?.revoked_at
+            ? "The revoked key is removed from this list. The audit log keeps a record of it."
+            : "Any system using this key will immediately stop working, and the key is removed from this list. The audit log keeps a record of it. This can't be undone."
+        }
+        confirmLabel="Delete key"
+        destructive
+        pending={remove.isPending}
+        onConfirm={() => deleting && remove.mutate(deleting)}
       />
     </>
   );

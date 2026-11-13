@@ -172,16 +172,24 @@ export function VendorSearch({ mine = false, aiFill = false, paged = false }: { 
           />
         )}
         {filtered && (
-          <Button variant="ghost" size="sm" onClick={() => setFilters(EMPTY)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setFilters(EMPTY);
+              if (paged) setPage(1);
+            }}
+          >
             <X /> Clear filters
           </Button>
         )}
       </div>
-      {aiFill && rows.length > 0 && (
-        <div className="mb-4 grid gap-4">
+      {aiFill && (
+        <div className="mb-4 grid gap-4 empty:hidden">
           <AiFillBar
             selected={[...selected]}
             actions={["website", "hq_country", "description", "contacts", "research"]}
+            showToolbar={rows.length > 0}
             onStarted={() => setSelected(new Set())}
             hint={`Tick up to ${MAX_AI_SELECTED} vendors to look up missing websites, headquarters, descriptions or contact details, or research their websites.`}
           />

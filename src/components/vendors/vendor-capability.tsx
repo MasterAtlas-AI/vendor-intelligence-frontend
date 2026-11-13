@@ -122,6 +122,10 @@ const size = (bytes: number) => (bytes >= 1_048_576 ? `${(bytes / 1_048_576).toF
 
 /** SOW 17.3: the documents your organization uploaded that this vendor's facts came from (private to you). */
 export function VendorDocuments({ vendorId }: { vendorId: string }) {
+  // Import files can hold prices and internal vendor lists: downloads need import rights or commercial access.
+  const canImport = useCan(P.UPLOAD_CREATE);
+  const canCommercial = useCan(P.COMMERCIAL_READ);
+  const canDownload = canImport || canCommercial;
   const docs = useQuery({
     queryKey: ["vendor-documents", vendorId],
     queryFn: () => api<VendorDocument[]>(`/vendors/${vendorId}/documents`),
@@ -130,7 +134,10 @@ export function VendorDocuments({ vendorId }: { vendorId: string }) {
     <Card>
       <CardHeader>
         <CardTitle>Source documents</CardTitle>
-        <CardDescription>Files your organization uploaded that facts on this vendor came from. Only your organization sees them.</CardDescription>
+        <CardDescription>
+          Files your organization uploaded that facts on this vendor came from. Only your organization sees them
+          {canDownload ? "." : "; downloading them needs import rights or access to commercial data."}
+        </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-2 text-sm">
         {docs.isPending && <Skeleton className="h-10" />}
@@ -146,14 +153,16 @@ export function VendorDocuments({ vendorId }: { vendorId: string }) {
                 {d.facts} fact{d.facts === 1 ? "" : "s"} · {size(d.size_bytes)} · {timeAgo(d.uploaded_at)}
               </div>
             </div>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              aria-label={`Download ${d.filename}`}
-              onClick={() => void download(`/vendors/${vendorId}/documents/${d.upload_id}`, d.filename).catch((e: unknown) => toast.error(errorMessage(e)))}
-            >
-              <Download />
-            </Button>
+            {canDownload && (
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                aria-label={`Download ${d.filename}`}
+                onClick={() => void download(`/vendors/${vendorId}/documents/${d.upload_id}`, d.filename).catch((e: unknown) => toast.error(errorMessage(e)))}
+              >
+                <Download />
+              </Button>
+            )}
           </div>
         ))}
       </CardContent>

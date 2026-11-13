@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCcw, ScanSearch, Search } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -80,6 +80,11 @@ export default function DataQualityPage() {
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
+
+  const lastPage = board.data ? Math.max(1, Math.ceil(board.data.worst_total / PAGE_SIZE)) : null;
+  useEffect(() => {
+    if (lastPage !== null && !board.isFetching && page > lastPage) setPage(lastPage);
+  }, [lastPage, page, board.isFetching, setPage]);
 
   if (!canReview) return <NoAccess what="the data-quality dashboard" />;
   const d = board.data;
@@ -196,14 +201,13 @@ export default function DataQualityPage() {
               </Label>
             </CardContent>
           </Card>
-          {rows.length > 0 && (
-            <AiFillBar
-              selected={[...selected]}
-              actions={actionsFor(issue)}
-              onStarted={() => setSelected(new Set())}
-              hint={`Tick up to ${MAX_AI_SELECTED} vendors, then let the AI fill the gaps.`}
-            />
-          )}
+          <AiFillBar
+            selected={[...selected]}
+            actions={actionsFor(issue)}
+            onStarted={() => setSelected(new Set())}
+            hint={`Tick up to ${MAX_AI_SELECTED} vendors, then let the AI fill the gaps.`}
+            showToolbar={rows.length > 0}
+          />
           <div className="rounded-lg border">
             <Table>
               <TableHeader>

@@ -138,7 +138,7 @@ function PoDialog({
       const body: ProcurementWrite = {
         project_id: projectId,
         equipment_id: form.equipment_id || null,
-        vendor_id: record?.vendor_id ?? null,
+        vendor_id: record && form.vendor_name.trim() === record.vendor_name ? record.vendor_id : null,
         vendor_name: form.vendor_name.trim(),
         record_type: form.record_type,
         technical_status: form.technical_status || null,

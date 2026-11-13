@@ -35,7 +35,13 @@ const RATED_TYPES = new Set(["datasheet", "specification", "other"]);
 
 const showValue = (v: Rating["current"], unit: string) => {
   if (v === null || v === undefined || v === "") return "—";
-  const text = Array.isArray(v) ? `${v[0].toLocaleString()} – ${v[1].toLocaleString()}` : typeof v === "number" ? v.toLocaleString() : v;
+  const text = Array.isArray(v)
+    ? v.length >= 2
+      ? `${v[0].toLocaleString()} – ${v[v.length - 1].toLocaleString()}`
+      : (v[0]?.toLocaleString() ?? "—")
+    : typeof v === "number"
+      ? v.toLocaleString()
+      : v;
   return unit && typeof v !== "string" ? `${text} ${unit}` : text;
 };
 const same = (a: Rating["current"], b: Rating["found"]) => JSON.stringify(a) === JSON.stringify(b);
@@ -56,6 +62,10 @@ function RatingsDialog({ doc, onClose }: { doc: ProjectDocument; onClose: () => 
       const lineId = found.data?.equipment_id;
       if (!lineId) throw new Error("This document isn't tied to an equipment line");
       const line = await api<Equipment>(`/equipment/${lineId}`);
+      if (found.data?.equipment_version != null && line.version !== found.data.equipment_version) {
+        void queryClient.invalidateQueries({ queryKey: ["document-ratings", doc.id] });
+        throw new Error("The line was changed since these ratings were compared. They have been refreshed: check them and copy again.");
+      }
       const attributes = { ...(line.attributes ?? {}) };
       for (const r of ratings) if (chosen.has(r.key)) attributes[r.key] = r.found;
       return api<Equipment>(`/equipment/${lineId}`, { method: "PATCH", body: { version: line.version, attributes } });

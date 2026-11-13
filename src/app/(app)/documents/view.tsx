@@ -36,10 +36,17 @@ export default function DocumentsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const [qParam] = useQueryParam("q");
-  const [type, setType] = useQueryParam("type");
+  const [type] = useQueryParam("type");
   const [page, setPage] = usePageParam();
   const [search, setSearch] = useState(qParam);
   const q = useDebounced(search.trim(), 400);
+  // The URL changed without typing (the sidebar link, Back): the box shows the URL's words. Adjusted while
+  // rendering, as React recommends; q is what the box last pushed, so the user's own typing is never undone.
+  const [seenQ, setSeenQ] = useState(qParam);
+  if (qParam !== seenQ) {
+    setSeenQ(qParam);
+    if (qParam !== q) setSearch(qParam);
+  }
   useEffect(() => {
     if (q !== qParam) {
       // One URL update: the new words, back to the first page.
@@ -86,8 +93,12 @@ export default function DocumentsPage() {
           anyLabel="All types"
           value={type}
           onChange={(v) => {
-            setType(v);
-            setPage(1);
+            // One URL update for both (two replaces would race and the second would drop the type).
+            const query = new URLSearchParams(window.location.search);
+            if (v) query.set("type", v);
+            else query.delete("type");
+            query.delete("page");
+            router.replace(query.toString() ? `${pathname}?${query}` : pathname, { scroll: false });
           }}
           options={DOC_TYPES.map((d) => ({ ...d }))}
           className="w-48"

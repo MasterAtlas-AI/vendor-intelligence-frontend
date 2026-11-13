@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronDown, ExternalLink, Sparkles, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -125,7 +125,7 @@ function useDecisions() {
   const [decided, setDecided] = useState<Record<string, Decision>>({});
   const [conflicts, setConflicts] = useState<Record<string, DomainOwner>>({});
   const [busy, setBusy] = useState<Set<string>>(new Set());
-  const run = async (key: string, label: string, action: () => Promise<unknown>, outcome: Decision) => {
+  const run = async (key: string, label: string, action: () => Promise<unknown>, outcome: Decision): Promise<boolean> => {
     setBusy((b) => new Set(b).add(key));
     try {
       await action();
@@ -138,6 +138,7 @@ function useDecisions() {
       void queryClient.invalidateQueries({ queryKey: ["data-quality"] });
       void queryClient.invalidateQueries({ queryKey: ["vendors"] });
       void queryClient.invalidateQueries({ queryKey: ["vendor"] });
+      return true;
     } catch (e) {
       const owner = e instanceof ApiError && e.code === "duplicate_vendor" ? (e.errors[0] as unknown as Record<string, string>) : null;
       if (owner?.other_vendor_id) {
@@ -145,6 +146,7 @@ function useDecisions() {
       } else {
         toast.error(`${label}: ${errorMessage(e)}`);
       }
+      return false;
     } finally {
       setBusy((b) => {
         const next = new Set(b);
@@ -314,14 +316,25 @@ export function LookupResults({ jobId, field, onClose }: { jobId: string; field:
     (r) => r.status === "proposed" && r.proposal_id && !decided[r.vendor_id] && !conflicts[r.vendor_id],
   );
   // Group company on its parent's site: drop the pending proposal (if any), then save the website without the domain.
+  // A proposal already dropped by an earlier try (whose second step failed) is not dropped again.
+  const dropped = useRef(new Set<string>());
   const saveAsGroupSite = (r: LookupRow) =>
     run(r.vendor_id, r.name, async () => {
-      if (r.proposal_id) await decide(r.proposal_id, "reject");
+      if (r.proposal_id && !dropped.current.has(r.proposal_id)) {
+        await decide(r.proposal_id, "reject");
+        dropped.current.add(r.proposal_id);
+      }
       await approveAnyway(r, "website", true);
     }, "approved");
+  const report = (ok: number, total: number, verb: string) => {
+    if (ok === total) toast.success(`${verb} ${ok}`);
+    else if (ok) toast.warning(`${verb} ${ok} of ${total}; the rest show why`);
+    else toast.error(`None ${verb.toLowerCase()}; each row shows why`);
+  };
   const approveAll = async () => {
-    for (const r of open) await run(r.vendor_id, r.name, () => decide(r.proposal_id!, "approve"), "approved");
-    toast.success("Approved");
+    let ok = 0;
+    for (const r of open) if (await run(r.vendor_id, r.name, () => decide(r.proposal_id!, "approve"), "approved")) ok++;
+    report(ok, open.length, "Approved");
   };
   // The rows' own buttons, in bulk (each list holds exactly the rows that show that button):
   // "Save as group website" where another vendor already has the website, "Use this anyway" for other answers
@@ -332,9 +345,13 @@ export function LookupResults({ jobId, field, onClose }: { jobId: string; field:
   const anywayRows = undecided.filter((r) => !conflicts[r.vendor_id] && !r.other_vendor_id && r.status === "rejected");
   const runBulk = async (which: "group" | "anyway") => {
     setBulk(null);
-    if (which === "group") for (const r of groupRows) await saveAsGroupSite(r);
-    else for (const r of anywayRows) await run(r.vendor_id, r.name, () => approveAnyway(r, field), "approved");
-    toast.success("Saved");
+    const list = which === "group" ? groupRows : anywayRows;
+    let ok = 0;
+    for (const r of list) {
+      const done = which === "group" ? await saveAsGroupSite(r) : await run(r.vendor_id, r.name, () => approveAnyway(r, field), "approved");
+      if (done) ok++;
+    }
+    report(ok, list.length, "Saved");
   };
 
   return (
@@ -576,11 +593,14 @@ export function AiFillBar({
   actions,
   onStarted,
   hint,
+  showToolbar = true,
 }: {
   selected: string[];
   actions: AiAction[];
   onStarted: () => void;
   hint: string;
+  /** False hides the select-and-run bar (an empty list) but keeps open results on screen. */
+  showToolbar?: boolean;
 }) {
   const [pending, setPending] = useState<AiAction | null>(null);
   const [results, setResults] = useState<Results | null>(null);
@@ -633,6 +653,7 @@ export function AiFillBar({
           onFindWebsites={(ids) => start.mutate({ action: "website", ids: ids.slice(0, MAX_AI_SELECTED) })}
         />
       )}
+      {showToolbar && (
       <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-muted/40 px-4 py-2">
         <span className="text-sm text-muted-foreground">{n ? `${n} selected` : hint}</span>
         <div className="ml-auto flex">
@@ -657,6 +678,7 @@ export function AiFillBar({
           )}
         </div>
       </div>
+      )}
       <ConfirmDialog
         open={pending !== null}
         onOpenChange={(o) => !o && setPending(null)}

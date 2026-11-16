@@ -2339,6 +2339,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/vendor-enrichment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Enrichment Plan
+         * @description What a run on the whole knowledge base would do: vendors per field still missing it (and, by default, not
+         *     yet checked by the AI), the cost estimate and the AI budget left this month; plus the current or last run.
+         */
+        get: operations["enrichment_plan_api_v1_admin_vendor_enrichment_get"];
+        put?: never;
+        /**
+         * Start Enrichment
+         * @description Runs AI on every vendor missing the chosen fields, as one background job (see GET /jobs/{id} for its live
+         *     progress and partial results; POST /jobs/{id}/cancel stops it and keeps what was done). Answers wait in
+         *     Approvals. It stops by itself at `max_usd` or when the AI budget is used up.
+         */
+        post: operations["start_enrichment_api_v1_admin_vendor_enrichment_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/data-quality/lookup": {
         parameters: {
             query?: never;
@@ -4045,6 +4072,57 @@ export interface components {
              * @description Signs every delivery (HMAC-SHA256). Shown only now; store it securely.
              */
             secret: string;
+        };
+        /** EnrichAccepted */
+        EnrichAccepted: {
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            /** Planned */
+            planned: {
+                [key: string]: number;
+            };
+            /** Estimated Cost Usd */
+            estimated_cost_usd: number;
+        };
+        /** EnrichPlan */
+        EnrichPlan: {
+            /** Planned */
+            planned: {
+                [key: string]: number;
+            };
+            /** Estimated Cost Usd */
+            estimated_cost_usd: number;
+            /** Budget Limit Usd */
+            budget_limit_usd: number;
+            /** Budget Remaining Usd */
+            budget_remaining_usd: number;
+            /** Running Job Id */
+            running_job_id: string | null;
+            /** Last Job Id */
+            last_job_id: string | null;
+        };
+        /** EnrichRequest */
+        EnrichRequest: {
+            /** Fields */
+            fields: ("website" | "hq_country" | "description" | "contacts")[];
+            /**
+             * Skip Checked
+             * @default true
+             */
+            skip_checked: boolean;
+            /**
+             * Max Usd
+             * @description Stop before spending more than this (US$)
+             */
+            max_usd: number;
+            /**
+             * Vendor Ids
+             * @description Only these vendors
+             */
+            vendor_ids?: string[] | null;
         };
         /** EquipmentCategoryRead */
         EquipmentCategoryRead: {
@@ -13095,6 +13173,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReverifyResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enrichment_plan_api_v1_admin_vendor_enrichment_get: {
+        parameters: {
+            query?: {
+                skip_checked?: boolean;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrichPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_enrichment_api_v1_admin_vendor_enrichment_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnrichRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrichAccepted"];
                 };
             };
             /** @description Validation Error */

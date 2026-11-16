@@ -98,8 +98,27 @@ async function decide(proposalId: string, decision: "approve" | "reject"): Promi
 
 /** A curator overrides the AI's checks: propose the answer by hand and approve it straight away. `shared` saves a
  *  group company's website without taking its domain from the vendor that owns it. */
+/** An http(s) address the API accepts as a source link, or null. */
+function webUrl(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const candidate = /^https?:\/\//i.test(value.trim()) ? value.trim() : /^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(value.trim()) ? `https://${value.trim()}` : null;
+  try {
+    return candidate && new URL(candidate).hostname.includes(".") ? candidate : null;
+  } catch {
+    return null;
+  }
+}
+
 async function approveAnyway(r: LookupRow, field: LookupField, shared = false): Promise<ProposalDetail> {
-  const evidence = [{ kind: "web", url: r.source_url ?? r.value, title: "AI lookup, confirmed by a curator", snippet: r.reason }];
+  // The source is the page the search cited; for a website, the site itself. An answer with no source page (the
+  // reason it wasn't accepted) is recorded as the AI's answer confirmed by the curator, without a link: the answer
+  // text (a description, a country code) is never a URL.
+  const url = webUrl(r.source_url) ?? (field === "website" ? webUrl(r.value) : null);
+  const evidence = [
+    url
+      ? { kind: "web", url, title: "AI lookup, confirmed by a curator", snippet: r.reason ?? "" }
+      : { kind: "ai", url: null, title: "AI lookup without a cited source, confirmed by a curator", snippet: r.reason ?? "" },
+  ];
   type Payload = { field: string; value: string | null; shared_domain?: boolean };
   const items: { action: string; payload: Payload; evidence: typeof evidence; confidence: number | null }[] = [
     { action: "update_vendor_field", payload: { field, value: r.value, ...(shared && { shared_domain: true }) }, evidence, confidence: r.confidence },

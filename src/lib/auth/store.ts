@@ -7,6 +7,7 @@ export type AuthStatus = "loading" | "authenticated" | "anonymous";
 export interface ActAsTenant {
   id: string;
   name: string;
+  slug?: string; // shown in the URL (?tenant=spog); older sessions may lack it and show the id instead
 }
 
 interface AuthState {

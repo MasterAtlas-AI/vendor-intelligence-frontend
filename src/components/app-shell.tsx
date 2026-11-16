@@ -3,9 +3,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Eye, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { TenantInUrl } from "@/components/tenant-in-url";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -61,7 +62,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const wasSignedIn = useRef(false);
 
   useEffect(() => {
-    const toLogin = () => router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    // Back to the same page after signing in, query included (a tenant view: ?tenant=spog).
+    const toLogin = () => router.replace(`/login?next=${encodeURIComponent(pathname + window.location.search)}`);
     if (status === "authenticated") wasSignedIn.current = true;
     if (status !== "anonymous") return;
     if (!wasSignedIn.current || useAuth.getState().signedOut) {
@@ -87,6 +89,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="print:hidden">
           <ActingAsBanner />
         </div>
+        <Suspense fallback={null}>
+          <TenantInUrl />
+        </Suspense>
         <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4 print:hidden">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />

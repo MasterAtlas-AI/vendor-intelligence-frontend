@@ -17,10 +17,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { OurHistory } from "@/components/vendors/our-history";
 import { OverlayDialog } from "@/components/vendors/overlay-dialog";
 import { LookupResults, ResearchResults } from "@/components/quality/ai-fill";
-import { FullDetailsButton, ProductResults } from "@/components/vendors/product-research";
+import { ProductResults } from "@/components/vendors/product-research";
 import { ProjectsCard } from "@/components/vendors/projects-card";
-import { ResearchCard } from "@/components/vendors/research-card";
-import { RunAllButton, type RunAllJobs } from "@/components/vendors/run-all";
+import { VendorAiActions, type VendorAiJobs } from "@/components/vendors/vendor-ai-actions";
 import { ManufacturingCapability, SupportNetwork, VendorDocuments } from "@/components/vendors/vendor-capability";
 import { AfterSalesSummary, VendorFacts } from "@/components/vendors/vendor-facts";
 import { api } from "@/lib/api/client";
@@ -108,12 +107,12 @@ export default function VendorDetailPage() {
   const actAs = useAuth((s) => s.actAs);
   const hasTenant = useAuth((s) => Boolean(s.user?.tenant || s.actAs));
   const [productJob, setProductJob] = useState<string | null>(null);
-  // AI web look-ups started from this page (contact details, or the missing basics from "Do everything").
-  const [lookupJobs, setLookupJobs] = useState<RunAllJobs["lookups"]>([]);
-  const [researchJob, setResearchJob] = useState<string | null>(null);
-  const startedAll = (jobs: RunAllJobs) => {
+  // AI jobs started from this page ("Get everything with AI" or one of "More AI options"), each shown with its results.
+  const [lookupJobs, setLookupJobs] = useState<VendorAiJobs["lookups"]>([]);
+  const [researchJobs, setResearchJobs] = useState<string[]>([]);
+  const startedAll = (jobs: VendorAiJobs) => {
     if (jobs.products) setProductJob(jobs.products);
-    if (jobs.research) setResearchJob(jobs.research);
+    if (jobs.research.length) setResearchJobs((prev) => [...jobs.research, ...prev]);
     setLookupJobs((prev) => [...prev.filter((l) => !jobs.lookups.some((n) => n.field === l.field)), ...jobs.lookups]);
   };
   const vendor = useQuery({
@@ -141,8 +140,7 @@ export default function VendorDetailPage() {
                 <ExternalLink /> Website
               </Button>
             )}
-            <FullDetailsButton vendor={v} onStarted={setProductJob} />
-            <RunAllButton vendor={v} onStarted={startedAll} />
+            <VendorAiActions vendor={v} onStarted={startedAll} />
           </>
         }
       />
@@ -152,14 +150,14 @@ export default function VendorDetailPage() {
           {lookupJobs.map((l) => (
             <LookupResults key={l.jobId} jobId={l.jobId} field={l.field} onClose={() => setLookupJobs((prev) => prev.filter((x) => x.jobId !== l.jobId))} />
           ))}
-          {researchJob && (
+          {researchJobs.map((jobId) => (
             <ResearchResults
-              key={researchJob}
-              research={{ queued: 1, estimated_cost_usd: 0, vendors: [{ vendor_id: v.id, name: v.display_name, job_id: researchJob, skipped: null }] }}
-              onClose={() => setResearchJob(null)}
+              key={jobId}
+              research={{ queued: 1, estimated_cost_usd: 0, vendors: [{ vendor_id: v.id, name: v.display_name, job_id: jobId, skipped: null }] }}
+              onClose={() => setResearchJobs((prev) => prev.filter((j) => j !== jobId))}
               onFindWebsites={() => undefined}
             />
-          )}
+          ))}
           <Card>
             <CardHeader>
               <CardTitle>Overview</CardTitle>
@@ -216,13 +214,6 @@ export default function VendorDetailPage() {
           {hasTenant && <ProjectsCard vendor={v} />}
           {hasTenant && <OurHistory vendorId={v.id} />}
           {hasTenant && <VendorDocuments vendorId={v.id} />}
-          {v.status !== "retired" && (
-            <ResearchCard
-              vendor={v}
-              onContactsStarted={(jobId) => startedAll({ lookups: [{ field: "contacts", jobId }] })}
-              onClassStarted={(jobId) => startedAll({ lookups: [{ field: "class_approvals", jobId }] })}
-            />
-          )}
         </div>
       </div>
     </>

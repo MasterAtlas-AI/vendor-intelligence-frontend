@@ -216,8 +216,8 @@ export default function TenantsPage() {
 
   function viewAs(t: TenantAdminRead) {
     queryClient.clear(); // never mix one tenant's cached data with another's
-    setActAs({ id: t.id, name: t.name });
-    router.push("/dashboard");
+    setActAs({ id: t.id, name: t.name, slug: t.slug });
+    router.push(`/dashboard?tenant=${encodeURIComponent(t.slug)}`);
   }
 
   if (!canManage) return <NoAccess what="tenant administration" />;

@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { NoAccess, PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { EnrichAll } from "@/components/vendors/enrich-all";
 import { VendorSearch } from "@/components/vendors/vendor-search";
 import { P, useCan } from "@/lib/auth/permissions";
 
@@ -27,6 +28,7 @@ export default function VendorsPage() {
           )
         }
       />
+      {canCurate && <EnrichAll />}
       <VendorSearch aiFill={canCurate} paged />
     </>
   );

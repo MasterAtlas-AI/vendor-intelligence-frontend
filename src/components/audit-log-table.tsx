@@ -7,6 +7,7 @@ import { Fragment, useState } from "react";
 import { LoadMore } from "@/components/load-more";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { DatePicker, localDay } from "@/components/ui/date-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useDebounced } from "@/hooks/use-debounced";
@@ -51,8 +52,8 @@ export function AuditLogTable({ path, showTenant = false }: { path: string; show
           value={action}
           onChange={(e) => setAction(e.target.value)}
         />
-        <Input type="date" className="w-40" aria-label="From date" value={from} onChange={(e) => setFrom(e.target.value)} />
-        <Input type="date" className="w-40" aria-label="To date" value={to} onChange={(e) => setTo(e.target.value)} />
+        <DatePicker className="w-44" aria-label="From date" placeholder="From date" value={from} onChange={setFrom} max={to || localDay()} />
+        <DatePicker className="w-44" aria-label="To date" placeholder="To date" value={to} onChange={setTo} min={from || undefined} max={localDay()} />
       </div>
       <div className="rounded-lg border">
         <Table>

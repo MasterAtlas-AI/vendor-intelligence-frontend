@@ -6453,6 +6453,25 @@
             }
           },
           {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Numbered pages: skip this many (returns `total`)",
+              "title": "Offset"
+            },
+            "description": "Numbered pages: skip this many (returns `total`)"
+          },
+          {
             "name": "authorization",
             "in": "header",
             "required": false,
@@ -16819,6 +16838,200 @@
         }
       }
     },
+    "/api/v1/rfqs/{rfq_id}/email": {
+      "get": {
+        "tags": [
+          "rfqs"
+        ],
+        "summary": "Rfq Email Preview",
+        "description": "The e-mail each vendor would receive (subject, text with the requirements) and who has an address.",
+        "operationId": "rfq_email_preview_api_v1_rfqs__rfq_id__email_get",
+        "parameters": [
+          {
+            "name": "rfq_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rfq Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailPreview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "rfqs"
+        ],
+        "summary": "Send Rfq Email",
+        "description": "E-mails the RFQ to the chosen vendors, one message each (no vendor sees another), replies going to the\nsender. A draft RFQ is issued by it. `test_to_me` sends a single copy to the sender instead.",
+        "operationId": "send_rfq_email_api_v1_rfqs__rfq_id__email_post",
+        "parameters": [
+          {
+            "name": "rfq_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rfq Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "x-act-as-tenant",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Act-As-Tenant"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSend"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSendResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/rfqs/{rfq_id}/vendors": {
       "get": {
         "tags": [
@@ -19772,6 +19985,11 @@
             "title": "Note",
             "description": "Required when rejecting",
             "default": ""
+          },
+          "shared_websites": {
+            "type": "boolean",
+            "title": "Shared Websites",
+            "default": false
           }
         },
         "additionalProperties": false,
@@ -21751,6 +21969,184 @@
           "total"
         ],
         "title": "DocumentSearch"
+      },
+      "EmailPreview": {
+        "properties": {
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "sender": {
+            "type": "string",
+            "title": "Sender"
+          },
+          "reply_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reply To"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "recipients": {
+            "items": {
+              "$ref": "#/components/schemas/EmailRecipient"
+            },
+            "type": "array",
+            "title": "Recipients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "configured",
+          "sender",
+          "reply_to",
+          "subject",
+          "body",
+          "recipients"
+        ],
+        "title": "EmailPreview"
+      },
+      "EmailRecipient": {
+        "properties": {
+          "vendor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Vendor Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "test_address": {
+            "type": "boolean",
+            "title": "Test Address",
+            "default": false
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "shortlisted",
+              "invited",
+              "quoted",
+              "declined",
+              "awarded",
+              "lost"
+            ],
+            "title": "Status"
+          },
+          "emailed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emailed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendor_id",
+          "name",
+          "email",
+          "status",
+          "emailed_at"
+        ],
+        "title": "EmailRecipient"
+      },
+      "EmailSend": {
+        "properties": {
+          "vendor_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Vendor Ids"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 3000,
+            "title": "Note",
+            "default": ""
+          },
+          "test_to_me": {
+            "type": "boolean",
+            "title": "Test To Me",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "vendor_ids"
+        ],
+        "title": "EmailSend"
+      },
+      "EmailSendResult": {
+        "properties": {
+          "sent": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sent"
+          },
+          "skipped": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skipped"
+          },
+          "failed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failed"
+          },
+          "issued": {
+            "type": "boolean",
+            "title": "Issued"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sent",
+          "skipped",
+          "failed",
+          "issued"
+        ],
+        "title": "EmailSendResult"
       },
       "EndpointCreate": {
         "properties": {
@@ -27730,6 +28126,17 @@
           "has_more": {
             "type": "boolean",
             "title": "Has More"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
           }
         },
         "type": "object",
@@ -28826,6 +29233,40 @@
               }
             ],
             "title": "Score"
+          },
+          "emailed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emailed At"
+          },
+          "emailed_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emailed To"
+          },
+          "test_recipient": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Recipient"
           }
         },
         "type": "object",
@@ -31881,6 +32322,17 @@
             "type": "integer",
             "title": "Certification Count"
           },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
           "tenant": {
             "anyOf": [
               {
@@ -32348,6 +32800,17 @@
           "certification_count": {
             "type": "integer",
             "title": "Certification Count"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
           },
           "tenant": {
             "anyOf": [

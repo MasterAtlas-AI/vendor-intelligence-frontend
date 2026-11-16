@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Award, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Award, Mail, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -10,15 +10,16 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PageHeader } from "@/components/page-header";
 import { ReportButton } from "@/components/reports/report-button";
+import { EmailRfqDialog } from "@/components/rfqs/email-rfq-dialog";
+import { AddVendors, RequirementsEditor } from "@/components/rfqs/rfq-editors";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useDebounced } from "@/hooks/use-debounced";
 import { ApiError, api } from "@/lib/api/client";
-import type { Rfq, RfqVendor, VendorPage } from "@/lib/api/types";
+import type { Rfq, RfqVendor } from "@/lib/api/types";
 import { formatDateTime } from "@/lib/format";
 import { RFQ_ACTIONS } from "@/lib/rfqs";
 import { errorMessage } from "@/lib/validation";
@@ -70,52 +71,14 @@ function QuoteEditor({ rfqId, row, onSaved }: { rfqId: string; row: RfqVendor; o
   );
 }
 
-function AddVendor({ rfqId, existing, onSaved }: { rfqId: string; existing: Set<string>; onSaved: (rows: RfqVendor[]) => void }) {
-  const [q, setQ] = useState("");
-  const term = useDebounced(q.trim(), 300);
-  const found = useQuery({
-    queryKey: ["vendors", "pick", term],
-    queryFn: ({ signal }) => api<VendorPage>("/vendors", { query: { q: term, limit: 8 }, signal }),
-    enabled: term.length >= 2,
-  });
-  const add = useMutation({
-    mutationFn: (vendorId: string) => api<RfqVendor[]>(`/rfqs/${rfqId}/vendors`, { method: "POST", body: { vendor_id: vendorId } }),
-    onSuccess: (rows) => {
-      onSaved(rows);
-      setQ("");
-    },
-    onError: (e) => toast.error(errorMessage(e)),
-  });
-  return (
-    <div className="grid gap-2">
-      <Input aria-label="Find a vendor to invite" placeholder="Add a vendor: type a name…" value={q} onChange={(e) => setQ(e.target.value)} />
-      {term.length >= 2 && found.data && (
-        <div className="grid gap-1 rounded-md border p-1">
-          {found.data.items.length === 0 && <p className="p-2 text-sm text-muted-foreground">No vendors match.</p>}
-          {found.data.items.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              disabled={existing.has(v.id) || add.isPending}
-              className="flex items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-muted disabled:opacity-50"
-              onClick={() => add.mutate(v.id)}
-            >
-              <span>{v.display_name}</span>
-              <span className="text-xs text-muted-foreground">{existing.has(v.id) ? "On the RFQ" : <Plus className="size-4" />}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function RfqPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const rfq = useQuery({ queryKey: ["rfq", id], queryFn: () => api<Rfq>(`/rfqs/${id}`) });
   const vendors = useQuery({ queryKey: ["rfq-vendors", id], queryFn: () => api<RfqVendor[]>(`/rfqs/${id}/vendors`) });
   const [awardTo, setAwardTo] = useState<RfqVendor | null>(null);
+  // The e-mail dialog: true for all vendors, or one vendor id (the row's own button).
+  const [emailing, setEmailing] = useState<boolean | string>(false);
   const [confirm, setConfirm] = useState<[string, string] | null>(null);
 
   const refresh = (rows?: RfqVendor[]) => {
@@ -183,6 +146,11 @@ export default function RfqPage() {
           <>
             <StatusBadge status={r.status} />
             <ReportButton reportType="rfq_summary" parameters={{ rfq_id: r.id }} label="Summary" size="default" />
+            {r.can_edit && ["draft", "issued", "evaluating"].includes(r.status) && rows.length > 0 && (
+              <Button variant="outline" onClick={() => setEmailing(true)}>
+                <Mail /> E-mail vendors
+              </Button>
+            )}
             {r.can_edit &&
               (RFQ_ACTIONS[r.status] ?? []).map(([path, label]) => (
                 <Button key={path} variant={path === "cancel" ? "outline" : "default"} disabled={move.isPending} onClick={() => setConfirm([path, label])}>
@@ -209,7 +177,7 @@ export default function RfqPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            {editable && <AddVendor rfqId={id} existing={new Set(rows.map((x) => x.vendor.id))} onSaved={(x) => refresh(x)} />}
+            {editable && <AddVendors rfq={r} existing={new Set(rows.map((x) => x.vendor.id))} onSaved={(x) => refresh(x)} />}
             <div className="rounded-lg border">
               <Table>
                 <TableHeader>
@@ -244,6 +212,23 @@ export default function RfqPage() {
                           {row.vendor.display_name}
                         </Link>
                         <div className="text-xs text-muted-foreground">{countryName(row.vendor.hq_country)}</div>
+                        {row.vendor.email ? (
+                          <a href={`mailto:${row.vendor.email}`} className="text-xs text-primary break-all hover:underline">
+                            {row.vendor.email}
+                          </a>
+                        ) : (
+                          row.test_recipient ? (
+                            <div className="text-xs">
+                              <span className="break-all text-primary">{row.test_recipient}</span>{" "}
+                              <span className="rounded bg-amber-500/15 px-1 text-amber-800 dark:text-amber-300">test address: no vendor e-mail</span>
+                            </div>
+                          ) : (
+                            <div className="text-xs text-muted-foreground/70">No email on record</div>
+                          )
+                        )}
+                        {row.emailed_at && (
+                          <div className="text-xs text-emerald-700 dark:text-emerald-400">RFQ e-mailed {formatDateTime(row.emailed_at)}</div>
+                        )}
                         {editable && r.status !== "draft" && (row.status === "invited" || row.status === "quoted") && (
                           <div className="mt-2">
                             <QuoteEditor rfqId={id} row={row} onSaved={(x) => refresh(x)} />
@@ -270,6 +255,17 @@ export default function RfqPage() {
                             <Award /> Award
                           </Button>
                         )}
+                        {r.can_edit && ["draft", "issued", "evaluating"].includes(r.status) && ["shortlisted", "invited"].includes(row.status) && (
+                          <Button
+                            size="xs"
+                            variant="outline"
+                            title={row.emailed_at ? "E-mail the RFQ again" : "E-mail the RFQ to this vendor"}
+                            disabled={!row.vendor.email && !row.test_recipient}
+                            onClick={() => setEmailing(row.vendor.id)}
+                          >
+                            <Mail /> {row.emailed_at ? "Resend" : "Send RFQ"}
+                          </Button>
+                        )}
                         {r.can_edit && r.status === "draft" && (
                           <Button size="xs" variant="ghost" aria-label={`Remove ${row.vendor.display_name}`} onClick={() => remove.mutate(row.vendor.id)}>
                             <Trash2 />
@@ -290,19 +286,42 @@ export default function RfqPage() {
             </CardHeader>
             <CardContent className="grid gap-2 text-sm">
               {r.description && <p className="whitespace-pre-wrap text-muted-foreground">{r.description}</p>}
-              {r.requirements.length === 0 && !r.description && <p className="text-muted-foreground">None recorded.</p>}
-              <ul className="ml-4 list-disc space-y-1">
-                {r.requirements.map((req, i) => (
-                  <li key={i}>
-                    {req.text}
-                    {req.mandatory === false && <span className="text-xs text-muted-foreground"> (optional)</span>}
-                  </li>
-                ))}
-              </ul>
+              {r.status === "draft" && r.can_edit ? (
+                <RequirementsEditor
+                  rfq={r}
+                  onSaved={(updated) => {
+                    queryClient.setQueryData(["rfq", id], updated);
+                    refresh();
+                  }}
+                />
+              ) : (
+                <>
+                  {r.requirements.length === 0 && !r.description && <p className="text-muted-foreground">None recorded.</p>}
+                  <ul className="ml-4 list-disc space-y-1">
+                    {r.requirements.map((req, i) => (
+                      <li key={i}>
+                        {req.text}
+                        {req.mandatory === false && <span className="text-xs text-muted-foreground"> (optional)</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
+      {emailing && (
+        <EmailRfqDialog
+          rfqId={r.id}
+          only={typeof emailing === "string" ? emailing : undefined}
+          onClose={() => setEmailing(false)}
+          onSent={() => {
+            void queryClient.invalidateQueries({ queryKey: ["rfq-vendors", id] });
+            refresh();
+          }}
+        />
+      )}
       <ConfirmDialog
         open={confirm !== null}
         onOpenChange={(o) => !o && setConfirm(null)}

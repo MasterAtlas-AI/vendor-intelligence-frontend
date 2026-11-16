@@ -2535,6 +2535,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/rfqs/{rfq_id}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Rfq Email Preview
+         * @description The e-mail each vendor would receive (subject, text with the requirements) and who has an address.
+         */
+        get: operations["rfq_email_preview_api_v1_rfqs__rfq_id__email_get"];
+        put?: never;
+        /**
+         * Send Rfq Email
+         * @description E-mails the RFQ to the chosen vendors, one message each (no vendor sees another), replies going to the
+         *     sender. A draft RFQ is issued by it. `test_to_me` sends a single copy to the sender instead.
+         */
+        post: operations["send_rfq_email_api_v1_rfqs__rfq_id__email_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/rfqs/{rfq_id}/vendors": {
         parameters: {
             query?: never;
@@ -3253,6 +3278,11 @@ export interface components {
              * @default
              */
             note: string;
+            /**
+             * Shared Websites
+             * @default false
+             */
+            shared_websites: boolean;
         };
         /** BulkOutcome */
         BulkOutcome: {
@@ -3986,6 +4016,71 @@ export interface components {
             items: components["schemas"]["DocumentHit"][];
             /** Total */
             total: number;
+        };
+        /** EmailPreview */
+        EmailPreview: {
+            /** Configured */
+            configured: boolean;
+            /** Sender */
+            sender: string;
+            /** Reply To */
+            reply_to: string | null;
+            /** Subject */
+            subject: string;
+            /** Body */
+            body: string;
+            /** Recipients */
+            recipients: components["schemas"]["EmailRecipient"][];
+        };
+        /** EmailRecipient */
+        EmailRecipient: {
+            /**
+             * Vendor Id
+             * Format: uuid
+             */
+            vendor_id: string;
+            /** Name */
+            name: string;
+            /** Email */
+            email: string | null;
+            /**
+             * Test Address
+             * @default false
+             */
+            test_address: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "shortlisted" | "invited" | "quoted" | "declined" | "awarded" | "lost";
+            /** Emailed At */
+            emailed_at: string | null;
+        };
+        /** EmailSend */
+        EmailSend: {
+            /** Vendor Ids */
+            vendor_ids: string[];
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /**
+             * Test To Me
+             * @default false
+             */
+            test_to_me: boolean;
+        };
+        /** EmailSendResult */
+        EmailSendResult: {
+            /** Sent */
+            sent: string[];
+            /** Skipped */
+            skipped: string[];
+            /** Failed */
+            failed: string[];
+            /** Issued */
+            issued: boolean;
         };
         /** EndpointCreate */
         EndpointCreate: {
@@ -5921,6 +6016,8 @@ export interface components {
             next_cursor: string | null;
             /** Has More */
             has_more: boolean;
+            /** Total */
+            total?: number | null;
         };
         /**
          * ProposalStatus
@@ -6285,6 +6382,12 @@ export interface components {
             scorecard_id?: string | null;
             /** Score */
             score?: string | null;
+            /** Emailed At */
+            emailed_at?: string | null;
+            /** Emailed To */
+            emailed_to?: string | null;
+            /** Test Recipient */
+            test_recipient?: string | null;
         };
         /** RfqVendorUpdate */
         RfqVendorUpdate: {
@@ -7394,6 +7497,8 @@ export interface components {
             service_count: number;
             /** Certification Count */
             certification_count: number;
+            /** Email */
+            email?: string | null;
             tenant?: components["schemas"]["TenantOverlayRead"] | null;
             /** Description */
             description: string;
@@ -7553,6 +7658,8 @@ export interface components {
             service_count: number;
             /** Certification Count */
             certification_count: number;
+            /** Email */
+            email?: string | null;
             tenant?: components["schemas"]["TenantOverlayRead"] | null;
         };
         /**
@@ -9871,6 +9978,8 @@ export interface operations {
                 origin?: components["schemas"]["ProposalOrigin"] | null;
                 limit?: number;
                 cursor?: string | null;
+                /** @description Numbered pages: skip this many (returns `total`) */
+                offset?: number | null;
             };
             header?: {
                 authorization?: string | null;
@@ -13661,6 +13770,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RfqRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rfq_email_preview_api_v1_rfqs__rfq_id__email_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailPreview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_rfq_email_api_v1_rfqs__rfq_id__email_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-api-key"?: string | null;
+                "x-act-as-tenant"?: string | null;
+            };
+            path: {
+                rfq_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailSend"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailSendResult"];
                 };
             };
             /** @description Validation Error */

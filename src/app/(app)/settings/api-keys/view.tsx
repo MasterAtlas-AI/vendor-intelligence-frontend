@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { DatePicker, localDay } from "@/components/ui/date-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { api } from "@/lib/api/client";
@@ -156,7 +157,7 @@ function KeyDialog({ open, onOpenChange, editing }: { open: boolean; onOpenChang
                 <ChoiceList idPrefix="scope" choices={choices} value={scopes} onChange={setScopes} />
               </FormField>
               <FormField id="key-expires" label="Expires on" hint="Optional. Leave empty for no expiry.">
-                <Input id="key-expires" type="date" value={expires} onChange={(e) => setExpires(e.target.value)} />
+                <DatePicker id="key-expires" value={expires} onChange={setExpires} placeholder="No expiry" min={localDay(1)} />
               </FormField>
               <FormField id="key-limit" label="Requests per minute" hint="10–10,000. Requests over the limit get HTTP 429 with Retry-After.">
                 <Input id="key-limit" type="number" min={10} max={10000} value={limit} onChange={(e) => setLimit(e.target.value)} />

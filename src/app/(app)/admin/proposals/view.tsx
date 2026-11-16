@@ -1,16 +1,16 @@
 "use client";
 
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, CopyCheck, X } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { FilterSelect } from "@/components/filter-select";
-import { LoadMore } from "@/components/load-more";
 import { NoAccess, PageHeader } from "@/components/page-header";
+import { Pager } from "@/components/pager";
 import { StatusBadge } from "@/components/status-badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { usePageParam } from "@/hooks/use-page-param";
 import { api } from "@/lib/api/client";
 import type { components } from "@/lib/api/schema";
 import type { JobAccepted, ProposalPage } from "@/lib/api/types";
@@ -33,6 +34,8 @@ const ORIGINS = ["manual", "excel", "pdf", "ai_vendor_discovery", "ai_equipment_
 const options = (values: string[], label = humanize) => values.map((value) => ({ value, label: label(value) }));
 const OPEN = new Set(["pending_review", "needs_info"]);
 const MAX_BULK = 100;
+const PAGE_SIZE = 50;
+const DEFAULT_STATUS = "pending_review";
 // Each request must finish well within the proxy's 120 s limit even on a slow database link, so a request carries a
 // few proposals, or fewer when they have many items (a products proposal can have 20+).
 const CHUNK_PROPOSALS = 4;
@@ -59,14 +62,19 @@ type BulkResult = components["schemas"]["BulkResult"];
 
 export default function ProposalsQueuePage() {
   const canReview = useCan(P.KNOWLEDGE_APPROVE);
-  const [status, setStatus] = useState("pending_review");
-  const [kind, setKind] = useState("");
-  const [origin, setOrigin] = useState("");
+  // Filters and page live in the URL: /admin/proposals?status=approved&origin=excel&page=3 (no status: the queue).
+  const params = useSearchParams();
+  const pathname = usePathname();
+  const statusParam = params.get("status") ?? DEFAULT_STATUS;
+  const status = statusParam === "any" ? "" : statusParam;
+  const kind = params.get("kind") ?? "";
+  const origin = params.get("origin") ?? "";
+  const [page, setPage] = usePageParam();
   const [scanning, setScanning] = useState(false);
   const [selected, setSelected] = useState<Map<string, number>>(new Map()); // proposal id -> version seen
   const [rejecting, setRejecting] = useState(false);
   const [note, setNote] = useState("");
-  const [failures, setFailures] = useState<{ id: string; title: string; error: string }[]>([]);
+  const [failures, setFailures] = useState<{ id: string; title: string; error: string; version: number }[]>([]);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -80,14 +88,32 @@ export default function ProposalsQueuePage() {
     onError: (e) => toast.error(errorMessage(e)),
   });
 
-  const proposals = useInfiniteQuery({
-    queryKey: ["proposals", "queue", status, kind, origin],
-    queryFn: ({ pageParam, signal }) =>
-      api<ProposalPage>("/admin/proposals", { query: { status, kind, origin, limit: 25, cursor: pageParam }, signal }),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (last) => last.next_cursor ?? undefined,
+  const proposals = useQuery({
+    queryKey: ["proposals", "queue", status, kind, origin, page],
+    queryFn: ({ signal }) =>
+      api<ProposalPage>("/admin/proposals", {
+        query: { status: status || undefined, kind: kind || undefined, origin: origin || undefined, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE },
+        signal,
+      }),
+    placeholderData: (previous) => previous,
     enabled: canReview,
   });
+  // One URL update for a filter change (two would race): the new filter, back to the first page.
+  const setFilter = (key: "status" | "kind" | "origin", value: string) => {
+    const query = new URLSearchParams(window.location.search);
+    const stored = key === "status" ? (value === DEFAULT_STATUS ? "" : value || "any") : value;
+    if (stored) query.set(key, stored);
+    else query.delete(key);
+    query.delete("page");
+    router.replace(query.toString() ? `${pathname}?${query}` : pathname, { scroll: false });
+    setSelected(new Map());
+  };
+  // Approving the last proposals of the last page: step back to the new last page.
+  const total = proposals.data?.total ?? null;
+  const lastPage = total === null ? null : Math.max(1, Math.ceil(total / PAGE_SIZE));
+  useEffect(() => {
+    if (lastPage !== null && !proposals.isFetching && page > lastPage) setPage(lastPage);
+  }, [lastPage, page, proposals.isFetching, setPage]);
   const bulk = useMutation({
     mutationFn: async (action: "approve" | "reject"): Promise<BulkResult> => {
       const pendingItems = new Map(rows.map((p) => [p.id, Math.max(1, p.counts.pending)]));
@@ -122,7 +148,11 @@ export default function ProposalsQueuePage() {
     },
     onSuccess: (r, action) => {
       const titles = new Map(rows.map((p) => [p.id, p.title]));
-      setFailures(r.results.filter((x) => !x.ok).map((x) => ({ id: x.id, title: titles.get(x.id) ?? x.id, error: x.error ?? "Failed" })));
+      setFailures(
+        r.results
+          .filter((x) => !x.ok)
+          .map((x) => ({ id: x.id, title: titles.get(x.id) ?? x.id, error: x.error ?? "Failed", version: selected.get(x.id) ?? 0 })),
+      );
       setSelected(new Map());
       setRejecting(false);
       setNote("");
@@ -135,8 +165,40 @@ export default function ProposalsQueuePage() {
     onError: (e) => toast.error(errorMessage(e)),
   });
 
+  // Websites another vendor already owns (group companies on the parent's site): save them all as group websites,
+  // or reject them, in one go.
+  const clashes = failures.filter((f) => f.error.includes("already belongs to"));
+  const resolve = useMutation({
+    mutationFn: async (mode: "shared" | "reject"): Promise<BulkResult> => {
+      const all: BulkResult = { done: 0, failed: 0, results: [] };
+      for (const batch of chunks(clashes.map((c) => ({ ...c, items: 1 })))) {
+        const r = await api<BulkResult>("/admin/proposals/bulk", {
+          method: "POST",
+          body:
+            mode === "shared"
+              ? { action: "approve", note: "Saved as group websites in bulk", shared_websites: true, proposals: batch.map(({ id, version }) => ({ id, version })) }
+              : { action: "reject", note: "The website belongs to another vendor", proposals: batch.map(({ id, version }) => ({ id, version })) },
+        });
+        all.done += r.done;
+        all.failed += r.failed;
+        all.results.push(...r.results);
+      }
+      return all;
+    },
+    onSuccess: (r, mode) => {
+      const left = new Map(r.results.filter((x) => !x.ok).map((x) => [x.id, x.error ?? "Failed"]));
+      setFailures((prev) => prev.filter((f) => !clashes.some((c) => c.id === f.id) || left.has(f.id)).map((f) => (left.has(f.id) ? { ...f, error: left.get(f.id)! } : f)));
+      if (r.done) toast.success(`${r.done} website${r.done === 1 ? "" : "s"} ${mode === "shared" ? "saved as group websites" : "rejected"}`);
+      if (r.failed) toast.error(`${r.failed} couldn't be changed; see the list`);
+      void queryClient.invalidateQueries({ queryKey: ["proposals"] });
+      void queryClient.invalidateQueries({ queryKey: ["vendors"] });
+      void queryClient.invalidateQueries({ queryKey: ["data-quality"] });
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+
   if (!canReview) return <NoAccess what="the approvals queue" />;
-  const rows = proposals.data?.pages.flatMap((p) => p.items) ?? [];
+  const rows = proposals.data?.items ?? [];
   const open = rows.filter((p) => OPEN.has(p.status)).slice(0, MAX_BULK);
   const allPicked = open.length > 0 && open.every((p) => selected.has(p.id));
   const toggle = (id: string, version: number, on: boolean) => {
@@ -174,13 +236,13 @@ export default function ProposalsQueuePage() {
         onConfirm={() => scan.mutate()}
       />
       <div className="mb-4 flex flex-wrap gap-2">
-        <FilterSelect label="Status" anyLabel="Any status" value={status} onChange={(v) => (setStatus(v), setSelected(new Map()))} options={options(STATUSES)} />
-        <FilterSelect label="Kind" anyLabel="New and updates" value={kind} onChange={(v) => (setKind(v), setSelected(new Map()))} options={options(KINDS)} />
+        <FilterSelect label="Status" anyLabel="Any status" value={status} onChange={(v) => setFilter("status", v)} options={options(STATUSES)} />
+        <FilterSelect label="Kind" anyLabel="New and updates" value={kind} onChange={(v) => setFilter("kind", v)} options={options(KINDS)} />
         <FilterSelect
           label="Source"
           anyLabel="Any source"
           value={origin}
-          onChange={(v) => (setOrigin(v), setSelected(new Map()))}
+          onChange={(v) => setFilter("origin", v)}
           options={options(ORIGINS, originLabel)}
         />
       </div>
@@ -193,6 +255,21 @@ export default function ProposalsQueuePage() {
                 <X />
               </Button>
             </div>
+            {clashes.length > 0 && (
+              <div className="mb-2 flex flex-wrap items-center gap-2 rounded-md bg-background/60 p-2 text-foreground">
+                <span className="text-sm">
+                  {clashes.length} website{clashes.length === 1 ? " is" : "s are"} already used by another vendor, usually group companies sharing the parent&apos;s site.
+                </span>
+                <div className="ml-auto flex gap-2">
+                  <Button size="sm" disabled={resolve.isPending} onClick={() => resolve.mutate("shared")}>
+                    Save {clashes.length} as group websites
+                  </Button>
+                  <Button size="sm" variant="outline" disabled={resolve.isPending} onClick={() => resolve.mutate("reject")}>
+                    Reject {clashes.length}
+                  </Button>
+                </div>
+              </div>
+            )}
             <ul className="grid gap-1">
               {failures.map((f) => (
                 <li key={f.id}>
@@ -307,7 +384,19 @@ export default function ProposalsQueuePage() {
           </TableBody>
         </Table>
       </div>
-      <LoadMore hasNextPage={proposals.hasNextPage} isFetchingNextPage={proposals.isFetchingNextPage} fetchNextPage={proposals.fetchNextPage} />
+      <div className="mt-4">
+        <Pager
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={total}
+          loading={proposals.isFetching}
+          onPage={(p) => {
+            setPage(p);
+            setSelected(new Map());
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      </div>
     </>
   );
 }

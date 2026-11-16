@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -242,7 +243,7 @@ function AddDocumentDialog({ projectId, equipmentId, onClose }: { projectId: str
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="doc-date">Date</Label>
-              <Input id="doc-date" type="date" value={form.doc_date} onChange={(e) => set("doc_date")(e.target.value)} />
+              <DatePicker id="doc-date" value={form.doc_date} onChange={set("doc_date")} placeholder="Document date" />
             </div>
             {!equipmentId && (
               <div className="grid gap-1.5 sm:col-span-2">

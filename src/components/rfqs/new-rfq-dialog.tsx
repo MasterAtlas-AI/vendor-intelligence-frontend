@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { DatePicker, localDay } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api/client";
 import type { ProjectRead, Rfq } from "@/lib/api/types";
@@ -75,7 +76,7 @@ export function NewRfqDialog({
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="rfq-due">Quotes due</Label>
-              <Input id="rfq-due" type="date" value={due} onChange={(e) => setDue(e.target.value)} />
+              <DatePicker id="rfq-due" value={due} onChange={setDue} placeholder="Pick a due date" min={localDay()} />
             </div>
           </div>
           {!projectId && (

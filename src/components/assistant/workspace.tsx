@@ -241,7 +241,7 @@ export function Workspace({ exchange, exchanges }: { exchange: Exchange; exchang
               <ShortlistTab reply={exchange.reply} question={exchange.question} ranked={ranked} weights={weights} onWeights={setWeights} onOpenVendor={openVendor} />
             </TabsContent>
             <TabsContent value="scorecard">
-              <ScorecardTab ranked={ranked} selected={selected} onSelect={setSelected} details={byId} loading={loading} requirement={exchange.reply.requirement} />
+              <ScorecardTab ranked={ranked} selected={selected} onSelect={setSelected} details={byId} loading={loading} requirement={exchange.reply.requirement} question={exchange.question} />
             </TabsContent>
             <TabsContent value="compare">
               <CompareTab ranked={ranked} details={byId} loading={loading} onOpenVendor={openVendor} />

@@ -17,6 +17,7 @@ import { P, useCan } from "@/lib/auth/permissions";
 import { errorMessage } from "@/lib/validation";
 import { countryName } from "@/lib/vendors";
 
+import { VendorRfqButton } from "./vendor-rfq";
 import { activeDims, Bar, Chip, DEFAULT_WEIGHTS, Panel, type Ranked, requirementChips, type Weights } from "./workspace-shared";
 
 function csv(rows: Ranked[]): string {
@@ -241,6 +242,7 @@ export function ShortlistTab({
                 {showOurs && <th className="p-2">Our projects</th>}
                 <th className="p-2">AVL</th>
                 <th className="p-2">Flags</th>
+                {canRfq && <th className="w-16 p-2 text-right">Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -298,6 +300,11 @@ export function ShortlistTab({
                       {r.flags.length > 2 && <Chip>+{r.flags.length - 2}</Chip>}
                     </div>
                   </td>
+                  {canRfq && (
+                    <td className="p-2 text-right">
+                      <VendorRfqButton vendor={r} question={question} requirement={reply.requirement} />
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

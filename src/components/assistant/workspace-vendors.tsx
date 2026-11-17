@@ -11,6 +11,7 @@ import type { SearchIntent, VendorDetail } from "@/lib/api/types";
 import { formatDateTime } from "@/lib/format";
 import { countryName } from "@/lib/vendors";
 
+import { VendorRfqButton } from "./vendor-rfq";
 import { activeDims, Bar, Chip, codeLabel, fullIntent, Panel, type Ranked } from "./workspace-shared";
 
 const norm = (s: string) => s.toLowerCase().replace(/[\s_-]/g, "");
@@ -73,6 +74,7 @@ export function ScorecardTab({
   details,
   loading,
   requirement,
+  question,
 }: {
   ranked: Ranked[];
   selected: string | null;
@@ -80,6 +82,7 @@ export function ScorecardTab({
   details: Record<string, VendorDetail>;
   loading: boolean;
   requirement: SearchIntent | null | undefined;
+  question: string;
 }) {
   const row = ranked.find((r) => r.vendor_id === selected) ?? ranked[0];
   if (!row) return <p className="text-sm text-muted-foreground">No vendors in this answer.</p>;
@@ -111,12 +114,15 @@ export function ScorecardTab({
             </Link>
           </p>
         </div>
-        <div className="text-right">
-          <div>
-            <span className="text-3xl font-semibold tabular-nums">{row.score.toFixed(1)}</span>
-            <span className="text-sm text-muted-foreground">/10</span>
+        <div className="flex items-start gap-4">
+          <VendorRfqButton vendor={row} question={question} requirement={requirement} size="sm" className="mt-1.5" />
+          <div className="text-right">
+            <div>
+              <span className="text-3xl font-semibold tabular-nums">{row.score.toFixed(1)}</span>
+              <span className="text-sm text-muted-foreground">/10</span>
+            </div>
+            <span className="text-xs text-muted-foreground">composite score</span>
           </div>
-          <span className="text-xs text-muted-foreground">composite score</span>
         </div>
       </section>
 

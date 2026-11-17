@@ -111,7 +111,7 @@ function KeyDialog({ open, onOpenChange, editing }: { open: boolean; onOpenChang
       // The secret is shown exactly once: don't let a stray click outside throw it away. "Done" closes it.
       disablePointerDismissal={Boolean(created)}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className={created ? "sm:max-w-md" : "grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden sm:max-w-2xl"}>
         {created ? (
           <>
             <DialogHeader>
@@ -149,21 +149,47 @@ function KeyDialog({ open, onOpenChange, editing }: { open: boolean; onOpenChang
                   : "For integrations such as ERP or procurement systems."}
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4">
+            {/* Only the form scrolls; the title and the Save button stay in view. */}
+            <div className="-mx-4 grid min-h-0 gap-5 overflow-y-auto px-4 py-1">
               <FormField id="key-name" label="Name">
                 <Input id="key-name" placeholder="e.g. SAP Ariba sync" value={name} onChange={(e) => setName(e.target.value)} />
               </FormField>
-              <FormField id="key-scopes" label="Scopes">
-                <ChoiceList idPrefix="scope" choices={choices} value={scopes} onChange={setScopes} />
-              </FormField>
-              <FormField id="key-expires" label="Expires on" hint="Optional. Leave empty for no expiry.">
-                <DatePicker id="key-expires" value={expires} onChange={setExpires} placeholder="No expiry" min={localDay(1)} />
-              </FormField>
-              <FormField id="key-limit" label="Requests per minute" hint="10–10,000. Requests over the limit get HTTP 429 with Retry-After.">
-                <Input id="key-limit" type="number" min={10} max={10000} value={limit} onChange={(e) => setLimit(e.target.value)} />
-              </FormField>
+              <div className="grid gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm font-medium">
+                    Scopes{" "}
+                    <span className="font-normal text-muted-foreground">
+                      ({scopes.length} of {choices.length} selected)
+                    </span>
+                  </span>
+                  <div className="flex gap-1">
+                    <Button
+                      type="button"
+                      size="xs"
+                      variant="ghost"
+                      onClick={() => setScopes(choices.filter((c) => !c.disabled || scopes.includes(c.value)).map((c) => c.value))}
+                    >
+                      Select all
+                    </Button>
+                    <Button type="button" size="xs" variant="ghost" disabled={!scopes.length} onClick={() => setScopes([])}>
+                      Clear
+                    </Button>
+                  </div>
+                </div>
+                <div className="rounded-lg border bg-muted/30 p-3">
+                  <ChoiceList idPrefix="scope" choices={choices} value={scopes} onChange={setScopes} className="gap-x-6 gap-y-3 sm:grid-cols-2" />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField id="key-expires" label="Expires on" hint="Optional. Leave empty for no expiry.">
+                  <DatePicker id="key-expires" value={expires} onChange={setExpires} placeholder="No expiry" min={localDay(1)} />
+                </FormField>
+                <FormField id="key-limit" label="Requests per minute" hint="10–10,000. Over the limit: HTTP 429.">
+                  <Input id="key-limit" type="number" min={10} max={10000} value={limit} onChange={(e) => setLimit(e.target.value)} />
+                </FormField>
+              </div>
               <FormField id="key-ips" label="Allowed IPs / networks" hint="Optional, e.g. 203.0.113.0/24. Comma or space separated.">
-                <Input id="key-ips" value={ips} onChange={(e) => setIps(e.target.value)} />
+                <Input id="key-ips" placeholder="Any address" value={ips} onChange={(e) => setIps(e.target.value)} />
               </FormField>
             </div>
             <DialogFooter>

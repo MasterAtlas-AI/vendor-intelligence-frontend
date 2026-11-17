@@ -2,6 +2,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export interface Choice {
   value: string;
@@ -16,14 +17,16 @@ export function ChoiceList({
   choices,
   value,
   onChange,
+  className,
 }: {
   idPrefix: string;
   choices: Choice[];
   value: string[];
   onChange: (next: string[]) => void;
+  className?: string; // e.g. a two-column grid for long lists
 }) {
   return (
-    <div className="grid gap-2.5">
+    <div className={cn("grid gap-2.5", className)}>
       {choices.map((c) => (
         // Clicking the text toggles via the wrapping label; Base UI's checkbox is a span with role="checkbox",
         // so it needs an explicit aria-label to be announced by screen readers.

@@ -11,6 +11,7 @@ import { CodePicker } from "@/components/code-picker";
 import { COMPARE_MAX, EquipmentCompare } from "@/components/equipment/equipment-compare";
 import { attributeLabel, attributeSummary, defsForCategory, downloadText, equipmentCsv, projectLabel, useAttributeDefs, useCategoryOptions, useProjects } from "@/components/equipment/shared";
 import { FilterSelect } from "@/components/filter-select";
+import { Pager } from "@/components/pager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,6 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VerificationBadge } from "@/components/verification-badge";
 import { useDebounced } from "@/hooks/use-debounced";
+import { usePageParam } from "@/hooks/use-page-param";
 import { api } from "@/lib/api/client";
 import type { Equipment, EquipmentPage, EquipmentSearch as SearchBody, SavedSearch, VendorDetail, VendorPage, Verification } from "@/lib/api/types";
 import { P, useCan } from "@/lib/auth/permissions";
@@ -265,7 +267,12 @@ export function EquipmentSearch() {
     setSeenCategory(urlCategory);
     setFilters((f) => ({ ...f, category_code: urlCategory }));
   }
-  const [offset, setOffset] = useState(0);
+  // The page lives in the URL (?page=), so a reload, a shared link or Back keeps it.
+  const [pageNo, setPageNo] = usePageParam();
+  const offset = (pageNo - 1) * PAGE;
+  const firstPage = () => {
+    if (pageNo !== 1) setPageNo(1);
+  };
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
   // Kept across pages and filter changes so records from different searches can be compared.
@@ -278,7 +285,7 @@ export function EquipmentSearch() {
   const bodyKey = useDebounced(JSON.stringify(body), 300);
   const update = (patch: Partial<Filters>) => {
     setFilters((f) => ({ ...f, ...patch }));
-    setOffset(0);
+    firstPage();
   };
 
   const defs = useAttributeDefs();
@@ -309,7 +316,7 @@ export function EquipmentSearch() {
   const applySaved = (s: SavedSearch) => {
     setSearch(s.query);
     setFilters(fromSaved(s.filters));
-    setOffset(0);
+    firstPage();
   };
   const exportCsv = async () => {
     setExporting(true);
@@ -343,7 +350,7 @@ export function EquipmentSearch() {
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
-                  setOffset(0);
+                  firstPage();
                 }}
               />
             </div>
@@ -579,16 +586,6 @@ export function EquipmentSearch() {
               </Button>
             </>
           )}
-          {total > PAGE && (
-            <>
-              <Button variant="outline" size="sm" disabled={offset === 0 || results.isFetching} onClick={() => setOffset(Math.max(0, offset - PAGE))}>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" disabled={offset + PAGE >= total || results.isFetching} onClick={() => setOffset(offset + PAGE)}>
-                Next
-              </Button>
-            </>
-          )}
         </div>
       </div>
       <div className="overflow-x-auto rounded-lg border">
@@ -666,6 +663,16 @@ export function EquipmentSearch() {
           </TableBody>
         </Table>
       </div>
+      <Pager
+        page={pageNo}
+        pageSize={PAGE}
+        total={page?.total}
+        loading={results.isFetching}
+        onPage={(p) => {
+          setPageNo(p);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
       <EquipmentCompare open={comparing} onOpenChange={setComparing} items={selected} index={index} />
       <SaveSearchDialog open={saving} onOpenChange={setSaving} q={search.trim()} filters={filters} />
     </div>

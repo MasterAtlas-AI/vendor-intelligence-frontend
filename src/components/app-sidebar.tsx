@@ -7,7 +7,6 @@ import {
   ChevronsUpDown,
   ClipboardCheck,
   Gauge,
-  Compass,
   Database,
   ShieldAlert,
   Factory,
@@ -39,6 +38,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -212,13 +212,14 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Compass className="size-5" />
+            <SidebarMenuButton size="lg" className="h-auto py-2" render={<Link href="/dashboard" aria-label="MasterAtlas AI by Targeticon: dashboard" />}>
+              {/* Collapsed sidebar: just the square "Ti" mark. */}
+              <span className="hidden size-8 shrink-0 items-center justify-center group-data-[collapsible=icon]:flex">
+                <BrandLogo mark className="h-7" />
               </span>
-              <div className="grid flex-1 text-left leading-tight">
-                <span className="font-semibold">MasterAtlas AI</span>
-                <span className="text-xs text-muted-foreground">Vendor intelligence</span>
+              <div className="grid min-w-0 flex-1 gap-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                <BrandLogo className="h-7 max-w-full" />
+                <span className="truncate text-xs text-muted-foreground">MasterAtlas AI · Vendor intelligence</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   experimental: {
     // The /api/v1 rewrite gives up after 30 s by default and answers 500 even if the API then succeeds.
     // File uploads, large curator approvals and assistant answers with web search (often 1-3 minutes) take longer.
-    proxyTimeout: 300_000,
+    proxyTimeout: 600_000,
   },
   turbopack: {
     rules: {

@@ -18,6 +18,7 @@ import { errorMessage } from "@/lib/validation";
 import { countryName } from "@/lib/vendors";
 
 import { VendorRfqButton } from "./vendor-rfq";
+import { WebVendorsPanel } from "./workspace-web-vendors";
 import { activeDims, Bar, Chip, DEFAULT_WEIGHTS, Panel, type Ranked, requirementChips, type Weights } from "./workspace-shared";
 
 function csv(rows: Ranked[]): string {
@@ -198,7 +199,9 @@ export function ShortlistTab({
             <dd className="text-right font-medium">{references}</dd>
             <dt className="text-muted-foreground">On your approved list</dt>
             <dd className="text-right font-medium">{approved}</dd>
-            <dt className="text-muted-foreground">Web pages found</dt>
+            <dt className="text-muted-foreground">More suppliers found on the web</dt>
+            <dd className="text-right font-medium">{(reply.web_vendors ?? []).length}</dd>
+            <dt className="text-muted-foreground">Web pages cited</dt>
             <dd className="text-right font-medium">{(reply.web_sources ?? []).length}</dd>
             <dt className="text-muted-foreground">Prices and lead times</dt>
             <dd className="text-right text-xs text-muted-foreground">from RFQ quotes</dd>
@@ -310,8 +313,12 @@ export function ShortlistTab({
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-muted-foreground">Click a vendor for its scorecard. Scores use only facts in the knowledge base; web findings are listed separately in the answer and on Sources.</p>
+        <p className="text-xs text-muted-foreground">
+          Click a vendor for its scorecard. Scores use only verified facts in the knowledge base
+          {(reply.web_vendors ?? []).length ? "; suppliers found on the web are listed below." : "; web findings are in the answer and on Sources."}
+        </p>
       </Panel>
+      <WebVendorsPanel vendors={reply.web_vendors ?? []} />
       <AddToProject open={projectOpen} onOpenChange={setProjectOpen} vendorIds={targets.map((r) => r.vendor_id)} />
     </div>
   );

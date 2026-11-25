@@ -8,6 +8,7 @@ import type { ChatResponse, VendorDetail } from "@/lib/api/types";
 
 import { Chip, DEFAULT_WEIGHTS, Panel, type Ranked, rank, useVendorDetails, type Weights } from "./workspace-shared";
 import { ShortlistTab } from "./workspace-shortlist";
+import { WebVendorsPanel } from "./workspace-web-vendors";
 import { CompareTab, ScorecardTab } from "./workspace-vendors";
 
 /** One question and its answer, as the workspace and the activity log see it. */
@@ -231,10 +232,20 @@ export function Workspace({ exchange, exchanges }: { exchange: Exchange; exchang
       </div>
       <div ref={scroller} className="@container min-h-0 flex-1 overflow-y-auto p-4">
         {!shortlist.length && tab !== "activity" && tab !== "sources" ? (
-          <div className="grid justify-items-center gap-2 py-16 text-center text-sm text-muted-foreground">
-            <CheckCircle2 className="size-6" />
-            This answer didn&apos;t involve vendors from the knowledge base. Ask about equipment or suppliers to build a shortlist.
-          </div>
+          (exchange.reply.web_vendors ?? []).length && tab === "shortlist" ? (
+            // Nothing in the knowledge base matched, but the web search found suppliers: show those.
+            <div className="grid gap-4">
+              <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+                No vendors in your knowledge base matched this question, so there is no scored shortlist yet.
+              </p>
+              <WebVendorsPanel vendors={exchange.reply.web_vendors ?? []} />
+            </div>
+          ) : (
+            <div className="grid justify-items-center gap-2 py-16 text-center text-sm text-muted-foreground">
+              <CheckCircle2 className="size-6" />
+              This answer didn&apos;t involve vendors from the knowledge base. Ask about equipment or suppliers to build a shortlist.
+            </div>
+          )
         ) : (
           <>
             <TabsContent value="shortlist">

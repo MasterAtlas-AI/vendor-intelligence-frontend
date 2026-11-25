@@ -82,6 +82,7 @@ export type ChatResponse = S["ChatResponse"];
 export type CitedVendor = S["CitedVendor"];
 export type ChatAction = S["ChatAction"];
 export type WebSource = S["WebSource"];
+export type WebVendor = S["WebVendor"];
 export type ShortlistRow = S["ShortlistRow"];
 export type DimensionScores = S["DimensionScores"];
 export type AgentStep = S["AgentStep"];

@@ -45,6 +45,7 @@ export const API_KEY_SCOPES: { key: string; label: string }[] = [
   // Curators and super admins only (a key never carries more than its creator holds). Lets an integration such as
   // the Valvesheet portal review proposals and run the data-quality AI on the shared knowledge base.
   { key: "knowledge:approve", label: "Review proposals and run data-quality AI (curators)" },
+  { key: "audit:read", label: "Follow background jobs and read the audit log" },
 ];
 
 export function useCan(permission: string): boolean {

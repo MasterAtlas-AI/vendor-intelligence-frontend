@@ -678,7 +678,7 @@ export default function AssistantPage() {
             </Button>
           </form>
           <p className="mx-auto mt-1.5 max-w-3xl text-center text-xs text-muted-foreground">
-            Enter to send, Shift+Enter for a new line. Each question searches the knowledge base and the web (about 1-2 US cents of your AI budget).
+            Enter to send, Shift+Enter for a new line. Each question searches the whole knowledge base and the web (a few US cents of your AI budget).
           </p>
         </div>
       </section>

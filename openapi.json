@@ -20640,6 +20640,13 @@
             "type": "array",
             "title": "Web Sources"
           },
+          "web_vendors": {
+            "items": {
+              "$ref": "#/components/schemas/WebVendor"
+            },
+            "type": "array",
+            "title": "Web Vendors"
+          },
           "follow_ups": {
             "items": {
               "type": "string"
@@ -32861,6 +32868,84 @@
         ],
         "title": "WebSource",
         "description": "A web page the answer cites as [W1], [W2]: found by the AI's web search, not verified like knowledge-base facts."
+      },
+      "WebVendor": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "supplies": {
+            "type": "string",
+            "title": "Supplies",
+            "default": ""
+          },
+          "fit": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Fit",
+            "default": "medium"
+          },
+          "source": {
+            "$ref": "#/components/schemas/WebSource"
+          },
+          "known_vendor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Known Vendor Id"
+          },
+          "known_vendor_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Known Vendor Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "source"
+        ],
+        "title": "WebVendor",
+        "description": "A supplier the AI's web search found for the request that isn't on the shortlist: shown beside it, unscored\n(nothing about it is verified yet). `known_vendor_id` is set when it is already in the knowledge base."
       },
       "YearCount": {
         "properties": {

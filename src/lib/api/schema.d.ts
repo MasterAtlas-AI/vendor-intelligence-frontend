@@ -3502,6 +3502,8 @@ export interface components {
             vendors: components["schemas"]["CitedVendor"][];
             /** Web Sources */
             web_sources?: components["schemas"]["WebSource"][];
+            /** Web Vendors */
+            web_vendors?: components["schemas"]["WebVendor"][];
             /** Follow Ups */
             follow_ups: string[];
             /** Actions */
@@ -7673,6 +7675,35 @@ export interface components {
             title: string;
             /** Url */
             url: string;
+        };
+        /**
+         * WebVendor
+         * @description A supplier the AI's web search found for the request that isn't on the shortlist: shown beside it, unscored
+         *     (nothing about it is verified yet). `known_vendor_id` is set when it is already in the knowledge base.
+         */
+        WebVendor: {
+            /** Name */
+            name: string;
+            /** Website */
+            website?: string | null;
+            /** Country */
+            country?: string | null;
+            /**
+             * Supplies
+             * @default
+             */
+            supplies: string;
+            /**
+             * Fit
+             * @default medium
+             * @enum {string}
+             */
+            fit: "high" | "medium" | "low";
+            source: components["schemas"]["WebSource"];
+            /** Known Vendor Id */
+            known_vendor_id?: string | null;
+            /** Known Vendor Name */
+            known_vendor_name?: string | null;
         };
         /** YearCount */
         YearCount: {

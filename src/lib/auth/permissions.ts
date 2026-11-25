@@ -39,6 +39,9 @@ export const API_KEY_SCOPES: { key: string; label: string }[] = [
   { key: "commercial:read", label: "See commercial values (PO amounts)" },
   { key: "data:export", label: "Export data" },
   { key: "rfq:manage", label: "Create and manage RFQs" },
+  { key: "project:manage", label: "Create and manage projects" },
+  { key: "user:manage", label: "Invite, edit and disable users and assign roles" },
+  { key: "role:manage", label: "Create and edit custom roles" },
   // Curators and super admins only (a key never carries more than its creator holds). Lets an integration such as
   // the Valvesheet portal review proposals and run the data-quality AI on the shared knowledge base.
   { key: "knowledge:approve", label: "Review proposals and run data-quality AI (curators)" },
